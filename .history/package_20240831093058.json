@@ -1,8 +1,8 @@
 {
-  "name": "culinary-explorer",
+  "name": "next-firebase-starter",
   "private": true,
   "version": "1.0.0",
-  "author": "Jesse Ramirez",
+  "author": "Trinity Christiana",
   "scripts": {
     "dev": "next dev",
     "build": "next build",

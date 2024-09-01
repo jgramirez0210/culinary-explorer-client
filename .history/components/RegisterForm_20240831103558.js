@@ -7,6 +7,7 @@ import { registerUser } from '../utils/auth';
 
 function RegisterForm({ user, updateUser }) {
   const router = useRouter();
+  // Use optional chaining to safely access displayName
   const fullName = user.fbUser?.displayName || 'Default Name';
   console.warn('fbUser:', user.fbUser);
   const nameParts = fullName.split(' ');
@@ -16,22 +17,27 @@ function RegisterForm({ user, updateUser }) {
   const [formData, setFormData] = useState({
     first_name: firstName,
     last_name: lastName,
-    email_address: user.fbUser?.email || '',
+    email: user.fbUser?.email || '',
     profile_image_url: user.fbUser?.photoURL || '',
     uid: user.uid,
+
   });
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
+    if (formData.password !== formData.verify_password) {
+      alert('Passwords do not match!');
+      return;
+    }
+
     registerUser(formData)
       .then((response) => {
-        console.warn('Full registration response:', response);
-
-        const id = response?.data?.user?.id;
+        console.warn('Registration response:', response); // Added for debugging
+        const id = response?.data?.user?.id; // Use optional chaining to safely access nested properties
 
         if (id !== undefined && !Number.isNaN(id)) {
-          const newUser = { ...formData, id };
+          const newUser = { ...formData, id }; // Assuming newUser is constructed from formData and the received id
           updateUser(id, newUser);
           router.push('/');
         } else {
@@ -71,10 +77,10 @@ function RegisterForm({ user, updateUser }) {
         <Form.Label>Email</Form.Label>
         <Form.Control
           type="email"
-          name="email_address" // Ensure the key is email_address
+          name="email"
           required
           placeholder="Enter your email"
-          value={formData.email_address}
+          value={formData.email}
           onChange={({ target }) => setFormData((prev) => ({ ...prev, [target.name]: target.value }))}
         />
       </Form.Group>
@@ -105,6 +111,7 @@ RegisterForm.propTypes = {
     }).isRequired,
   }).isRequired,
   updateUser: PropTypes.func.isRequired,
+
 };
 
 export default RegisterForm;

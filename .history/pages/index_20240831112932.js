@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react';
-// import { Button } from 'react-bootstrap';
-// import { signOut } from '../utils/auth';
-// import { useAuth } from '../utils/context/authContext';
+import { Button } from 'react-bootstrap';
+import { signOut } from '../utils/auth';
+import { useAuth } from '../utils/context/authContext';
 import FoodLogCard from '../components/FoodLogCard';
 import { getAllFoodLogs } from '../api/FoodLog'; // Ensure this matches the export type
 
 function Home() {
-  // const { user } = useAuth();
+  const { user } = useAuth();
   const [foodLog, setFoodLog] = useState([]);
 
   useEffect(() => {

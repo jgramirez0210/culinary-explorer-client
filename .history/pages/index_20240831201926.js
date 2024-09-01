@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 // import { Button } from 'react-bootstrap';
 // import { signOut } from '../utils/auth';
-// import { useAuth } from '../utils/context/authContext';
+import { useAuth } from '../utils/context/authContext';
 import FoodLogCard from '../components/FoodLogCard';
 import { getAllFoodLogs } from '../api/FoodLog'; // Ensure this matches the export type
 
@@ -10,7 +10,7 @@ function Home() {
   const [foodLog, setFoodLog] = useState([]);
 
   useEffect(() => {
-    getAllFoodLogs().then((data) => setFoodLog(data));
+    getAllFoodLogs().then((data) => setFoodLog(data))
   }, []);
 
   return (
