@@ -7,6 +7,7 @@ import { registerUser } from '../utils/auth';
 
 function RegisterForm({ user, updateUser }) {
   const router = useRouter();
+  // Use optional chaining to safely access displayName
   const fullName = user.fbUser?.displayName || 'Default Name';
   console.warn('fbUser:', user.fbUser);
   const nameParts = fullName.split(' ');
@@ -16,7 +17,7 @@ function RegisterForm({ user, updateUser }) {
   const [formData, setFormData] = useState({
     first_name: firstName,
     last_name: lastName,
-    email_address: user.fbUser?.email || '',
+    email_address: user.fbUser?.email || '', // Ensure the key is email_address
     profile_image_url: user.fbUser?.photoURL || '',
     uid: user.uid,
   });
@@ -24,14 +25,16 @@ function RegisterForm({ user, updateUser }) {
   const handleSubmit = (e) => {
     e.preventDefault();
 
+    // Log the formData to the console
+    console.warn('Sending the following data to register API:', formData);
+
     registerUser(formData)
       .then((response) => {
-        console.warn('Full registration response:', response);
-
-        const id = response?.data?.user?.id;
+        console.log('Registration response:', response); // Added for debugging
+        const id = response?.data?.user?.id; // Use optional chaining to safely access nested properties
 
         if (id !== undefined && !Number.isNaN(id)) {
-          const newUser = { ...formData, id };
+          const newUser = { ...formData, id }; // Assuming newUser is constructed from formData and the received id
           updateUser(id, newUser);
           router.push('/');
         } else {
@@ -53,7 +56,9 @@ function RegisterForm({ user, updateUser }) {
           required
           placeholder="Enter your first name"
           value={formData.first_name}
-          onChange={({ target }) => setFormData((prev) => ({ ...prev, [target.name]: target.value }))}
+          onChange={({ target }) =>
+            setFormData((prev) => ({ ...prev, [target.name]: target.value }))
+          }
         />
       </Form.Group>
       <Form.Group className="mb-3">
@@ -64,7 +69,9 @@ function RegisterForm({ user, updateUser }) {
           required
           placeholder="Enter your last name"
           value={formData.last_name}
-          onChange={({ target }) => setFormData((prev) => ({ ...prev, [target.name]: target.value }))}
+          onChange={({ target }) =>
+            setFormData((prev) => ({ ...prev, [target.name]: target.value }))
+          }
         />
       </Form.Group>
       <Form.Group className="mb-3">
@@ -75,7 +82,9 @@ function RegisterForm({ user, updateUser }) {
           required
           placeholder="Enter your email"
           value={formData.email_address}
-          onChange={({ target }) => setFormData((prev) => ({ ...prev, [target.name]: target.value }))}
+          onChange={({ target }) =>
+            setFormData((prev) => ({ ...prev, [target.name]: target.value }))
+          }
         />
       </Form.Group>
       <Form.Group className="mb-3">
@@ -85,7 +94,9 @@ function RegisterForm({ user, updateUser }) {
           name="profile_image_url"
           placeholder="Enter your profile image URL"
           value={formData.profile_image_url}
-          onChange={({ target }) => setFormData((prev) => ({ ...prev, [target.name]: target.value }))}
+          onChange={({ target }) =>
+            setFormData((prev) => ({ ...prev, [target.name]: target.value }))
+          }
         />
       </Form.Group>
       <Button variant="primary" type="submit">
@@ -105,6 +116,7 @@ RegisterForm.propTypes = {
     }).isRequired,
   }).isRequired,
   updateUser: PropTypes.func.isRequired,
+  isEditing: PropTypes.bool,
 };
 
 export default RegisterForm;

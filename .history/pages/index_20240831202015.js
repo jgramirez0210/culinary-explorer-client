@@ -10,7 +10,7 @@ function Home() {
   const [foodLog, setFoodLog] = useState([]);
 
   useEffect(() => {
-    getAllFoodLogs().then((data) => setFoodLog(data));
+    getAllFoodLogs().then((data) => setFoodLog(data)):
   }, []);
 
   return (
