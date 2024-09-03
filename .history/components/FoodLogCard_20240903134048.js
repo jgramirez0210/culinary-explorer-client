@@ -7,9 +7,9 @@ import Card from 'react-bootstrap/Card';
 function ItemCard({ itemObj }) {
   console.warn('this is my item object', itemObj);
 
-  // Check if category is defined and is an array
-  const categoryNames = Array.isArray(itemObj.category)
-    ? itemObj.category.map((cat) => cat.category)
+  // Check if food_log_category is defined and is an array
+  const categoryNames = Array.isArray(itemObj.food_log_category)
+    ? itemObj.food_log_category.map((flc) => flc.category.category_name)
     : [];
 
   return (
@@ -24,7 +24,7 @@ function ItemCard({ itemObj }) {
         <p className="card-text bold">Description: {itemObj.description}</p>
         <p className="card-text bold">Notes: {itemObj.notes}</p>
         <p className="card-text bold">Restaurant Address: {itemObj.restaurant.restaurant_address}</p>
-        <p className="card-text">Website: <a href={itemObj.restaurant.website_url} target="_blank" rel="noopener noreferrer">{itemObj.restaurant.website_url}</a></p>
+        <p className="card-text bold">Website: <a href={itemObj.restaurant.website_url} target="_blank" rel="noopener noreferrer">{itemObj.restaurant.website_url}</a></p>
         <Link href={`/view/${itemObj.id}`} passHref>
           <Button variant="outline-success" className="m-2">VIEW</Button>
         </Link>
@@ -45,9 +45,11 @@ ItemCard.propTypes = {
       website_url: PropTypes.string,
     }).isRequired,
     price: PropTypes.number,
-    category: PropTypes.arrayOf(
+    food_log_category: PropTypes.arrayOf(
       PropTypes.shape({
-        category: PropTypes.string.isRequired,
+        category: PropTypes.shape({
+          category_name: PropTypes.string,
+        }).isRequired,
       }),
     ),
     description: PropTypes.string,
