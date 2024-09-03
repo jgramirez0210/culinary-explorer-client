@@ -48,7 +48,7 @@ ItemCard.propTypes = {
     category: PropTypes.arrayOf(
       PropTypes.shape({
         category: PropTypes.string.isRequired,
-      }),
+      })
     ),
     description: PropTypes.string,
     notes: PropTypes.string,
