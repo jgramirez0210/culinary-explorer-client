@@ -1,7 +1,5 @@
 import React from 'react';
-import {
-  Navbar, Container, Nav, Button,
-} from 'react-bootstrap';
+import { Navbar, Container, Nav, Button } from 'react-bootstrap';
 import Link from 'next/link';
 import { signOut } from '../utils/auth';
 
@@ -32,7 +30,7 @@ export default function NavBar() {
               Sign Out
             </Button>
           </Nav>
-          <nav className="navbar bg-dark" data-bs-theme="dark">
+          <nav className="navbar bg-body-tertiary">
             <div className="container-fluid">
               <form className="d-flex" role="search">
                 <input className="form-control me-2" type="search" placeholder="Search" aria-label="Search" />
