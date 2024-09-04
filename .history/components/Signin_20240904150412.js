@@ -21,9 +21,6 @@ function SignIn() {
         allergies or intolerances. That is where Culinary Explorer steps in, it creates a single spot where you can log
         the different restaurants you&apos;ve eaten at and your experience.
       </div>
-      <div className="about-the-site-label">
-        ABOUT THE CREATOR
-      </div>
       <div className="d-flex flex-wrap">
         Before embarking on my software development journey, I worked as a Project Manager in the entertainment industry.
         I enjoyed problem-solving and creating things that people would love. When I discovered software development,

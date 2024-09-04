@@ -19,10 +19,7 @@ function SignIn() {
       <div className="about-the-site">
         Dining out can become a complex and often stressful experience for people with dietary restrictions, such as
         allergies or intolerances. That is where Culinary Explorer steps in, it creates a single spot where you can log
-        the different restaurants you&apos;ve eaten at and your experience.
-      </div>
-      <div className="about-the-site-label">
-        ABOUT THE CREATOR
+        the different restaurants you&aposve eaten at and your experience.
       </div>
       <div className="d-flex flex-wrap">
         Before embarking on my software development journey, I worked as a Project Manager in the entertainment industry.
