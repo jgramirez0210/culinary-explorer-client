@@ -13,16 +13,8 @@ function SignIn() {
           Sign In
         </Button>
       </div>
-      <div className="about-the-site-label">
-        ABOUT THE SITE
-      </div>
       <div className="about-the-site">
-        Dining out can become a complex and often stressful experience for people with dietary restrictions, such as
-        allergies or intolerances. That is where Culinary Explorer steps in, it creates a single spot where you can log
-        the different restaurants you&apos;ve eaten at and your experience.
-      </div>
-      <div className="about-the-site-label">
-        ABOUT THE CREATOR
+        ABOUT THE SITE
       </div>
       <div className="d-flex flex-wrap">
         Before embarking on my software development journey, I worked as a Project Manager in the entertainment industry.
