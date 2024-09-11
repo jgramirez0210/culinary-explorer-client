@@ -3,12 +3,11 @@ import { useState } from 'react';
 import { useRouter } from 'next/router';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
-import { registerUser } from '../utils/auth';
+import { registerUser } from '../../utils/auth';
 
 function RegisterForm({ user, updateUser }) {
   const router = useRouter();
   const fullName = user.fbUser?.displayName || 'Default Name';
-  console.warn('fbUser:', user.fbUser);
   const nameParts = fullName.split(' ');
   const firstName = nameParts[0];
   const lastName = nameParts.length > 1 ? nameParts.slice(1).join(' ') : '';
@@ -26,9 +25,9 @@ function RegisterForm({ user, updateUser }) {
 
     registerUser(formData)
       .then((response) => {
-        console.warn('Full registration response:', response);
 
-        const id = response?.data?.user?.id;
+
+        const id = response?.id;
 
         if (id !== undefined && !Number.isNaN(id)) {
           const newUser = { ...formData, id };
