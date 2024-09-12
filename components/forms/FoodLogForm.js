@@ -1,171 +1,134 @@
-
-// Importing necessary modules and functions
-import { useRouter } from 'next/router';
+import React, { useEffect, useState, Component } from 'react';
+import Select from 'react-select';
+import makeAnimated from 'react-select/animated';
 import PropTypes from 'prop-types';
-import { useState, useEffect } from 'react';
-import { Button, Form } from 'react-bootstrap';
-import {
-  createGame, getGameTypes, getGame, updateGame,
-} from '../api/gameData';
+import { Form, Button } from 'react-bootstrap';
+import { useRouter } from 'next/router';
+import { getAllRestaurants } from '../../api/Restaurants';
+import { getAllDishes } from '../../api/Dish';
+import { getAllCategories } from '../../api/Categories';
 
-// Initial state for the form
 const initialState = {
-  restaurant_name: '',
-  restaurant_address: '',
-  website_url: '',
-  dish_name: '',
-  description: '',
-  notes: '',
-  food_image: '',
-  price: '',
-  category: '',
+  id: null,
+  restaurant: {
+    restaurant_name: '',
+    restaurant_address: '',
+    website_url: '',
+  },
+  dish: {
+    food_image_url: '',
+    dish_name: '',
+    price: 0,
+    description: '',
+    notes: '',
+    short_description: '',
+  },
+  category: [],
 };
 
-// The GameForm component
-function FoodLogForm({ user }) {
-  // State for game types and the current game
-  const [gameTypes, setGameTypes] = useState([]);
-  const [currentGame, setCurrentGame] = useState(initialState);
-
-  // Getting the router and query object
+function FoodLogForm({ itemObj, viewType }) {
+  const [formState, setFormState] = useState(initialState);
+  const [restaurant, setRestaurant] = useState([]);
+  const [dish, setDish] = useState([]);
+  const [category, setCategory] = useState([]);
   const router = useRouter();
-  const { query } = useRouter();
-  const { id } = query;
 
-  // useEffect hook to fetch the game data and game types
   useEffect(() => {
-    if (id) {
-      // If an id is present, fetch the game and set it to currentGame
-      getGame(id)
-        .then((game) => {
-          setCurrentGame(game);
-        })
-        .catch((error) => {
-          console.error(error);
-        });
-    } else {
-      // If no id is present, set currentGame to initialState
-      setCurrentGame(initialState);
+    if (itemObj) {
+      setFormState(itemObj);
     }
+  }, [itemObj]);
 
-    // Fetch the game types
-    getGameTypes()
+  useEffect(() => {
+    getAllRestaurants()
       .then((types) => {
-        setGameTypes(types);
+        setRestaurant(types);
       })
       .catch((error) => {
         console.error(error);
       });
-  }, [id, user.uid]);
+  }, []);
 
-  // useEffect hook to log the currentGame state
   useEffect(() => {
-  }, [currentGame]);
+    getAllDishes()
+      .then((types) => {
+        setDish(types);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }, []);
 
-  // Function to handle form field changes
-  const handleChange = (e) => {
-    const value = e.target.name === 'game_type' ? parseInt(e.target.value, 10) : e.target.value;
-    setCurrentGame({
-      ...currentGame,
-      [e.target.name]: value,
-    });
+  useEffect(() => {
+    getAllCategories()
+      .then((types) => {
+        console.warn('Fetched categories', types);
+        setCategory(types);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }, []);
+
+  const handleChange = (event) => {
+    const { name, value } = event.target;
+    setFormState((prevState) => ({
+      ...prevState,
+      [name]: value,
+    }));
   };
 
-  // Function to handle form submission
-  const handleSubmit = (e) => {
-    e.preventDefault();
-
-    // Constructing the game object
-    const game = {
-      maker: currentGame.maker,
-      title: currentGame.title,
-      number_of_players: currentGame.number_of_players,
-      skill_level: currentGame.skill_level,
-      game_type: currentGame.game_type,
-      userId: user.uid,
-    };
-
-    if (id) {
-      // If an id is present, update the game
-      updateGame(id, game)
-        .then(() => {
-          router.push(`/games/${id}`);
-        })
-        .catch((error) => {
-          console.error(error);
-        });
-    } else {
-      // If no id is present, create a new game
-      createGame(game)
-        .then(() => {
-          router.push('/');
-        })
-        .catch((error) => {
-          console.error(error);
-        });
-    }
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    // Handle form submission logic here
   };
 
   return (
-    <Form onSubmit={handleSubmit}>
-      <h2 className="text-white mt-5">{currentGame.id ? 'Update' : 'Create'} Game</h2>
-      <Form.Group className="mb-3">
-        <Form.Label>Title</Form.Label>
-        <Form.Control
-          name="title"
-          value={currentGame.title}
-          onChange={handleChange}
-          required
-        />
-        <Form.Label>Game Type</Form.Label>
-        <Form.Select
-          name="game_type"
-          value={currentGame.game_type}
-          onChange={handleChange}
-        >
-          {gameTypes.map((type) => (
+    <div>
+      <Form onSubmit={handleSubmit}>
+        <Form.Select name="restaurant" value={formState.restaurant || ''} onChange={handleChange}>
+          {restaurant.map((type) => (
             <option key={type.id} value={type.id}>
-              {type.label}
+              {type.restaurant_name}
+            </option>
+          ))}
+        </Form.Select>
+        <Form.Select name="dish" value={formState.dish || ''} onChange={handleChange}>
+          {dish.map((type) => (
+            <option key={type.id} value={type.id}>
+              {type.dish_name}
             </option>
           ))}
         </Form.Select>
 
-        <Form.Label>Maker</Form.Label>
-        <Form.Control
-          name="maker"
-          value={currentGame.maker}
-          onChange={handleChange}
-          required
-        />
+        <div className='container'>
+        <div className='row'>
+          <div className='col-md-3'></div>
+          <div className='col-md-6'>
+            <Select
+              options={category.map(cat => ({ value: cat.category, label: cat.category }))}
+              components={makeAnimated()}
+              isMulti
+            />
+          </div>
+          <div className='col-md-3'></div>
+        </div>
+      </div>
 
-        <Form.Label>Number of Players</Form.Label>
-        <Form.Control
-          name="number_of_players"
-          value={currentGame.number_of_players}
-          onChange={handleChange}
-          required
-        />
-
-        <Form.Label>Skill Level</Form.Label>
-        <Form.Control
-          name="skill_level"
-          value={currentGame.skill_level}
-          onChange={handleChange}
-          required
-        />
-      </Form.Group>
-      <Button variant="primary" type="submit">
-        Submit!
-      </Button>
-    </Form>
+        <Button variant="primary" type="submit">
+          Submit!
+        </Button>
+      </Form>
+    </div>
   );
 }
 
-// Prop types for the GameForm component
-GameForm.propTypes = {
-  user: PropTypes.shape({
-    uid: PropTypes.string.isRequired,
-  }).isRequired,
+FoodLogForm.propTypes = {
+  itemObj: PropTypes.shape({
+    skill_level: PropTypes.string,
+    // Add other properties as needed
+  }),
+  viewType: PropTypes.any.isRequired,
 };
 
 export default FoodLogForm;
