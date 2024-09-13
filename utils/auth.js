@@ -13,7 +13,11 @@ const checkUser = (uid) => new Promise((resolve, reject) => {
       Accept: 'application/json',
     },
   })
-    .then((resp) => resolve(resp.json()))
+    .then((resp) => resp.json())
+    .then((data) => {
+      // console.warn('Response from checkUser:', data);
+      resolve(data);
+    })
     .catch(reject);
 });
 
