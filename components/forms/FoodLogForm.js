@@ -60,11 +60,9 @@ function FoodLogForm() {
     const payload = {
       restaurant_id: formInput.restaurant,
       dish_id: formInput.dish,
-      category_ids: formInput.category ? formInput.category.map((cat) => cat.value) : [], // Ensure these are IDs
+      category_ids: formInput.category ? formInput.category.map((cat) => cat.value) : [],
       uid: user.uid,
     };
-
-    console.log('Payload before submission:', payload); // Log payload
 
     try {
       const response = await createFoodLog(payload);
@@ -77,42 +75,41 @@ function FoodLogForm() {
 
   return (
     <div>
-<Form onSubmit={handleSubmit}>
-    <Select
-        name="restaurant"
-        options={restaurant.map((type) => ({
+      <Form onSubmit={handleSubmit}>
+        <Select
+          name="restaurant"
+          options={restaurant.map((type) => ({
             value: type.id,
             label: type.restaurant_name,
-        }))}
-        value={formInput.restaurant_id}
-        onChange={(selectedOption, actionMeta) => handleChange(selectedOption, actionMeta)}
-    />
-    <Select
-        name="dish"
-        options={dish.map((type) => ({
+          }))}
+          value={formInput.restaurant_id}
+          onChange={(selectedOption, actionMeta) => handleChange(selectedOption, actionMeta)}
+        />
+        <Select
+          name="dish"
+          options={dish.map((type) => ({
             value: type.id,
             label: type.dish_name,
-        }))}
-        value={formInput.dish_id}
-        onChange={(selectedOption, actionMeta) => handleChange(selectedOption, actionMeta)}
-    />
-    <Select
-        name="category"
-        options={category.map((type) => ({
+          }))}
+          value={formInput.dish_id}
+          onChange={(selectedOption, actionMeta) => handleChange(selectedOption, actionMeta)}
+        />
+        <Select
+          name="category"
+          options={category.map((type) => ({
             value: type.id,
             label: type.category,
-        }))}
-        value={formInput.category_id}
-        onChange={(selectedOption, actionMeta) => handleChange(selectedOption, actionMeta)}
-        isMulti
-    />
-    <Form.Control
-        type="hidden"
-        name="uid"
-        value={formInput.uid}
-        required
-    />
-
+          }))}
+          value={formInput.category_id}
+          onChange={(selectedOption, actionMeta) => handleChange(selectedOption, actionMeta)}
+          isMulti
+        />
+        <Form.Control
+          type="hidden"
+          name="uid"
+          value={formInput.uid}
+          required
+        />
         <Button variant="primary" type="submit">
           Submit!
         </Button>
