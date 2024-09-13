@@ -25,8 +25,6 @@ function RegisterForm({ user, updateUser }) {
 
     registerUser(formData)
       .then((response) => {
-
-
         const id = response?.id;
 
         if (id !== undefined && !Number.isNaN(id)) {
