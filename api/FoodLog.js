@@ -25,6 +25,7 @@ const getSingleFoodLog = (id) => new Promise((resolve, reject) => {
 });
 
 const createFoodLog = (payload) => new Promise((resolve, reject) => {
+  console.warn('Payload being sent to createFoodLog API:', payload); // Log the payload
   fetch(`${endpoint}/food_log`, {
     method: 'POST',
     headers: {

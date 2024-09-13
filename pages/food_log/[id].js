@@ -11,10 +11,9 @@ const ViewSingleFoodLog = () => {
   useEffect(() => {
     if (id) {
       getSingleFoodLog(id).then((fetchedData) => {
-        console.log('Fetched data:', fetchedData);
         setData(fetchedData);
-      }).catch((error) => {
-        console.error('Error fetching food log:', error);
+      }).catch(() => {
+        // Handle error if needed
       });
     }
   }, [id]);
@@ -22,7 +21,7 @@ const ViewSingleFoodLog = () => {
   return (
     <>
       {data ? (
-        <FoodLogCard itemObj={data} viewType='single'/>
+        <FoodLogCard itemObj={data} viewType="single" />
       ) : (
         <p>Loading...</p>
       )}
