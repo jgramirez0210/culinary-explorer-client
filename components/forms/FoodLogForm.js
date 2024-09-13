@@ -6,7 +6,7 @@ import { useAuth } from '../../utils/context/authContext';
 import { getAllRestaurants } from '../../api/Restaurants';
 import { getAllDishes } from '../../api/Dish';
 import { getAllCategories } from '../../api/Categories';
-import { createFoodLog } from '../../api/FoodLog';
+import { createFoodLog, getSingleFoodLog } from '../../api/FoodLog';
 
 const initialState = {
   restaurant: '',
@@ -18,10 +18,12 @@ function FoodLogForm() {
   const [formInput, setFormInput] = useState(initialState);
   const [restaurant, setRestaurant] = useState([]);
   const [dish, setDish] = useState([]);
+  const [obj, setObj] = useState(null);
   const [category, setCategory] = useState([]);
   const router = useRouter();
   const { user } = useAuth();
   const { id } = router.query;
+  
   // Fetch and set initial data
   useEffect(() => {
     const fetchData = async () => {
@@ -41,19 +43,19 @@ function FoodLogForm() {
     fetchData();
   }, []);
 
-  useEffect(() => {}, [formInput.restaurant, formInput.dish]);
-
+  
   const handleChange = (selectedOption, actionMeta) => {
     if (!actionMeta) {
       return;
     }
     const { name } = actionMeta;
-
+  
     setFormInput((prevState) => ({
       ...prevState,
-      [name]: selectedOption.value, // Store only the ID
+      [name]: selectedOption.value,
     }));
   };
+
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -78,6 +80,7 @@ function FoodLogForm() {
       <Form onSubmit={handleSubmit}>
         <Select
           name="restaurant"
+          placeholder="Select a restaurant"
           options={restaurant.map((type) => ({
             value: type.id,
             label: type.restaurant_name,
@@ -87,6 +90,7 @@ function FoodLogForm() {
         />
         <Select
           name="dish"
+          placeholder="Select a dish"
           options={dish.map((type) => ({
             value: type.id,
             label: type.dish_name,
@@ -96,6 +100,7 @@ function FoodLogForm() {
         />
         <Select
           name="category"
+          placeholder="Select a category"
           options={category.map((type) => ({
             value: type.id,
             label: type.category,

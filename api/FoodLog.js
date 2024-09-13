@@ -38,8 +38,21 @@ const createFoodLog = (payload) => new Promise((resolve, reject) => {
     .catch(reject);
 });
 
+const deleteItem = (id) => new Promise((resolve, reject) => {
+  fetch(`${endpoint}/food_log/${id}`, {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  })
+    .then((data) => resolve((data)))
+    .catch(reject);
+});
+
+
 export {
   getAllFoodLogs,
   getSingleFoodLog,
   createFoodLog,
+  deleteItem,
 };
