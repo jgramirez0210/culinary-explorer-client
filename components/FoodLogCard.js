@@ -2,9 +2,16 @@ import Link from 'next/link';
 import Card from 'react-bootstrap/Card';
 import Button from 'react-bootstrap/Button';
 import PropTypes from 'prop-types';
+import { deleteItem } from '../api/FoodLog';
 
-function FoodLogCard({ itemObj, viewType }) {
+function FoodLogCard({ itemObj, viewType, onUpdate }) {
   const categoryNames = Array.isArray(itemObj.category) ? itemObj.category.map((cat) => cat.category) : [];
+  
+  const deleteThisItem = () => {
+    if (window.confirm(`Delete Entry?`)) {
+      deleteItem(itemObj.id).then(() => onUpdate(itemObj.id));
+    }
+  };
 
   return (
     <Card className="card" style={{ width: '18rem', margin: '10px', border: '1px solid' }}>
@@ -39,11 +46,14 @@ function FoodLogCard({ itemObj, viewType }) {
             VIEW
           </Button>
         </Link>
-        <Link href={`/edit/${itemObj.id}`} passHref>
+        <Link href={`/food_log/edit/${itemObj.id}`} passHref>
           <Button variant="outline-dark" color="success">
             EDIT
           </Button>
         </Link>
+        <Button variant="outline-danger" onClick={deleteThisItem} className="m-2">
+          DELETE
+        </Button>        
       </Card.Body>
     </Card>
   );
@@ -51,27 +61,25 @@ function FoodLogCard({ itemObj, viewType }) {
 
 FoodLogCard.propTypes = {
   itemObj: PropTypes.shape({
-    id: PropTypes.number.isRequired,
+    id: PropTypes.number,
+    category: PropTypes.arrayOf(PropTypes.shape({
+      category: PropTypes.string,
+    })),
     restaurant: PropTypes.shape({
-      restaurant_name: PropTypes.string.isRequired,
+      restaurant_name: PropTypes.string,
       restaurant_address: PropTypes.string,
       website_url: PropTypes.string,
-    }).isRequired,
+    }),
     dish: PropTypes.shape({
-      food_image_url: PropTypes.string.isRequired,
-      dish_name: PropTypes.string.isRequired,
-      price: PropTypes.number.isRequired,
-      description: PropTypes.string.isRequired,
+      food_image_url: PropTypes.string,
+      dish_name: PropTypes.string,
+      description: PropTypes.string,
+      price: PropTypes.number,
       notes: PropTypes.string,
-      short_description: PropTypes.string,
-    }).isRequired,
-    category: PropTypes.arrayOf(
-      PropTypes.shape({
-        category: PropTypes.string.isRequired,
-      }),
-    ),
+    }),
   }).isRequired,
-  viewType: PropTypes.oneOf(['single', 'all']).isRequired,
+  viewType: PropTypes.string.isRequired,
+  onUpdate: PropTypes.func.isRequired,
 };
 
 export default FoodLogCard;
