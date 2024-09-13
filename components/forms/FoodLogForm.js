@@ -1,14 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { useAuth } from '../../utils/context/authContext';
 import Select from 'react-select';
-import makeAnimated from 'react-select/animated';
-import PropTypes from 'prop-types';
 import { Form, Button } from 'react-bootstrap';
 import { useRouter } from 'next/router';
+import { useAuth } from '../../utils/context/authContext';
 import { getAllRestaurants } from '../../api/Restaurants';
 import { getAllDishes } from '../../api/Dish';
 import { getAllCategories } from '../../api/Categories';
-import { checkUser } from '../../utils/auth';
 import { createFoodLog } from '../../api/FoodLog';
 
 const initialState = {
@@ -17,23 +14,18 @@ const initialState = {
   category: [],
 };
 
-function FoodLogForm({ itemObj, viewType }) {
+function FoodLogForm() {
   const [formInput, setFormInput] = useState(initialState);
   const [restaurant, setRestaurant] = useState([]);
   const [dish, setDish] = useState([]);
   const [category, setCategory] = useState([]);
   const router = useRouter();
   const { user } = useAuth();
-  const { id } = router.query;  
-
+  const { id } = router.query;
   // Fetch and set initial data
   useEffect(() => {
     const fetchData = async () => {
-      const [restaurants, dishes, categories] = await Promise.all([
-        getAllRestaurants(),
-        getAllDishes(),
-        getAllCategories(),
-      ]);
+      const [restaurants, dishes, categories] = await Promise.all([getAllRestaurants(), getAllDishes(), getAllCategories()]);
 
       setRestaurant(restaurants);
       setDish(dishes);
@@ -49,49 +41,35 @@ function FoodLogForm({ itemObj, viewType }) {
     fetchData();
   }, []);
 
-  useEffect(() => {
-    console.log("Form Input Restaurant ID:", formInput.restaurant);
-    console.log("Form Input Dish ID:", formInput.dish);
-  }, [formInput.restaurant, formInput.dish]);
+  useEffect(() => {}, [formInput.restaurant, formInput.dish]);
 
   const handleChange = (selectedOption, actionMeta) => {
     if (!actionMeta) {
       return;
     }
-  
     const { name } = actionMeta;
-  
-    setFormInput(prevState => ({
+
+    setFormInput((prevState) => ({
       ...prevState,
       [name]: selectedOption.value, // Store only the ID
     }));
   };
 
-  const handleCategoryChange = (selectedOptions) => {
-    setFormInput((prevState) => ({
-      ...prevState,
-      category: selectedOptions,
-    }));
-  };
-
   const handleSubmit = async (event) => {
     event.preventDefault();
-  
-    console.log('Current form input state:', formInput); // Log form input state
-  
     const payload = {
       restaurant_id: formInput.restaurant,
       dish_id: formInput.dish,
-      category_ids: formInput.category ? formInput.category.map(cat => cat.value) : [], // Ensure these are IDs
+      category_ids: formInput.category ? formInput.category.map((cat) => cat.value) : [], // Ensure these are IDs
       uid: user.uid,
     };
-  
+
     console.log('Payload before submission:', payload); // Log payload
-  
+
     try {
       const response = await createFoodLog(payload);
       console.warn('API response:', response);
-      router.push(`/food_log/${id}`)
+      router.push(`/food_log/${id}`);
     } catch (error) {
       console.error('API error:', error);
     }
@@ -99,32 +77,41 @@ function FoodLogForm({ itemObj, viewType }) {
 
   return (
     <div>
-      <Form onSubmit={handleSubmit}>
-      <Select
+<Form onSubmit={handleSubmit}>
+    <Select
         name="restaurant"
-        options={restaurant.map((type) => ({ value: type.id, label: type.restaurant_name }))}
+        options={restaurant.map((type) => ({
+            value: type.id,
+            label: type.restaurant_name,
+        }))}
         value={formInput.restaurant_id}
         onChange={(selectedOption, actionMeta) => handleChange(selectedOption, actionMeta)}
-      />
-      <Select
+    />
+    <Select
         name="dish"
-        options={dish.map((type) => ({ value: type.id, label: type.dish_name }))}
+        options={dish.map((type) => ({
+            value: type.id,
+            label: type.dish_name,
+        }))}
         value={formInput.dish_id}
         onChange={(selectedOption, actionMeta) => handleChange(selectedOption, actionMeta)}
-      />
-      <Select
+    />
+    <Select
         name="category"
-        options={category.map((type) => ({ value: type.id, label: type.category }))}
+        options={category.map((type) => ({
+            value: type.id,
+            label: type.category,
+        }))}
         value={formInput.category_id}
         onChange={(selectedOption, actionMeta) => handleChange(selectedOption, actionMeta)}
         isMulti
-      />
-      <Form.Control
+    />
+    <Form.Control
         type="hidden"
         name="uid"
         value={formInput.uid}
         required
-      />
+    />
 
         <Button variant="primary" type="submit">
           Submit!
