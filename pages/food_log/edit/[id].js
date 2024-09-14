@@ -14,6 +14,7 @@ export default function EditItem() {
     if (id) {
       getSingleFoodLog(id)
         .then((data) => {
+          console.warn('data:', data);
           setEditObj(data);
           setLoading(false);
         })
