@@ -2,9 +2,9 @@
 import { useRouter } from 'next/router';
 import PropTypes from 'prop-types';
 import { useState, useEffect } from 'react';
-import { Button, Form } from 'react-bootstrap';
 import Select from 'react-select';
-import { getSingleFoodLog, updateFoodLog, createFoodLog } from '../../api/FoodLog';
+import Form from 'react-bootstrap/Form';
+import { updateFoodLog, createFoodLog } from '../../api/FoodLog';
 import { getAllRestaurants } from '../../api/Restaurants';
 import { getAllCategories } from '../../api/Categories';
 import { getAllDishes } from '../../api/Dish';
@@ -29,42 +29,41 @@ function FoodLogForm({ user, editObj }) {
       setFormInput({
         restaurant_id: editObj.restaurant.id,
         dish_id: editObj.dish.id,
-        category_ids: editObj.category.map(cat => cat.id),
+        category_ids: editObj.category.map((cat) => cat.id),
       });
     } else {
       setFormInput(initialState);
     }
 
     getAllRestaurants()
-      .then((restaurantList) => {
-        setRestaurants(restaurantList);
+      .then((restaurants) => {
+        setRestaurants(restaurants);
       })
       .catch((error) => {
         console.error(error);
       });
 
     getAllDishes()
-      .then((dishList) => {
-        setDishes(dishList);
+      .then((dishes) => {
+        setDishes(dishes);
       })
       .catch((error) => {
         console.error(error);
       });
 
     getAllCategories()
-      .then((categoryList) => {
-        setCategories(categoryList);
+      .then((categories) => {
+        setCategories(categories);
       })
       .catch((error) => {
         console.error(error);
       });
   }, [editObj]);
 
-
   // Function to handle form submission
   const handleSubmit = (e) => {
     e.preventDefault();
-  
+
     // Constructing the Food log object
     const payload = {
       restaurant_id: formInput.restaurant_id,
@@ -73,7 +72,7 @@ function FoodLogForm({ user, editObj }) {
       uid: user.uid,
     };
     console.warn('Payload:', payload);
-  
+
     if (id) {
       // If an id is present, update the Food log
       updateFoodLog(id, payload)
@@ -152,7 +151,7 @@ function FoodLogForm({ user, editObj }) {
       <button type="submit">Submit</button>
     </Form>
   );
-};
+}
 
 // Prop types for the FoodLogForm component
 FoodLogForm.propTypes = {
@@ -160,11 +159,21 @@ FoodLogForm.propTypes = {
     uid: PropTypes.string.isRequired,
   }).isRequired,
   editObj: PropTypes.shape({
-    id: PropTypes.string,
+    id: PropTypes.number,
+    restaurant: PropTypes.shape({
+      id: PropTypes.number.isRequired,
+    }),
+    dish: PropTypes.shape({
+      id: PropTypes.number.isRequired,
+    }),
+    category: PropTypes.arrayOf(
+      PropTypes.shape({
+        id: PropTypes.number.isRequired,
+      }),
+    ),
   }),
 };
 
-// Default props for the FoodLogForm component
 FoodLogForm.defaultProps = {
   editObj: null,
 };
