@@ -6,9 +6,9 @@ import { deleteItem } from '../api/FoodLog';
 
 function FoodLogCard({ itemObj, viewType, onUpdate }) {
   const categoryNames = Array.isArray(itemObj.category) ? itemObj.category.map((cat) => cat.category) : [];
-  
+
   const deleteThisItem = () => {
-    if (window.confirm(`Delete Entry?`)) {
+    if (window.confirm('Delete Entry?')) {
       deleteItem(itemObj.id).then(() => onUpdate(itemObj.id));
     }
   };
@@ -53,7 +53,7 @@ function FoodLogCard({ itemObj, viewType, onUpdate }) {
         </Link>
         <Button variant="outline-danger" onClick={deleteThisItem} className="m-2">
           DELETE
-        </Button>        
+        </Button>
       </Card.Body>
     </Card>
   );
