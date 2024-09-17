@@ -8,7 +8,7 @@ export default function EditItem() {
   const [editObj, setEditObj] = useState(null);
   const router = useRouter();
   const { id } = router.query;
-  const { user } = useAuth(); 
+  const { user } = useAuth();
 
   useEffect(() => {
     if (id) {

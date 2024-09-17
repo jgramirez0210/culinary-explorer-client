@@ -48,8 +48,8 @@ const deleteItem = (id) => new Promise((resolve, reject) => {
     .catch(reject);
 });
 
-const updateFoodLog = (payload) => new Promise((resolve, reject) => {
-  fetch(`${endpoint}/food_log/${payload.id}`, {
+const updateFoodLog = (id, payload) => new Promise((resolve, reject) => {
+  fetch(`${endpoint}/food_log/${id}`, {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
@@ -59,6 +59,7 @@ const updateFoodLog = (payload) => new Promise((resolve, reject) => {
     .then((data) => resolve(data))
     .catch(reject);
 });
+
 
 export {
   getAllFoodLogs,
