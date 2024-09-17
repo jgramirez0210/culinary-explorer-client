@@ -1,149 +1,182 @@
-import React, { useEffect, useState } from 'react';
-import Select from 'react-select';
-import { Form, Button } from 'react-bootstrap';
+// Importing necessary modules and functions
 import { useRouter } from 'next/router';
-import { useAuth } from '../../utils/context/authContext';
-import { getAllRestaurants } from '../../api/Restaurants';
-import { getAllDishes } from '../../api/Dish';
+import PropTypes from 'prop-types';
+import { useState, useEffect } from 'react';
+import { Button, Form } from 'react-bootstrap';
+import Select from 'react-select';
+import { getSingleFoodLog, updateFoodLog, createFoodLog } from '../../api/FoodLog';
+import { getAllRestaurants } from '../../api/Restaurants';  
 import { getAllCategories } from '../../api/Categories';
-import { createFoodLog, getSingleFoodLog } from '../../api/FoodLog';
+import { getAllDishes } from '../../api/Dish';
 
+// Initial state for the form
 const initialState = {
   restaurant: '',
   dish: '',
   category_ids: [],
 };
 
-/**
- * Represents a form component for creating or updating a food log entry.
- *
- * @param {Object} props - The props containing the data for editing the food log entry.
- * @returns {JSX.Element} The JSX element representing the food log form.
- */
-function FoodLogForm({ editObj }) {
+function FoodLogForm({ user, editObj }) {
+  const [currentGame, setCurrentGame] = useState(initialState);
   const [formInput, setFormInput] = useState(initialState);
   const [restaurant, setRestaurant] = useState([]);
   const [dish, setDish] = useState([]);
   const [category, setCategory] = useState([]);
   const router = useRouter();
-  const { user } = useAuth();
-  const { id } = router.query;
-  
-  // Fetch and set initial data for form dropdowns
+  const { query } = useRouter();
+  const { id } = query;
+
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const restaurants = await getAllRestaurants();
-        const dishes = await getAllDishes();
-        const categories = await getAllCategories();
-      
+    if (id) {
+      getSingleFoodLog(id)
+        .then((singleFoodLog) => {
+          setFormInput(singleFoodLog);
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    } else {
+      setFormInput(initialState);
+    }
+
+    getAllRestaurants()
+      .then((restaurants) => {
         setRestaurant(restaurants);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+
+    getAllDishes()
+      .then((dishes) => {
         setDish(dishes);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+
+    getAllCategories()
+      .then((categories) => {
         setCategory(categories);
-      
-        // Debugging logs
-        console.warn('editObj:', editObj);
-      
-        // Set form input based on editObj if it exists
-        if (editObj) {
-          setFormInput(editObj);
-        }
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      }
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }, [id]);
+
+
+
+  // Function to handle form submission
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    // Constructing the Food log object
+    const payload = {
+      restaurant_id: formInput.restaurant[0],
+      dish_id: formInput.dish[0], 
+      category_ids: formInput.category_ids.map(Number), 
+      uid: user.uid, 
     };
+    console.warn('Payload:', payload);
+    
+    if (id) {
+      // If an id is present, update the Food log
+      updateFoodLog(id, payload)
+        .then(() => {
+          router.push(`/food_log/${id}`);
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    } else {
+      // If no id is present, create a new Food log
+      createFoodLog(payload)
+        .then(() => {
+          // console.warn('Food log created', payload);
+          router.push('/');
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    }
+  };
 
-    fetchData();
-  }, [editObj]);
-
-    // Update formInput when editObj changes
-    useEffect(() => {
-      if (editObj) {
-        setFormInput(editObj);
-      }
-    }, [editObj]);
-
-    const handleMultiInputChange = (selectedOptions) => {
-      setFormInput((prevState) => ({
-        ...prevState,
-        category: selectedOptions ? selectedOptions.map(option => option.value) : [],
-      }));
-    };
-
-    const handleInputChange = (selectedOption, { name }) => {
-      const value = selectedOption ? selectedOption.value : '';
-      setFormInput((prevState) => ({
-        ...prevState,
-        [name]: value,
-      }));
-    };
-
-    // Handle form submission
-    const handleSubmit = async (event) => {
-      event.preventDefault();
-      const payload = { ...formInput, category_ids: formInput.category, uid: user.uid };
-      try {
-        await createFoodLog(payload);
-        router.push('/');
-      } catch (error) {
-        console.error('Error creating food log:', error);
-      }
-    };
-      
-    console.warn('editObj:', editObj);
+  const handleMultiSelectChange = (selectedOptions) => {
+    const selectedValues = selectedOptions ? selectedOptions.map(option => option.value) : [];
+    setFormInput((prevState) => ({
+      ...prevState,
+      category_ids: selectedValues,
+    }));
+  };
   
-    return (
-      <div>
-        <Form onSubmit={handleSubmit}>
-        <h2 className="text-white mt-5">{editObj && editObj.id ? 'Update' : 'Create'} Food Log Entry</h2>
-          <Select
-            name="restaurant_id"
-            placeholder="Select a restaurant"
-            options={restaurant.map((type) => ({
-              value: type.id,
-              label: type.restaurant_name,
-            }))}
-            value={editObj ? { value: editObj.restaurant.id, label: editObj.restaurant.restaurant_name } : restaurant.find(option => option.restaurant_id === formInput.restaurant)}
-            onChange={handleInputChange}
-          />
-          <Select
-            name="dish_id"
-            placeholder="Select a dish"
-            options={dish.map((type) => ({
-              value: type.id,
-              label: type.dish_name,
-            }))}
-            value={editObj ? { value: editObj.dish.id, label: editObj.dish.dish_name } : dish.find(option => option.id === formInput.dish)}
-            onChange={handleInputChange}
-          />
-          <Form.Control
-            as={Select}
-            options={category.map(cat => ({ value: cat.id, label: cat.category }))}
-            value={
-              editObj && editObj.category
-                ? editObj.category.map(cat => ({ value: cat.id, label: cat.category }))
-                : (formInput.category || []).map(catId => category.find(cat => cat.id === catId))
-            }
-            onChange={(selectedOption, actionMeta) => handleMultiInputChange(selectedOption, actionMeta)}
-            isMulti
-          />
-          <Form.Control
-            type="hidden"
-            name="uid"
-            value={formInput.uid}
-            required
-          />
-          <Button variant="primary" type="submit">
-            Submit!
-          </Button>
-        </Form>
-      </div>
-    );
-  }
+  const handleChange = (event) => {
+    const { name, value } = event.target;
+    setFormInput((prevState) => ({
+      ...prevState,
+      [name]: value,
+    }));
+  };
+
+  return (
+    <Form onSubmit={handleSubmit}>
+      <h2 className="text-white mt-5">{editObj && editObj.id ? 'Update' : 'Create'} Food Entry</h2>
       
-FoodLogForm.defaultProps = {
-  itemObj: initialState,
-  viewType: '',
-    };
+      <Form.Group className="mb-3">
+        <Form.Label>Restaurant Name</Form.Label>
+        <Form.Select
+          as="select"
+          name="restaurant"
+          value={formInput.restaurant_id}
+          onChange={handleChange}
+        
+          required
+        >
+         <option value="">Select a restaurant</option>
+         {restaurant.map((restaurant) => (
+            <option key={restaurant.id} value={restaurant.id}>
+              {restaurant.restaurant_name}
+            </option>
+          ))}
+        </Form.Select>
+
+        <Form.Label>Dish Name</Form.Label>
+        <Form.Select
+          as="select"
+          name="dish"
+          value={formInput.dish_id}
+          onChange={handleChange}
+          required
+        >
+          <option value="">Select a dish</option>
+          {dish.map((dish) => (
+            <option key={dish.id} value={dish.id}>
+              {dish.dish_name}
+            </option>
+          ))}
+        </Form.Select>
+
+        <Form.Label>Select Categories</Form.Label>
+        <Select
+          name="category"
+          value={category.filter((cat) => formInput.category_ids.includes(cat.id)).map((cat) => ({ value: cat.id, label: cat.category }))}
+          options={category.map((cat) => ({ value: cat.id, label: cat.category }))}
+          isMulti
+          onChange={handleMultiSelectChange}
+        />
+
+      </Form.Group>
+      <Button variant="primary" type="submit">
+        Submit!
+      </Button>
+    </Form>
+  );
+}
+
+// Prop types for the FoodLogForm component
+FoodLogForm.propTypes = {
+  user: PropTypes.shape({
+    uid: PropTypes.string.isRequired,
+  }).isRequired,
+};
 
 export default FoodLogForm;
