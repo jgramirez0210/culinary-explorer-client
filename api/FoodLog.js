@@ -25,7 +25,6 @@ const getSingleFoodLog = (id) => new Promise((resolve, reject) => {
 });
 
 const createFoodLog = (payload) => new Promise((resolve, reject) => {
-  console.warn('Payload being sent to createFoodLog API:', payload); // Log the payload
   fetch(`${endpoint}/food_log`, {
     method: 'POST',
     headers: {
@@ -49,10 +48,23 @@ const deleteItem = (id) => new Promise((resolve, reject) => {
     .catch(reject);
 });
 
+const updateFoodLog = (id, payload) => new Promise((resolve, reject) => {
+  fetch(`${endpoint}/food_log/${id}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(payload),
+  })
+    .then((data) => resolve(data))
+    .catch(reject);
+});
+
 
 export {
   getAllFoodLogs,
   getSingleFoodLog,
   createFoodLog,
   deleteItem,
+  updateFoodLog,
 };
