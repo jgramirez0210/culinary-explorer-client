@@ -1,4 +1,3 @@
-import { useRouter } from 'next/router';
 import PropTypes from 'prop-types';
 import { useState } from 'react';
 import Button from 'react-bootstrap/Button';
@@ -6,7 +5,6 @@ import Form from 'react-bootstrap/Form';
 import { registerUser } from '../../utils/auth';
 
 function RegisterForm({ user, updateUser }) {
-
   const fullName = user.fbUser?.displayName || 'Default Name';
   const nameParts = fullName.split(' ');
   const firstName = nameParts[0];
@@ -19,35 +17,10 @@ function RegisterForm({ user, updateUser }) {
     profile_image_url: user.fbUser?.photoURL || '',
     uid: user.uid,
   });
-
-  const router = useRouter();
-  
   const handleSubmit = (e) => {
     e.preventDefault();
     registerUser(formData).then(() => updateUser(user.uid));
   };
-
-
-  // const handleSubmit = (e) => {
-  //   e.preventDefault();
-
-  //   registerUser(formData)
-  //     .then((response) => {
-  //       const id = response?.id;
-
-  //       if (id !== undefined && !Number.isNaN(id)) {
-  //         const newUser = { ...formData, id };
-  //         updateUser(id, newUser);
-  //         router.push('/');
-  //       } else {
-  //         console.error('Registration failed, no valid ID returned');
-  //       }
-  //     })
-  //     .catch((error) => {
-  //       console.error('Registration failed:', error);
-  //     });
-  // };
-
 
   return (
     <Form onSubmit={handleSubmit}>
@@ -103,11 +76,11 @@ function RegisterForm({ user, updateUser }) {
 
 RegisterForm.propTypes = {
   user: PropTypes.shape({
+    uid: PropTypes.string.isRequired,
     fbUser: PropTypes.shape({
       displayName: PropTypes.string,
       email: PropTypes.string,
       photoURL: PropTypes.string,
-      uid: PropTypes.string.isRequired,
     }),
   }).isRequired,
   updateUser: PropTypes.func.isRequired,

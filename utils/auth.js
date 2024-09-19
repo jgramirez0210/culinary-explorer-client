@@ -19,7 +19,6 @@ const checkUser = (uid) => new Promise((resolve, reject) => {
 
 const registerUser = (userInfo) => new Promise((resolve, reject) => {
   // Log the payload being sent
-  console.log('Payload being sent:', userInfo);
 
   fetch(`${clientCredentials.databaseURL}/register`, {
     method: 'POST',
@@ -31,8 +30,6 @@ const registerUser = (userInfo) => new Promise((resolve, reject) => {
   })
     .then((resp) => resp.json())
     .then((data) => {
-      // Log the response received
-      console.log('Response received:', data);
       resolve(data);
     })
     .catch((error) => {

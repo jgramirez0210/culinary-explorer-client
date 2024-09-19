@@ -71,7 +71,6 @@ function FoodLogForm({ user, editObj }) {
       category_ids: formInput.category_ids.map(Number),
       uid: user.uid,
     };
-    console.warn('Payload:', payload);
 
     if (id) {
       // If an id is present, update the Food log
@@ -85,8 +84,8 @@ function FoodLogForm({ user, editObj }) {
     } else {
       // Otherwise, create a new Food log
       createFoodLog(payload)
-        .then(() => {
-          router.push('/food_log');
+        .then((newFoodLog) => {
+          router.push(`/food_log/${newFoodLog.id}`);
         })
         .catch((error) => {
           console.error(error);
@@ -110,9 +109,6 @@ function FoodLogForm({ user, editObj }) {
     }));
   };
 
-  if (editObj && editObj.id) {
-    console.warn(`editObj.id: ${editObj.id}`);
-  }
   return (
     <Form onSubmit={handleSubmit}>
       <h2 className="text-white mt-5">{editObj && editObj.id ? 'Update' : 'Create'} Food Entry</h2>
