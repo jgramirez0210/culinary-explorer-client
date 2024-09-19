@@ -19,9 +19,6 @@ export default function NavBar() {
             <Link passHref href="/">
               <Nav.Link as="a">Home</Nav.Link>
             </Link>
-            <Link passHref href="/delete-me">
-              <Nav.Link as="a">Food Log</Nav.Link>
-            </Link>
             <Link passHref href="/food_log/new">
               <Nav.Link as="a">Add To Food Log</Nav.Link>
             </Link>

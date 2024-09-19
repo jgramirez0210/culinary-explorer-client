@@ -9,19 +9,43 @@ const ViewSingleFoodLog = () => {
   const { id } = router.query;
 
   useEffect(() => {
+    let isMounted = true;
+
     if (id) {
       getSingleFoodLog(id).then((fetchedData) => {
-        setData(fetchedData);
+        if (isMounted) {
+          setData(fetchedData);
+        }
       }).catch(() => {
         // Handle error if needed
       });
     }
+
+    return () => {
+      isMounted = false;
+    };
   }, [id]);
+
+  const handleUpdate = (updatedId) => {
+    let isMounted = true;
+
+    getSingleFoodLog(updatedId).then((fetchedData) => {
+      if (isMounted) {
+        setData(fetchedData);
+      }
+    }).catch(() => {
+      // Handle error if needed
+    });
+
+    return () => {
+      isMounted = false;
+    };
+  };
 
   return (
     <>
       {data ? (
-        <FoodLogCard itemObj={data} viewType="single" />
+        <FoodLogCard itemObj={data} viewType="single" onUpdate={handleUpdate} />
       ) : (
         <p>Loading...</p>
       )}
