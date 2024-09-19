@@ -12,6 +12,23 @@ const getAllFoodLogs = () => new Promise((resolve, reject) => {
     .catch(reject);
 });
 
+const getFoodLogByUser = (uid) => new Promise((resolve, reject) => {
+  fetch(`${endpoint}/food_log/?uid=${uid}`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      resolve(data);
+    })
+    .catch((error) => {
+      console.error('Error:', error);
+      reject(error);
+    });
+});
+
 const getSingleFoodLog = (id) => new Promise((resolve, reject) => {
   fetch(`${endpoint}/food_log/${id}`, {
     method: 'GET',
@@ -67,4 +84,5 @@ export {
   createFoodLog,
   deleteItem,
   updateFoodLog,
+  getFoodLogByUser,
 };

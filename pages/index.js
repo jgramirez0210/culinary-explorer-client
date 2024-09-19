@@ -10,7 +10,6 @@ function Home() {
   useEffect(() => {
     // Call checkUser and log the result
     checkUser().then((user) => {
-      console.warn('User data:', user);
     });
 
     getAllFoodLogs().then((data) => setFoodLog(data));
