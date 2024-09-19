@@ -109,8 +109,6 @@ function FoodLogForm({ user, editObj }) {
     }));
   };
 
-  if (editObj && editObj.id) {
-  }
   return (
     <Form onSubmit={handleSubmit}>
       <h2 className="text-white mt-5">{editObj && editObj.id ? 'Update' : 'Create'} Food Entry</h2>

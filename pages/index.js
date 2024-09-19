@@ -1,17 +1,11 @@
 import { useState, useEffect } from 'react';
-import PropTypes from 'prop-types';
 import FoodLogCard from '../components/FoodLogCard';
 import { getAllFoodLogs } from '../api/FoodLog';
-import { checkUser } from '../utils/auth';
 
 function Home() {
   const [foodLog, setFoodLog] = useState([]);
 
   useEffect(() => {
-    // Call checkUser and log the result
-    checkUser().then((user) => {
-    });
-
     getAllFoodLogs().then((data) => setFoodLog(data));
   }, []);
 

@@ -24,77 +24,75 @@ function FoodLogCard({ itemObj, viewType, onUpdate }) {
       <Card.Body className="card-body">
         <Card.Img variant="top" src={itemObj.dish?.food_image_url} alt={itemObj.dish?.dish_name} style={{ height: '175px', borderRadius: '0.5rem' }} />
         <div className="card-text">
-          <label>Dish Name:</label>
-          <span>{itemObj.dish?.dish_name}</span>
+          <label htmlFor="dishName">Dish Name:</label>
+          <span id="dishName">{itemObj.dish?.dish_name}</span>
         </div>
         <p className="card-text">
-          <label>Category:</label> 
-          <span>{categoryNames.join(', ')}</span>
-          </p>
-
+          <label htmlFor="category">Category:</label>
+          <span id="category">{categoryNames.join(', ')}</span>
+        </p>
 
         {viewType === 'single' && (
           <>
             <p className="card-text">
-              <label>Description: </label>
-                <span>{itemObj.dish?.description}</span>
-                </p>
+              <label htmlFor="description">Description: </label>
+              <span id="description">{itemObj.dish?.description}</span>
+            </p>
             <p className="card-text">
-              <label>Notes: </label>
-              <span>{itemObj.dish?.notes}</span>
-              </p>
+              <label htmlFor="notes">Notes: </label>
+              <span id="notes">{itemObj.dish?.notes}</span>
+            </p>
             <p className="card-text">
-              <label>Price: </label>
-              <span>${itemObj.dish?.price}</span>
-              </p>
+              <label htmlFor="price">Price: </label>
+              <span id="price">${itemObj.dish?.price}</span>
+            </p>
             <p className="card-text">
-              <label>Restaurant Address: </label>
-              <span>{itemObj.restaurant?.restaurant_address}</span>
-              </p>
-              <a href={itemObj.restaurant?.website_url} target="_blank" rel="noopener noreferrer" className="website-link">
-                Website
-              </a>
+              <label htmlFor="restaurant-address">Restaurant Address: </label>
+              <span id="restaurant-address">{itemObj.restaurant?.restaurant_address}</span>
+            </p>
+            <a href={itemObj.restaurant?.website_url} target="_blank" rel="noopener noreferrer" className="website-link">
+              Website
+            </a>
             <p className="card-text">
-              <label>Notes: </label>
-              <span>{itemObj.dish?.notes}</span>
-              </p>
+              <label htmlFor="notes">Notes: </label>
+              <span id="notes">{itemObj.dish?.notes}</span>
+            </p>
             <Link href={`/food_log/edit/${itemObj.id}`} passHref>
-          <Button variant="outline-dark" color="success">
-            EDIT
-          </Button>
-        </Link>
-        <Button variant="outline-danger" onClick={deleteThisItem} className="m-2">
-          DELETE
-        </Button>
+              <Button variant="outline-dark" color="success">
+                EDIT
+              </Button>
+            </Link>
+            <Button variant="outline-danger" onClick={deleteThisItem} className="m-2">
+              DELETE
+            </Button>
           </>
         )}
         {viewType === 'all' && (
           <>
             <p className="card-text bold">
-              <label>Short Description: </label>
-              <span>{itemObj.dish.description}</span>
-              </p>
+              <label htmlFor="short-description">Short Description: </label>
+              <span id="short-description">{itemObj.dish.description}</span>
+            </p>
             <Link href={`/food_log/${itemObj.id}`} passHref>
-          <Button variant="outline-success" className="m-2 view-button">
-            VIEW
-          </Button>
-        </Link>
+              <Button variant="outline-success" className="m-2 view-button">
+                VIEW
+              </Button>
+            </Link>
           </>
         )}
-
-
       </Card.Body>
     </Card>
   );
 }
 
-
 FoodLogCard.propTypes = {
   itemObj: PropTypes.shape({
     id: PropTypes.number,
-    category: PropTypes.arrayOf(PropTypes.shape({
-      category: PropTypes.string,
-    })),
+    category: PropTypes.arrayOf(
+      PropTypes.shape({
+        category: PropTypes.string,
+      }),
+    ),
     restaurant: PropTypes.shape({
       restaurant_name: PropTypes.string,
       restaurant_address: PropTypes.string,
