@@ -1,4 +1,3 @@
-// Importing necessary modules and functions
 import { useRouter } from 'next/router';
 import PropTypes from 'prop-types';
 import { useState, useEffect } from 'react';
@@ -8,8 +7,8 @@ import { Button } from 'react-bootstrap';
 import { updateFoodLog, createFoodLog } from '../../api/FoodLog';
 import { getAllRestaurants } from '../../api/Restaurants';
 import { getAllCategories } from '../../api/Categories';
-import { getAllDishes } from '../../api/Dish';
-import DishForm from './DIshForm';
+import { getAllDishes, deleteDish } from '../../api/Dish';
+import DishForm from './DishForm';
 
 // Initial state for the form
 const initialState = {
@@ -17,16 +16,18 @@ const initialState = {
   dish: '',
   category_ids: [],
 };
-function FoodLogForm({ user, editObj }) {
+
+function FoodLogForm({ user, editObj, onUpdate }) {
   const [formInput, setFormInput] = useState(initialState);
   const [restaurantList, setRestaurants] = useState([]);
   const [dishList, setDishes] = useState([]);
   const [categoryList, setCategories] = useState([]);
   const [showDishForm, setShowDishForm] = useState(false);
-  const [showRestaurantForm, setShowRestaurantForm] = useState(false); // eslint-disable-line no-unused-vars
-  const [showCategoryForm, setShowCategoryForm] = useState(false); // eslint-disable-line no-unused-vars
-  const [showDropdown, setShowDropdown] = useState(false); // eslint-disable-line no-unused-vars
-  const [showAddToFoodLogForm, setShowAddToFoodLogForm] = useState(true); // eslint-disable-line no-unused-vars
+  const [showRestaurantForm, setShowRestaurantForm] = useState(false);
+  const [showCategoryForm, setShowCategoryForm] = useState(false);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const [showAddToFoodLogForm, setShowAddToFoodLogForm] = useState(true);
+  const [reload, setReload] = useState(false);
   const router = useRouter();
   const { query } = useRouter();
   const { id } = query;
@@ -104,6 +105,7 @@ function FoodLogForm({ user, editObj }) {
     setShowAddToFoodLogForm(true);
     setShowDishForm(false);
     setShowDropdown(false);
+    setReload(!reload); 
   };
 
   const handleShowDishForm = () => {
@@ -123,6 +125,7 @@ function FoodLogForm({ user, editObj }) {
     setShowCategoryForm(true);
     setShowDropdown(false);
   };
+  
 
   const handleMultiSelectChange = (selectedOptions) => {
     const selectedValues = selectedOptions.map((option) => option.value);
@@ -152,6 +155,29 @@ function FoodLogForm({ user, editObj }) {
     }
   };
 
+  const handleDelete = (itemId) => {
+    if (window.confirm('Delete Entry?')) {
+      deleteDish(itemId).then(() => {
+        if (typeof onUpdate === 'function') onUpdate();
+        handleBack();
+        // router.push('/'); // Navigate to the home page
+      });
+    }
+  };
+
+
+  const customDishOptions = dishList.map((dish) => ({
+    value: dish.id,
+    label: (
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <span>{dish.dish_name}</span>
+        <Button variant="danger" size="sm" onClick={() => handleDelete(dish.id)} style={{ marginLeft: '10px' }}>
+          Delete
+        </Button>
+      </div>
+    ),
+  }));
+
   return (
     <div>
       {!showDishForm ? (
@@ -176,27 +202,16 @@ function FoodLogForm({ user, editObj }) {
               ))}
             </Form.Select>
           </Form.Group>
-
           <Form.Group controlId="dishName">
-            <Form.Label>Dish Name</Form.Label>
-            <Form.Select
-              as="select"
-              name="dish_id"
-              value={formInput.dish_id || ''}
-              onChange={handleChange}
-              required
-            >
-              <option value="" disabled hidden>
-                Select a Dish
-              </option>
-              <option value="create_new">Create New</option>
-              {dishList.map((dish) => (
-                <option key={dish.id} value={dish.id}>
-                  {dish.dish_name}
-                </option>
-              ))}
-            </Form.Select>
-          </Form.Group>
+        <Form.Label>Dish Name</Form.Label>
+        <Select
+          name="dish_id"
+          value={customDishOptions.find(option => option.value === formInput.dish_id) || ''}
+          onChange={(selectedOption) => handleChange({ target: { name: 'dish_id', value: selectedOption.value } })}
+          options={[{ value: 'create_new', label: 'Create New' }, ...customDishOptions]}
+          placeholder="Select a Dish"
+        />
+      </Form.Group>
 
           <Form.Group controlId="categories">
             <Form.Label>Select Categories</Form.Label>
