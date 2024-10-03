@@ -81,18 +81,7 @@ function FoodLogCard({ itemObj, viewType, onUpdate }) {
             </Link>
           </>
         )}
-        <Dropdown>
-          <Dropdown.Toggle variant="success" id="dropdown-basic">
-            Options
-          </Dropdown.Toggle>
 
-          <Dropdown.Menu>
-            <Dropdown.Item onClick={() => deleteThisItem(itemObj.id)} style={{ color: 'red' }}>
-              Delete
-            </Dropdown.Item>
-            {/* Add more dropdown items if needed */}
-          </Dropdown.Menu>
-        </Dropdown>
       </Card.Body>
     </Card>
   );
