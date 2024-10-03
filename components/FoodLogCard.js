@@ -2,6 +2,7 @@ import Link from 'next/link';
 import Card from 'react-bootstrap/Card';
 import Button from 'react-bootstrap/Button';
 import PropTypes from 'prop-types';
+import { Dropdown } from 'react-bootstrap';
 import { useRouter } from 'next/router';
 import { deleteItem } from '../api/FoodLog';
 
@@ -80,7 +81,7 @@ function FoodLogCard({ itemObj, viewType, onUpdate }) {
             </Link>
           </>
         )}
-         <Dropdown>
+        <Dropdown>
           <Dropdown.Toggle variant="success" id="dropdown-basic">
             Options
           </Dropdown.Toggle>
