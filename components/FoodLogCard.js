@@ -9,10 +9,10 @@ function FoodLogCard({ itemObj, viewType, onUpdate }) {
   const router = useRouter();
   const categoryNames = Array.isArray(itemObj.category) ? itemObj.category.map((cat) => cat.category) : [];
 
-  const deleteThisItem = () => {
+  const deleteThisItem = (itemId) => {
     if (window.confirm('Delete Entry?')) {
-      deleteItem(itemObj.id).then(() => {
-        onUpdate(itemObj.id);
+      deleteItem(itemId).then(() => {
+        onUpdate();
         router.push('/'); // Navigate to the home page
       });
     }
@@ -80,6 +80,18 @@ function FoodLogCard({ itemObj, viewType, onUpdate }) {
             </Link>
           </>
         )}
+         <Dropdown>
+          <Dropdown.Toggle variant="success" id="dropdown-basic">
+            Options
+          </Dropdown.Toggle>
+
+          <Dropdown.Menu>
+            <Dropdown.Item onClick={() => deleteThisItem(itemObj.id)} style={{ color: 'red' }}>
+              Delete
+            </Dropdown.Item>
+            {/* Add more dropdown items if needed */}
+          </Dropdown.Menu>
+        </Dropdown>
       </Card.Body>
     </Card>
   );
