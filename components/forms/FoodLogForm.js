@@ -9,7 +9,7 @@ import { updateFoodLog, createFoodLog } from '../../api/FoodLog';
 import { getAllRestaurants } from '../../api/Restaurants';
 import { getAllCategories } from '../../api/Categories';
 import { getAllDishes } from '../../api/Dish';
-import DishForm from './DishForm';
+import DishForm from './DIshForm';
 
 // Initial state for the form
 const initialState = {
@@ -23,8 +23,10 @@ function FoodLogForm({ user, editObj }) {
   const [dishList, setDishes] = useState([]);
   const [categoryList, setCategories] = useState([]);
   const [showDishForm, setShowDishForm] = useState(false);
-  const [showDropdown, setShowDropdown] = useState(false);
-  const [showAddToFoodLogForm, setShowAddToFoodLogForm] = useState(true);
+  const [showRestaurantForm, setShowRestaurantForm] = useState(false); // eslint-disable-line no-unused-vars
+  const [showCategoryForm, setShowCategoryForm] = useState(false); // eslint-disable-line no-unused-vars
+  const [showDropdown, setShowDropdown] = useState(false); // eslint-disable-line no-unused-vars
+  const [showAddToFoodLogForm, setShowAddToFoodLogForm] = useState(true); // eslint-disable-line no-unused-vars
   const router = useRouter();
   const { query } = useRouter();
   const { id } = query;
@@ -32,9 +34,9 @@ function FoodLogForm({ user, editObj }) {
   useEffect(() => {
     if (editObj) {
       setFormInput({
-        restaurant_id: editObj.restaurant.id,
-        dish_id: editObj.dish.id,
-        category_ids: editObj.category.map((cat) => cat.id),
+        restaurant: editObj.restaurant.id || '',
+        dish: editObj.dish.id || '',
+        category_ids: editObj.category.map((cat) => cat.id) || [],
       });
     } else {
       setFormInput(initialState);
@@ -97,7 +99,6 @@ function FoodLogForm({ user, editObj }) {
         });
     }
   };
-
 
   const handleBack = () => {
     setShowAddToFoodLogForm(true);
@@ -217,7 +218,7 @@ function FoodLogForm({ user, editObj }) {
         </Form>
       ) : (
         <div>
-          <DishForm user={user} />
+          <DishForm user={user} onDishCreated={handleBack}/>
           <Button variant="primary" onClick={handleBack}>
             Back
           </Button>
@@ -226,6 +227,7 @@ function FoodLogForm({ user, editObj }) {
     </div>
   );
 };
+
 // Prop types for the FoodLogForm component
 FoodLogForm.propTypes = {
   user: PropTypes.shape({
@@ -242,7 +244,7 @@ FoodLogForm.propTypes = {
     category: PropTypes.arrayOf(
       PropTypes.shape({
         id: PropTypes.number.isRequired,
-      })
+      }),
     ),
   }),
 };

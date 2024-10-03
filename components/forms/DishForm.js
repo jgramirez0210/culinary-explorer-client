@@ -14,7 +14,7 @@ const initialState = {
   price: '',
 };
 
-function DishForm({ editObj }) {
+function DishForm({ editObj, onDishCreated }) {
   const [formInput, setFormInput] = useState(initialState);
   const { query } = useRouter();
   const router = useRouter();
@@ -55,12 +55,13 @@ function DishForm({ editObj }) {
     } else {
       // Otherwise, create a new Food log
       createDish(payload)
-        .then((newFoodLog) => {
-          router.push(`/`);
-        })
-        .catch((error) => {
-          console.error(error);
-        });
+        .then(() => {if (onDishCreated) {
+          onDishCreated();
+        }
+      })
+      .catch((error) => {
+        console.error(error);
+      });
     }
   };
 
@@ -100,14 +101,20 @@ function DishForm({ editObj }) {
 }
 
 DishForm.propTypes = {
-  id: PropTypes.string,
+  editObj: PropTypes.shape({
+    dish_name: PropTypes.string,
+    description: PropTypes.string,
+    notes: PropTypes.string,
+    food_image_url: PropTypes.string,
+    price: PropTypes.string,
+  }),
   user: PropTypes.shape({
     uid: PropTypes.string.isRequired,
   }).isRequired,
 };
 
 DishForm.defaultProps = {
-  id: null,
+  editObj: {},
 };
 
 export default DishForm;
