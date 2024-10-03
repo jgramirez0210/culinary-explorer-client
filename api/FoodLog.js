@@ -37,7 +37,7 @@ const getSingleFoodLog = (id) => new Promise((resolve, reject) => {
     },
   })
     .then((response) => response.json())
-    .then((data) => resolve(data)) // Directly resolve the single food log object
+    .then((data) => resolve(data))
     .catch(reject);
 });
 

@@ -4,10 +4,12 @@ import PropTypes from 'prop-types';
 import { useState, useEffect } from 'react';
 import Select from 'react-select';
 import Form from 'react-bootstrap/Form';
+import { Button } from 'react-bootstrap';
 import { updateFoodLog, createFoodLog } from '../../api/FoodLog';
 import { getAllRestaurants } from '../../api/Restaurants';
 import { getAllCategories } from '../../api/Categories';
 import { getAllDishes } from '../../api/Dish';
+import DishForm from './DishForm';
 
 // Initial state for the form
 const initialState = {
@@ -20,6 +22,9 @@ function FoodLogForm({ user, editObj }) {
   const [restaurantList, setRestaurants] = useState([]);
   const [dishList, setDishes] = useState([]);
   const [categoryList, setCategories] = useState([]);
+  const [showDishForm, setShowDishForm] = useState(false);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const [showAddToFoodLogForm, setShowAddToFoodLogForm] = useState(true);
   const router = useRouter();
   const { query } = useRouter();
   const { id } = query;
@@ -93,62 +98,134 @@ function FoodLogForm({ user, editObj }) {
     }
   };
 
-  const handleMultiSelectChange = (selectedOptions) => {
-    const selectedValues = selectedOptions ? selectedOptions.map((option) => option.value) : [];
-    setFormInput((prevState) => ({
-      ...prevState,
-      category_ids: selectedValues,
-    }));
+
+  const handleBack = () => {
+    setShowAddToFoodLogForm(true);
+    setShowDishForm(false);
+    setShowDropdown(false);
   };
 
-  const handleChange = (event) => {
-    const { name, value } = event.target;
-    setFormInput((prevState) => ({
-      ...prevState,
-      [name]: value,
-    }));
+  const handleShowDishForm = () => {
+    setShowAddToFoodLogForm(false);
+    setShowDishForm(true);
+    setShowDropdown(false);
+  };
+
+  const handleShowRestaurantForm = () => {
+    setShowAddToFoodLogForm(false);
+    setShowRestaurantForm(true);
+    setShowDropdown(false);
+  };
+
+  const handleShowCategoryForm = () => {
+    setShowAddToFoodLogForm(false);
+    setShowCategoryForm(true);
+    setShowDropdown(false);
+  };
+
+  const handleMultiSelectChange = (selectedOptions) => {
+    const selectedValues = selectedOptions.map((option) => option.value);
+    if (selectedValues.includes('create_new')) {
+      handleShowCategoryForm();
+    } else {
+      setFormInput((prevState) => ({
+        ...prevState,
+        category_ids: selectedValues,
+      }));
+    }
+  };
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    if (value === 'create_new') {
+      if (name === 'restaurant_id') {
+        handleShowRestaurantForm();
+      } else if (name === 'dish_id') {
+        handleShowDishForm();
+      }
+    } else {
+      setFormInput((prevState) => ({
+        ...prevState,
+        [name]: value,
+      }));
+    }
   };
 
   return (
-    <Form onSubmit={handleSubmit}>
-      <h2 className="text-white mt-5">{editObj && editObj.id ? 'Update' : 'Create'} Food Entry</h2>
+    <div>
+      {!showDishForm ? (
+        <Form onSubmit={handleSubmit}>
+          <Form.Group controlId="restaurantName">
+            <Form.Label>Restaurant Name</Form.Label>
+            <Form.Select
+              as="select"
+              name="restaurant_id"
+              value={formInput.restaurant_id || ''}
+              onChange={handleChange}
+              required
+            >
+              <option value="" disabled hidden>
+                Select a Restaurant
+              </option>
+              <option value="create_new">Create New</option>
+              {restaurantList.map((restaurant) => (
+                <option key={restaurant.id} value={restaurant.id}>
+                  {restaurant.restaurant_name}
+                </option>
+              ))}
+            </Form.Select>
+          </Form.Group>
 
-      <Form.Group className="mb-3">
-        <Form.Label>Restaurant Name</Form.Label>
-        <Form.Select as="select" name="restaurant_id" value={formInput.restaurant_id} onChange={handleChange} required>
-          <option value="">Select a restaurant</option>
-          {restaurantList.map((restaurant) => (
-            <option key={restaurant.id} value={restaurant.id}>
-              {restaurant.restaurant_name}
-            </option>
-          ))}
-        </Form.Select>
+          <Form.Group controlId="dishName">
+            <Form.Label>Dish Name</Form.Label>
+            <Form.Select
+              as="select"
+              name="dish_id"
+              value={formInput.dish_id || ''}
+              onChange={handleChange}
+              required
+            >
+              <option value="" disabled hidden>
+                Select a Dish
+              </option>
+              <option value="create_new">Create New</option>
+              {dishList.map((dish) => (
+                <option key={dish.id} value={dish.id}>
+                  {dish.dish_name}
+                </option>
+              ))}
+            </Form.Select>
+          </Form.Group>
 
-        <Form.Label>Dish Name</Form.Label>
-        <Form.Select as="select" name="dish_id" value={formInput.dish_id} onChange={handleChange} required>
-          <option value="">Select a dish</option>
-          {dishList.map((dish) => (
-            <option key={dish.id} value={dish.id}>
-              {dish.dish_name}
-            </option>
-          ))}
-        </Form.Select>
+          <Form.Group controlId="categories">
+            <Form.Label>Select Categories</Form.Label>
+            <Select
+              name="category_ids"
+              value={categoryList
+                .filter((cat) => Array.isArray(formInput.category_ids) && formInput.category_ids.includes(cat.id))
+                .map((cat) => ({ value: cat.id, label: cat.category }))}
+              options={categoryList.map((cat) => ({ value: cat.id, label: cat.category }))}
+              isMulti
+              onChange={handleMultiSelectChange}
+              placeholder="Select a Category"
+            />
+          </Form.Group>
 
-        <Form.Label>Select Categories</Form.Label>
-        <Select
-          name="category_ids"
-          value={categoryList.filter((cat) => Array.isArray(formInput.category_ids) && formInput.category_ids.includes(cat.id)).map((cat) => ({ value: cat.id, label: cat.category }))}
-          options={categoryList.map((cat) => ({ value: cat.id, label: cat.category }))}
-          isMulti
-          onChange={handleMultiSelectChange}
-        />
-      </Form.Group>
-
-      <button type="submit">Submit</button>
-    </Form>
+          <Button variant="primary" type="submit">
+            Submit
+          </Button>
+        </Form>
+      ) : (
+        <div>
+          <DishForm user={user} />
+          <Button variant="primary" onClick={handleBack}>
+            Back
+          </Button>
+        </div>
+      )}
+    </div>
   );
-}
-
+};
 // Prop types for the FoodLogForm component
 FoodLogForm.propTypes = {
   user: PropTypes.shape({
@@ -165,7 +242,7 @@ FoodLogForm.propTypes = {
     category: PropTypes.arrayOf(
       PropTypes.shape({
         id: PropTypes.number.isRequired,
-      }),
+      })
     ),
   }),
 };
