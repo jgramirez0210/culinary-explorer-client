@@ -2,7 +2,6 @@ import Link from 'next/link';
 import Card from 'react-bootstrap/Card';
 import Button from 'react-bootstrap/Button';
 import PropTypes from 'prop-types';
-import { Dropdown } from 'react-bootstrap';
 import { useRouter } from 'next/router';
 import { deleteItem } from '../api/FoodLog';
 

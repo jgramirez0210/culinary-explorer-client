@@ -17,7 +17,6 @@ const initialState = {
 function DishForm({ editObj, onDishCreated }) {
   const [formInput, setFormInput] = useState(initialState);
   const { query } = useRouter();
-  const router = useRouter();
   const { id } = query;
 
   useEffect(() => {
@@ -29,7 +28,7 @@ function DishForm({ editObj, onDishCreated }) {
   }, [editObj]);
 
   // Function to handle form submission
-  const handleSubmit = (e) => {
+  const handleSubmit = () => {
     // Constructing the Food log object
     const payload = {
       dish_name: formInput.dish_name,
@@ -53,13 +52,14 @@ function DishForm({ editObj, onDishCreated }) {
     } else {
       // Otherwise, create a new Food log
       createDish(payload)
-        .then(() => {if (onDishCreated) {
-          onDishCreated();
-        }
-      })
-      .catch((error) => {
-        console.error(error);
-      });
+        .then(() => {
+          if (onDishCreated) {
+            onDishCreated();
+          }
+        })
+        .catch((error) => {
+          console.error(error);
+        });
     }
   };
 
@@ -109,6 +109,7 @@ DishForm.propTypes = {
   user: PropTypes.shape({
     uid: PropTypes.string.isRequired,
   }).isRequired,
+  onDishCreated: PropTypes.func.isRequired,
 };
 
 DishForm.defaultProps = {
