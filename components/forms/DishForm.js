@@ -30,8 +30,6 @@ function DishForm({ editObj, onDishCreated }) {
 
   // Function to handle form submission
   const handleSubmit = (e) => {
-    e.preventDefault();
-
     // Constructing the Food log object
     const payload = {
       dish_name: formInput.dish_name,

@@ -66,7 +66,9 @@ function FoodLogForm({ user, editObj, onUpdate }) {
       .catch((error) => {
         console.error(error);
       });
-  }, [editObj]);
+
+      setReload(false);
+    }, [editObj, reload]);
 
   // Function to handle form submission
   const handleSubmit = (e) => {
@@ -155,15 +157,15 @@ function FoodLogForm({ user, editObj, onUpdate }) {
     }
   };
 
-  const handleDelete = (itemId) => {
-    if (window.confirm('Delete Entry?')) {
-      deleteDish(itemId).then(() => {
-        if (typeof onUpdate === 'function') onUpdate();
-        handleBack();
-        // router.push('/'); // Navigate to the home page
-      });
-    }
-  };
+const handleDelete = (id) => {
+  deleteDish(id)
+    .then(() => {
+      setReload(true);
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+};
 
 
   const customDishOptions = dishList.map((dish) => ({
