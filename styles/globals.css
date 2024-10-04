@@ -123,3 +123,23 @@ body {
   align-items: center;
   justify-content: flex-end;
 }
+
+.loading {
+  font-size: 1.5em;
+  text-align: center;
+  margin-top: 20px;
+}
+
+.food-map {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.food-map h1 {
+  font-size: 2em;
+  margin-bottom: 10px;
+}
+
+.food-map p {
+  font-size: 1.2em;
+}

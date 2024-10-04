@@ -22,7 +22,7 @@ export default function NavBar() {
             <Link passHref href="/food_log/new">
               <Nav.Link as="a">Add To Food Log</Nav.Link>
             </Link>
-            <Link passHref href="/delete-me">
+            <Link passHref href="/food_map/food_map">
               <Nav.Link as="a">Food Map</Nav.Link>
             </Link>
             <Button variant="danger" onClick={signOut}>
