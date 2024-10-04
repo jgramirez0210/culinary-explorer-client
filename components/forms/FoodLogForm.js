@@ -17,16 +17,16 @@ const initialState = {
   category_ids: [],
 };
 
-function FoodLogForm({ user, editObj, onUpdate }) {
+function FoodLogForm({ user, editObj }) {
   const [formInput, setFormInput] = useState(initialState);
   const [restaurantList, setRestaurants] = useState([]);
   const [dishList, setDishes] = useState([]);
   const [categoryList, setCategories] = useState([]);
   const [showDishForm, setShowDishForm] = useState(false);
-  const [showRestaurantForm, setShowRestaurantForm] = useState(false);
-  const [showCategoryForm, setShowCategoryForm] = useState(false);
-  const [showDropdown, setShowDropdown] = useState(false);
-  const [showAddToFoodLogForm, setShowAddToFoodLogForm] = useState(true);
+  const [showRestaurantForm, setShowRestaurantForm] = useState(false); // eslint-disable-line no-unused-vars
+  const [showCategoryForm, setShowCategoryForm] = useState(false); // eslint-disable-line no-unused-vars
+  const [showDropdown, setShowDropdown] = useState(false); // eslint-disable-line no-unused-vars
+  const [showAddToFoodLogForm, setShowAddToFoodLogForm] = useState(true); // eslint-disable-line no-unused-vars
   const [reload, setReload] = useState(false);
   const router = useRouter();
   const { query } = useRouter();
@@ -67,8 +67,8 @@ function FoodLogForm({ user, editObj, onUpdate }) {
         console.error(error);
       });
 
-      setReload(false);
-    }, [editObj, reload]);
+    setReload(false);
+  }, [editObj, reload]);
 
   // Function to handle form submission
   const handleSubmit = (e) => {
@@ -107,7 +107,7 @@ function FoodLogForm({ user, editObj, onUpdate }) {
     setShowAddToFoodLogForm(true);
     setShowDishForm(false);
     setShowDropdown(false);
-    setReload(!reload); 
+    setReload(!reload);
   };
 
   const handleShowDishForm = () => {
@@ -127,7 +127,6 @@ function FoodLogForm({ user, editObj, onUpdate }) {
     setShowCategoryForm(true);
     setShowDropdown(false);
   };
-  
 
   const handleMultiSelectChange = (selectedOptions) => {
     const selectedValues = selectedOptions.map((option) => option.value);
@@ -157,16 +156,15 @@ function FoodLogForm({ user, editObj, onUpdate }) {
     }
   };
 
-const handleDelete = (id) => {
-  deleteDish(id)
-    .then(() => {
-      setReload(true);
-    })
-    .catch((error) => {
-      console.error(error);
-    });
-};
-
+  const handleDelete = () => {
+    deleteDish(id)
+      .then(() => {
+        setReload(true);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  };
 
   const customDishOptions = dishList.map((dish) => ({
     value: dish.id,
@@ -186,13 +184,7 @@ const handleDelete = (id) => {
         <Form onSubmit={handleSubmit}>
           <Form.Group controlId="restaurantName">
             <Form.Label>Restaurant Name</Form.Label>
-            <Form.Select
-              as="select"
-              name="restaurant_id"
-              value={formInput.restaurant_id || ''}
-              onChange={handleChange}
-              required
-            >
+            <Form.Select as="select" name="restaurant_id" value={formInput.restaurant_id || ''} onChange={handleChange} required>
               <option value="" disabled hidden>
                 Select a Restaurant
               </option>
@@ -205,28 +197,13 @@ const handleDelete = (id) => {
             </Form.Select>
           </Form.Group>
           <Form.Group controlId="dishName">
-        <Form.Label>Dish Name</Form.Label>
-        <Select
-          name="dish_id"
-          value={customDishOptions.find(option => option.value === formInput.dish_id) || ''}
-          onChange={(selectedOption) => handleChange({ target: { name: 'dish_id', value: selectedOption.value } })}
-          options={[{ value: 'create_new', label: 'Create New' }, ...customDishOptions]}
-          placeholder="Select a Dish"
-        />
-      </Form.Group>
+            <Form.Label>Dish Name</Form.Label>
+            <Select name="dish_id" value={customDishOptions.find((option) => option.value === formInput.dish_id) || ''} onChange={(selectedOption) => handleChange({ target: { name: 'dish_id', value: selectedOption.value } })} options={[{ value: 'create_new', label: 'Create New' }, ...customDishOptions]} placeholder="Select a Dish" />
+          </Form.Group>
 
           <Form.Group controlId="categories">
             <Form.Label>Select Categories</Form.Label>
-            <Select
-              name="category_ids"
-              value={categoryList
-                .filter((cat) => Array.isArray(formInput.category_ids) && formInput.category_ids.includes(cat.id))
-                .map((cat) => ({ value: cat.id, label: cat.category }))}
-              options={categoryList.map((cat) => ({ value: cat.id, label: cat.category }))}
-              isMulti
-              onChange={handleMultiSelectChange}
-              placeholder="Select a Category"
-            />
+            <Select name="category_ids" value={categoryList.filter((cat) => Array.isArray(formInput.category_ids) && formInput.category_ids.includes(cat.id)).map((cat) => ({ value: cat.id, label: cat.category }))} options={categoryList.map((cat) => ({ value: cat.id, label: cat.category }))} isMulti onChange={handleMultiSelectChange} placeholder="Select a Category" />
           </Form.Group>
 
           <Button variant="primary" type="submit">
@@ -235,7 +212,7 @@ const handleDelete = (id) => {
         </Form>
       ) : (
         <div>
-          <DishForm user={user} onDishCreated={handleBack}/>
+          <DishForm user={user} onDishCreated={handleBack} />
           <Button variant="primary" onClick={handleBack}>
             Back
           </Button>
@@ -243,7 +220,7 @@ const handleDelete = (id) => {
       )}
     </div>
   );
-};
+}
 
 // Prop types for the FoodLogForm component
 FoodLogForm.propTypes = {
