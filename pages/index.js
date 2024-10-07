@@ -10,7 +10,7 @@ function Home() {
   }, []);
 
   const handleUpdate = (deletedItemId) => {
-    setFoodLog((prevFoodLog) => (prevFoodLog.filter((item) => (item.id !== deletedItemId))));
+    setFoodLog((prevFoodLog) => prevFoodLog.filter((item) => item.id !== deletedItemId));
   };
 
   return (
