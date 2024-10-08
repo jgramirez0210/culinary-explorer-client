@@ -166,7 +166,9 @@ function FoodLogForm({ user, editObj }) {
         console.error(error);
       });
   };
+  // eslint-disable-next-line implicit-arrow-linebreak
   const generateOptions = (list, type) =>
+  // eslint-disable-next-line implicit-arrow-linebreak
     list.map((item) => ({
       value: item.id,
       label: (
