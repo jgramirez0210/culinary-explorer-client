@@ -31,7 +31,7 @@ function FoodLogCard({ itemObj, viewType, onUpdate }) {
           <label htmlFor="category">Category:</label>
           <span id="category">{categoryNames.join(', ')}</span>
         </p>
-
+  
         {viewType === 'single' && (
           <>
             <p className="card-text">
@@ -50,9 +50,9 @@ function FoodLogCard({ itemObj, viewType, onUpdate }) {
               <label htmlFor="restaurant-address">Restaurant Address: </label>
               <span id="restaurant-address">{itemObj.restaurant?.restaurant_address}</span>
             </p>
-            <a href={itemObj.restaurant?.website_url} target="_blank" rel="noopener noreferrer" className="website-link">
+            <Link href={itemObj.restaurant?.website_url} target="_blank" rel="noopener noreferrer" className="website-link">
               Website
-            </a>
+            </Link>
             <p className="card-text">
               <label htmlFor="notes">Notes: </label>
               <span id="notes">{itemObj.dish?.notes}</span>
@@ -80,7 +80,6 @@ function FoodLogCard({ itemObj, viewType, onUpdate }) {
             </Link>
           </>
         )}
-
       </Card.Body>
     </Card>
   );
