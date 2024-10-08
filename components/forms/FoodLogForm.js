@@ -5,7 +5,7 @@ import Select from 'react-select';
 import Form from 'react-bootstrap/Form';
 import { Button } from 'react-bootstrap';
 import { updateFoodLog, createFoodLog } from '../../api/FoodLog';
-import { getAllRestaurants } from '../../api/Restaurants';
+import { getAllRestaurants, deleteRestaurant } from '../../api/Restaurants';
 import { getAllCategories } from '../../api/Categories';
 import { getAllDishes, deleteDish } from '../../api/Dish';
 import DishForm from './DishForm';
@@ -158,45 +158,48 @@ function FoodLogForm({ user, editObj }) {
       }));
     }
   };
-  const handleDelete = () => {
-    deleteDish(id)
+
+  const handleDelete = (id, type) => {
+    console.log(`Deleting ${type} with id: ${id}`); // Debugging log
+    const deleteFunction = type === 'restaurant' ? deleteRestaurant : deleteDish;
+
+    deleteFunction(id)
       .then(() => {
+        console.log(`${type.charAt(0).toUpperCase() + type.slice(1)} with id: ${id} deleted successfully`); // Debugging log
         setReload(true);
       })
       .catch((error) => {
-        console.error(error);
+        console.error(`Error deleting ${type} with id: ${id}`, error); // Debugging log
       });
   };
-  const generateOptions = (list, type) => list.map((item) => ({
-    value: item.id,
-    label: (
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <span>{type === 'restaurant' ? item.restaurant_name : item.dish_name}</span>
-        <Button variant="danger" size="sm" onClick={() => handleDelete(item.id)} style={{ marginLeft: '10px' }}>
-          Delete
-        </Button>
-      </div>
-    ),
-  }));
+
+  const generateOptions = (list, type) =>
+    list.map((item) => ({
+      value: item.id,
+      label: (
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <span>{type === 'restaurant' ? item.restaurant_name : item.dish_name}</span>
+          <Button variant="danger" size="sm" onClick={() => handleDelete(item.id, type)} style={{ marginLeft: '10px' }}>
+            Delete
+          </Button>
+        </div>
+      ),
+    }));
 
   const restaurantOptions = generateOptions(restaurantList, 'restaurant');
   const dishOptions = generateOptions(dishList, 'dish');
   const renderForm = () => {
-if (showRestaurantForm || showDishForm) {
-  return (
-    <div>
-      {showRestaurantForm && (
-        <RestaurantForm user={user} onRestaurantCreated={handleSubmit} />
-      )}
-      {showDishForm && (
-        <DishForm user={user} onDishCreated={handleSubmit} />
-      )}
-      <Button variant="primary" onClick={handleBack}>
-        Back
-      </Button>
-    </div>
-  );
-}
+    if (showRestaurantForm || showDishForm) {
+      return (
+        <div>
+          {showRestaurantForm && <RestaurantForm user={user} onRestaurantCreated={handleSubmit} />}
+          {showDishForm && <DishForm user={user} onDishCreated={handleSubmit} />}
+          <Button variant="primary" onClick={handleBack}>
+            Back
+          </Button>
+        </div>
+      );
+    }
 
     return (
       <Form>
@@ -241,7 +244,7 @@ FoodLogForm.propTypes = {
     category: PropTypes.arrayOf(
       PropTypes.shape({
         id: PropTypes.number.isRequired,
-      }),
+      })
     ),
   }),
 };
