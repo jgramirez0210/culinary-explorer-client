@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 import { Form } from 'react-bootstrap';
 import { createRestaurant } from '../../api/Restaurants';
 
@@ -6,7 +7,7 @@ const RestaurantForm = ({ id, updateRestaurant, onRestaurantCreated }) => {
   const [formInput, setFormInput] = useState({
     restaurant_name: '',
     restaurant_address: '',
-    website_url: ''
+    website_url: '',
   });
   const [errors, setErrors] = useState({});
 
@@ -27,7 +28,7 @@ const RestaurantForm = ({ id, updateRestaurant, onRestaurantCreated }) => {
     const payload = {
       restaurant_name: formInput.restaurant_name,
       restaurant_address: formInput.restaurant_address,
-      website_url: formInput.website_url
+      website_url: formInput.website_url,
     };
 
     console.warn('Creating new restaurant with payload:', payload);
@@ -60,7 +61,7 @@ const RestaurantForm = ({ id, updateRestaurant, onRestaurantCreated }) => {
     }));
     setErrors((prevErrors) => ({
       ...prevErrors,
-      [name]: ''
+      [name]: '',
     }));
   };
 
@@ -111,6 +112,26 @@ const RestaurantForm = ({ id, updateRestaurant, onRestaurantCreated }) => {
       <button type="submit">Submit a New Restaurant</button>
     </Form>
   );
+};
+
+RestaurantForm.propTypes = {
+  id: PropTypes.string,
+  updateRestaurant: PropTypes.func.isRequired,
+  onRestaurantCreated: PropTypes.func.isRequired,
+  formInput: PropTypes.shape({
+    restaurant_name: PropTypes.string.isRequired,
+    restaurant_address: PropTypes.string.isRequired,
+    website_url: PropTypes.string.isRequired,
+  }).isRequired,
+  errors: PropTypes.shape({
+    restaurant_name: PropTypes.string,
+    restaurant_address: PropTypes.string,
+    website_url: PropTypes.string,
+  }).isRequired,
+};
+
+RestaurantForm.defaultProps = {
+  id: null,
 };
 
 export default RestaurantForm;

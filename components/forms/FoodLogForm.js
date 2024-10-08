@@ -106,6 +106,7 @@ function FoodLogForm({ user, editObj }) {
 
   const handleBack = () => {
     setShowAddToFoodLogForm(true);
+    setShowRestaurantForm(false);
     setShowDishForm(false);
     setShowDropdown(false);
     setReload(!reload);
@@ -166,65 +167,62 @@ function FoodLogForm({ user, editObj }) {
         console.error(error);
       });
   };
-  // eslint-disable-next-line implicit-arrow-linebreak
-  const generateOptions = (list, type) =>
-  // eslint-disable-next-line implicit-arrow-linebreak
-    list.map((item) => ({
-      value: item.id,
-      label: (
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <span>{type === 'restaurant' ? item.restaurant_name : item.dish_name}</span>
-          <Button variant="danger" size="sm" onClick={() => handleDelete(item.id)} style={{ marginLeft: '10px' }}>
-            Delete
-          </Button>
-        </div>
-      ),
-    }));
+  const generateOptions = (list, type) => list.map((item) => ({
+    value: item.id,
+    label: (
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <span>{type === 'restaurant' ? item.restaurant_name : item.dish_name}</span>
+        <Button variant="danger" size="sm" onClick={() => handleDelete(item.id)} style={{ marginLeft: '10px' }}>
+          Delete
+        </Button>
+      </div>
+    ),
+  }));
 
   const restaurantOptions = generateOptions(restaurantList, 'restaurant');
   const dishOptions = generateOptions(dishList, 'dish');
-
+  const renderForm = () => {
+if (showRestaurantForm || showDishForm) {
   return (
     <div>
-      {showRestaurantForm ? (
-        <div>
-          <RestaurantForm user={user} onRestaurantCreated={handleSubmit} />
-          <Button variant="primary" onClick={handleBack}>
-            Back
-          </Button>
-        </div>
-      ) : showDishForm ? (
-        <div>
-          <DishForm user={user} onDishCreated={handleSubmit} />
-          <Button variant="primary" onClick={handleBack}>
-            Back
-          </Button>
-        </div>
-      ) : (
-        <Form>
-          {/* Form fields */}
-          <Form.Group controlId="restaurant">
-            <Form.Label>Restaurant</Form.Label>
-            <Select value={restaurantOptions.find((option) => option.value === formInput.restaurant_id) || ''} onChange={(selectedOption) => handleChange({ target: { name: 'restaurant_id', value: selectedOption.value } })} options={[{ value: 'create_new', label: 'Create New' }, ...restaurantOptions]} placeholder="Select a Restaurant" />
-          </Form.Group>
-
-          <Form.Group controlId="dishName">
-            <Form.Label>Dish Name</Form.Label>
-            <Select name="dish_id" value={dishOptions.find((option) => option.value === formInput.dish_id) || ''} onChange={(selectedOption) => handleChange({ target: { name: 'dish_id', value: selectedOption.value } })} options={[{ value: 'create_new', label: 'Create New' }, ...dishOptions]} placeholder="Select a Dish" />
-          </Form.Group>
-
-          <Form.Group controlId="categories">
-            <Form.Label>Select Categories</Form.Label>
-            <Select name="category_ids" value={categoryList.filter((cat) => Array.isArray(formInput.category_ids) && formInput.category_ids.includes(cat.id)).map((cat) => ({ value: cat.id, label: cat.category }))} options={categoryList.map((cat) => ({ value: cat.id, label: cat.category }))} isMulti onChange={handleMultiSelectChange} placeholder="Select a Category" />
-          </Form.Group>
-
-          <Button variant="primary" type="submit">
-            Submit
-          </Button>
-        </Form>
+      {showRestaurantForm && (
+        <RestaurantForm user={user} onRestaurantCreated={handleSubmit} />
       )}
+      {showDishForm && (
+        <DishForm user={user} onDishCreated={handleSubmit} />
+      )}
+      <Button variant="primary" onClick={handleBack}>
+        Back
+      </Button>
     </div>
   );
+}
+
+    return (
+      <Form>
+        <Form.Group controlId="restaurant">
+          <Form.Label>Restaurant</Form.Label>
+          <Select value={restaurantOptions.find((option) => option.value === formInput.restaurant_id) || ''} onChange={(selectedOption) => handleChange({ target: { name: 'restaurant_id', value: selectedOption.value } })} options={[{ value: 'create_new', label: 'Create New' }, ...restaurantOptions]} placeholder="Select a Restaurant" />
+        </Form.Group>
+
+        <Form.Group controlId="dishName">
+          <Form.Label>Dish Name</Form.Label>
+          <Select name="dish_id" value={dishOptions.find((option) => option.value === formInput.dish_id) || ''} onChange={(selectedOption) => handleChange({ target: { name: 'dish_id', value: selectedOption.value } })} options={[{ value: 'create_new', label: 'Create New' }, ...dishOptions]} placeholder="Select a Dish" />
+        </Form.Group>
+
+        <Form.Group controlId="categories">
+          <Form.Label>Select Categories</Form.Label>
+          <Select name="category_ids" value={categoryList.filter((cat) => Array.isArray(formInput.category_ids) && formInput.category_ids.includes(cat.id)).map((cat) => ({ value: cat.id, label: cat.category }))} options={categoryList.map((cat) => ({ value: cat.id, label: cat.category }))} isMulti onChange={handleMultiSelectChange} placeholder="Select a Category" />
+        </Form.Group>
+
+        <Button variant="primary" type="submit">
+          Submit
+        </Button>
+      </Form>
+    );
+  };
+
+  return <div>{renderForm()}</div>;
 }
 
 // Prop types for the FoodLogForm component
@@ -243,7 +241,7 @@ FoodLogForm.propTypes = {
     category: PropTypes.arrayOf(
       PropTypes.shape({
         id: PropTypes.number.isRequired,
-      })
+      }),
     ),
   }),
 };
