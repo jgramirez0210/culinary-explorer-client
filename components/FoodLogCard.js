@@ -31,7 +31,7 @@ function FoodLogCard({ itemObj, viewType, onUpdate }) {
           <label htmlFor="category">Category:</label>
           <span id="category">{categoryNames.join(', ')}</span>
         </p>
-  
+
         {viewType === 'single' && (
           <>
             <p className="card-text">
@@ -62,9 +62,7 @@ function FoodLogCard({ itemObj, viewType, onUpdate }) {
                 EDIT
               </Button>
             </Link>
-            <Button variant="outline-danger" onClick={deleteThisItem} className="m-2">
-              DELETE
-            </Button>
+            <button variant="outline-danger" onClick={() => deleteThisItem(itemObj.id)} className="m-2">Delete</button>
           </>
         )}
         {viewType === 'all' && (
