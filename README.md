@@ -46,3 +46,4 @@ To learn more about Next.js, take a look at the following resources:
 # Tech Stack Used
 - ngrok for google maps api testing
 - Google Maps API
+- React Hover https://www.npmjs.com/package/react-hover
