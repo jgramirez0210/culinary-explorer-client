@@ -1,4 +1,5 @@
 import { useRouter } from 'next/router';
+import ReactHover, { Trigger, Hover } from 'react-hover';
 import PropTypes from 'prop-types';
 import { useState, useEffect } from 'react';
 import Select from 'react-select';
@@ -10,6 +11,9 @@ import { getAllCategories } from '../../api/Categories';
 import { getAllDishes, deleteDish } from '../../api/Dish';
 import DishForm from './DishForm';
 import RestaurantForm from './RestaurantForm';
+import setShowDishHoverCard from '../dishHoverCard';
+import DishHoverCard from '../dishHoverCard';
+
 
 // Initial state for the form
 const initialState = {
@@ -17,6 +21,13 @@ const initialState = {
   dish: '',
   category_ids: [],
 };
+
+const optionsCursorTrueWithMargin = {
+  followCursor: true,
+  shiftX: 20,
+  shiftY: 0
+};
+
 
 function FoodLogForm({ user, editObj }) {
   const [formInput, setFormInput] = useState(initialState);
@@ -28,6 +39,12 @@ function FoodLogForm({ user, editObj }) {
   const [showCategoryForm, setShowCategoryForm] = useState(false); // eslint-disable-line no-unused-vars
   const [showDropdown, setShowDropdown] = useState(false); // eslint-disable-line no-unused-vars
   const [showAddToFoodLogForm, setShowAddToFoodLogForm] = useState(true); // eslint-disable-line no-unused-vars
+  const [selectedType, setSelectedType] = useState('');
+  const [hoveredItem, setHoveredItem] = useState(null);
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [dish, setDish] = useState(null); 
+  const [showDishHoverCard, setShowDishHoverCard] = useState(false);
+  const [showRestaurantHoverCard, setShowRestaurantHoverCard] = useState(false);
   const [reload, setReload] = useState(false);
   const router = useRouter();
   const { query } = useRouter();
@@ -43,7 +60,7 @@ function FoodLogForm({ user, editObj }) {
     } else {
       setFormInput(initialState);
     }
-  
+
     getAllRestaurants()
       .then((restaurants) => {
         setRestaurants(restaurants);
@@ -51,7 +68,7 @@ function FoodLogForm({ user, editObj }) {
       .catch((error) => {
         console.error(error);
       });
-  
+
     getAllDishes()
       .then((dishes) => {
         setDishes(dishes);
@@ -59,7 +76,7 @@ function FoodLogForm({ user, editObj }) {
       .catch((error) => {
         console.error(error);
       });
-  
+
     getAllCategories()
       .then((categories) => {
         setCategories(categories);
@@ -103,6 +120,7 @@ function FoodLogForm({ user, editObj }) {
     }
   };
 
+  // HANDEL EVENTS
   const handleBack = () => {
     setShowAddToFoodLogForm(true);
     setShowRestaurantForm(false);
@@ -129,6 +147,67 @@ function FoodLogForm({ user, editObj }) {
     setShowCategoryForm(true);
     setShowDropdown(false);
   };
+
+  // const handleMouseEnter = (event) => {
+  //     setSelectedType(event.type);
+  //     console.log('Event:', event); // Log the entire event object
+
+  //     const itemId = event.id;
+  //     const itemValue = event.restaurant_name || event.dish_name;
+
+  //     console.log('Event target id:', itemId);
+  //     console.log('Event target value:', itemValue);
+
+  //     if (itemId !== undefined) {
+  //         console.log(`Mouse entered ${event.type}:`, itemId);
+  //         setHoveredItem(itemId);
+
+  //         if (event.type === 'dish') {
+  //             setShowDishHoverCard(true);
+  //             setShowRestaurantHoverCard(false);
+  //         } else if (event.type === 'restaurant') {
+  //             setShowDishHoverCard(false);
+  //             setShowRestaurantHoverCard(true);
+  //         }
+  //     } else {
+  //         console.log(`Mouse entered ${event.type}, but no id found.`);
+  //     }
+  // };
+  // const handleMouseEnter = (item, type) => {
+  //   console.log(`Mouse entered ${type}:`, item);
+  //   setHoveredItem(item);
+  //   if (type === 'dish') {
+  //     setShowDishHoverCard(true);
+  //     setShowRestaurantHoverCard(false);
+  //   } else if (type === 'restaurant') {
+  //     setShowRestaurantHoverCard(true);
+  //     setShowDishHoverCard(false);
+  //   }
+  // };
+
+  // const handleMouseLeave = () => {
+  //   console.log('Mouse left');
+  //   setHoveredItem(null);
+  //   setShowDishHoverCard(false);
+  //   setShowRestaurantHoverCard(false);
+  // };
+
+  const handleMouseEnter = (dish) => {
+    console.warn('Mouse Enter Dish:', dish);
+    setDish(dish);
+    setHoveredItem(dish);
+    setShowDishHoverCard(true);
+  };
+
+  const handleMouseLeave = () => {
+    setHoveredItem(null);
+    setShowDishHoverCard(false);
+  };
+  
+  const handleMouseMove = (e) => {
+    setMousePosition({ x: e.clientX, y: e.clientY });
+  };
+
 
   const handleMultiSelectChange = (selectedOptions) => {
     const selectedValues = selectedOptions.map((option) => option.value);
@@ -157,7 +236,6 @@ function FoodLogForm({ user, editObj }) {
       }));
     }
   };
-
   const handleDelete = (type) => {
     const deleteFunction = type === 'restaurant' ? deleteRestaurant : deleteDish;
 
@@ -170,17 +248,18 @@ function FoodLogForm({ user, editObj }) {
       });
   };
 
-  const generateOptions = (list, type) => list.map((item) => ({
-    value: item.id,
-    label: (
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <span>{type === 'restaurant' ? item.restaurant_name : item.dish_name}</span>
-        <Button variant="danger" size="sm" onClick={() => handleDelete(item.id, type)} style={{ marginLeft: '10px' }}>
-          Delete
-        </Button>
-      </div>
-    ),
-  }));
+  const generateOptions = (list, type) =>
+    list.map((item) => ({
+      value: item.id,
+      label: (
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} onMouseEnter={() => handleMouseEnter(item)} onMouseLeave={handleMouseLeave}>
+          <span>{type === 'restaurant' ? item.restaurant_name : item.dish_name}</span>
+          <Button variant="danger" size="sm" onClick={() => handleDelete(item.id, type)} style={{ marginLeft: '10px' }}>
+            Delete
+          </Button>
+        </div>
+      ),
+    }));
 
   const restaurantOptions = generateOptions(restaurantList, 'restaurant');
   const dishOptions = generateOptions(dishList, 'dish');
@@ -199,26 +278,71 @@ function FoodLogForm({ user, editObj }) {
     }
 
     return (
-      <Form onSubmit={handleSubmit}>
-        <Form.Group controlId="restaurant">
-          <Form.Label>Restaurant</Form.Label>
-          <Select value={restaurantOptions.find((option) => option.value === formInput.restaurant_id) || ''} onChange={(selectedOption) => handleChange({ target: { name: 'restaurant_id', value: selectedOption.value } })} options={[{ value: 'create_new', label: 'Create New' }, ...restaurantOptions]} placeholder="Select a Restaurant" />
-        </Form.Group>
+      <div>
+        <Form onSubmit={handleSubmit}>
+          <Form.Group controlId="restaurant">
+            <Form.Label>Restaurant</Form.Label>
+            <Select
+              name="restaurant_id"
+              data-type="restaurant"
+              value={restaurantOptions.find((option) => option.value === formInput.restaurant_id) || ''}
+              onChange={(selectedOption) => handleChange({ target: { name: 'restaurant_id', value: selectedOption.value } })}
+              options={[{ value: 'create_new', label: 'Create New' }, ...restaurantOptions]}
+              placeholder="Select a Restaurant"
+              // onMouseEnter={() => handleMouseEnter({ id: 1, name: 'Dish 1' }, 'dish')}
+              // onMouseLeave={handleMouseLeave}
+              // onFocus={(e) => handleMouseEnter(e, 'restaurant')}
+              // onBlur={handleMouseLeave}
+            />
+          </Form.Group>
 
-        <Form.Group controlId="dishName">
+          {/* <Form.Group controlId="dishName">
+            <Form.Label>Dish Name</Form.Label>
+            <Select name="dish_id" data-type="dish" 
+            value={dishOptions.find((option) => option.value === formInput.dish_id) || ''} 
+            onChange={(selectedOption) => handleChange({ target: { name: 'dish_id', value: selectedOption.value } })} 
+            options={[{ value: 'create_new', label: 'Create New' }, ...dishOptions]} 
+            placeholder="Select a Dish"/>
+          </Form.Group> */}
+          <Form.Group controlId="dish">
           <Form.Label>Dish Name</Form.Label>
-          <Select name="dish_id" value={dishOptions.find((option) => option.value === formInput.dish_id) || ''} onChange={(selectedOption) => handleChange({ target: { name: 'dish_id', value: selectedOption.value } })} options={[{ value: 'create_new', label: 'Create New' }, ...dishOptions]} placeholder="Select a Dish" />
+          <Select
+            onMouseEnter={() => handleMouseEnter(dish)}
+            onMouseLeave={handleMouseLeave}
+            onMouseMove={handleMouseMove}
+            name="dish_id"
+            data-type="dish"
+            value={dishOptions.find((option) => option.value === formInput.dish_id) || ''}
+            onChange={(selectedOption) => handleChange({ target: { name: 'dish_id', value: selectedOption.value } })}
+            options={[
+              { value: 'create_new', label: 'Create New' },
+              ...dishOptions,
+            ]}
+            placeholder="Select a Dish"
+          />
         </Form.Group>
 
-        <Form.Group controlId="categories">
-          <Form.Label>Select Categories</Form.Label>
-          <Select name="category_ids" value={categoryList.filter((cat) => Array.isArray(formInput.category_ids) && formInput.category_ids.includes(cat.id)).map((cat) => ({ value: cat.id, label: cat.category }))} options={categoryList.map((cat) => ({ value: cat.id, label: cat.category }))} isMulti onChange={handleMultiSelectChange} placeholder="Select a Category" />
-        </Form.Group>
 
-        <Button variant="primary" type="submit">
-          Submit
-        </Button>
-      </Form>
+
+          <Form.Group controlId="categories">
+            <Form.Label>Select Categories</Form.Label>
+            <Select name="category_ids" value={categoryList.filter((cat) => Array.isArray(formInput.category_ids) && formInput.category_ids.includes(cat.id)).map((cat) => ({ value: cat.id, label: cat.category }))} options={categoryList.map((cat) => ({ value: cat.id, label: cat.category }))} isMulti onChange={handleMultiSelectChange} placeholder="Select a Category" />
+          </Form.Group>
+
+
+          <Button variant="primary" type="submit">
+            Submit
+          </Button>
+        </Form>
+
+
+        {hoveredItem && (
+          <>
+            {console.log('Dish data:', dish)}
+            <DishHoverCard dish={dish} position={{ x: mousePosition.x, y: mousePosition.y }} />
+          </>
+        )}
+      </div>
     );
   };
 
@@ -241,7 +365,7 @@ FoodLogForm.propTypes = {
     category: PropTypes.arrayOf(
       PropTypes.shape({
         id: PropTypes.number.isRequired,
-      }),
+      })
     ),
   }),
 };
