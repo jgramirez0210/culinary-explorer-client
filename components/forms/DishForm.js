@@ -38,8 +38,6 @@ function DishForm({ editObj, onDishCreated }) {
       price: parseFloat(formInput.price), // Ensure price is a number
     };
 
-    console.warn('Creating new dish with payload:', payload); // Log the payload
-
     if (id) {
       // If an id is present, update the Food log
       updateDish(id, payload)
