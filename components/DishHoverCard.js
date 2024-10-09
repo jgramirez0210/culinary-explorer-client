@@ -1,7 +1,6 @@
 import React from 'react';
 
 const DishHoverCard = ({ dish, position = { x: 50, y: 50 } }) => {
-  console.warn('DishHoverCard Data:', dish);  
   const cardStyle = {
     position: 'absolute',
     top: `${position.y}px`,

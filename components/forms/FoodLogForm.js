@@ -14,7 +14,6 @@ import RestaurantForm from './RestaurantForm';
 import setShowDishHoverCard from '../dishHoverCard';
 import DishHoverCard from '../dishHoverCard';
 
-
 // Initial state for the form
 const initialState = {
   restaurant: '',
@@ -27,7 +26,6 @@ const optionsCursorTrueWithMargin = {
   shiftX: 20,
   shiftY: 0
 };
-
 
 function FoodLogForm({ user, editObj }) {
   const [formInput, setFormInput] = useState(initialState);
@@ -42,7 +40,7 @@ function FoodLogForm({ user, editObj }) {
   const [selectedType, setSelectedType] = useState('');
   const [hoveredItem, setHoveredItem] = useState(null);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
-  const [dish, setDish] = useState(null); 
+  const [dish, setDish] = useState(null);
   const [showDishHoverCard, setShowDishHoverCard] = useState(false);
   const [showRestaurantHoverCard, setShowRestaurantHoverCard] = useState(false);
   const [reload, setReload] = useState(false);
@@ -89,7 +87,7 @@ function FoodLogForm({ user, editObj }) {
   // Function to handle form submission
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.warn('Form data being submitted:', formInput);
+
 
     // Constructing the Food log object
     const payload = {
@@ -148,52 +146,7 @@ function FoodLogForm({ user, editObj }) {
     setShowDropdown(false);
   };
 
-  // const handleMouseEnter = (event) => {
-  //     setSelectedType(event.type);
-  //     console.log('Event:', event); // Log the entire event object
-
-  //     const itemId = event.id;
-  //     const itemValue = event.restaurant_name || event.dish_name;
-
-  //     console.log('Event target id:', itemId);
-  //     console.log('Event target value:', itemValue);
-
-  //     if (itemId !== undefined) {
-  //         console.log(`Mouse entered ${event.type}:`, itemId);
-  //         setHoveredItem(itemId);
-
-  //         if (event.type === 'dish') {
-  //             setShowDishHoverCard(true);
-  //             setShowRestaurantHoverCard(false);
-  //         } else if (event.type === 'restaurant') {
-  //             setShowDishHoverCard(false);
-  //             setShowRestaurantHoverCard(true);
-  //         }
-  //     } else {
-  //         console.log(`Mouse entered ${event.type}, but no id found.`);
-  //     }
-  // };
-  // const handleMouseEnter = (item, type) => {
-  //   console.log(`Mouse entered ${type}:`, item);
-  //   setHoveredItem(item);
-  //   if (type === 'dish') {
-  //     setShowDishHoverCard(true);
-  //     setShowRestaurantHoverCard(false);
-  //   } else if (type === 'restaurant') {
-  //     setShowRestaurantHoverCard(true);
-  //     setShowDishHoverCard(false);
-  //   }
-  // };
-
-  // const handleMouseLeave = () => {
-  //   console.log('Mouse left');
-  //   setHoveredItem(null);
-  //   setShowDishHoverCard(false);
-  //   setShowRestaurantHoverCard(false);
-  // };
-
   const handleMouseEnter = (dish) => {
-    console.warn('Mouse Enter Dish:', dish);
     setDish(dish);
     setHoveredItem(dish);
     setShowDishHoverCard(true);
@@ -203,11 +156,10 @@ function FoodLogForm({ user, editObj }) {
     setHoveredItem(null);
     setShowDishHoverCard(false);
   };
-  
+
   const handleMouseMove = (e) => {
     setMousePosition({ x: e.clientX, y: e.clientY });
   };
-
 
   const handleMultiSelectChange = (selectedOptions) => {
     const selectedValues = selectedOptions.map((option) => option.value);
@@ -289,21 +241,9 @@ function FoodLogForm({ user, editObj }) {
               onChange={(selectedOption) => handleChange({ target: { name: 'restaurant_id', value: selectedOption.value } })}
               options={[{ value: 'create_new', label: 'Create New' }, ...restaurantOptions]}
               placeholder="Select a Restaurant"
-              // onMouseEnter={() => handleMouseEnter({ id: 1, name: 'Dish 1' }, 'dish')}
-              // onMouseLeave={handleMouseLeave}
-              // onFocus={(e) => handleMouseEnter(e, 'restaurant')}
-              // onBlur={handleMouseLeave}
             />
           </Form.Group>
 
-          {/* <Form.Group controlId="dishName">
-            <Form.Label>Dish Name</Form.Label>
-            <Select name="dish_id" data-type="dish" 
-            value={dishOptions.find((option) => option.value === formInput.dish_id) || ''} 
-            onChange={(selectedOption) => handleChange({ target: { name: 'dish_id', value: selectedOption.value } })} 
-            options={[{ value: 'create_new', label: 'Create New' }, ...dishOptions]} 
-            placeholder="Select a Dish"/>
-          </Form.Group> */}
           <Form.Group controlId="dish">
           <Form.Label>Dish Name</Form.Label>
           <Select
@@ -322,23 +262,18 @@ function FoodLogForm({ user, editObj }) {
           />
         </Form.Group>
 
-
-
           <Form.Group controlId="categories">
             <Form.Label>Select Categories</Form.Label>
             <Select name="category_ids" value={categoryList.filter((cat) => Array.isArray(formInput.category_ids) && formInput.category_ids.includes(cat.id)).map((cat) => ({ value: cat.id, label: cat.category }))} options={categoryList.map((cat) => ({ value: cat.id, label: cat.category }))} isMulti onChange={handleMultiSelectChange} placeholder="Select a Category" />
           </Form.Group>
-
 
           <Button variant="primary" type="submit">
             Submit
           </Button>
         </Form>
 
-
         {hoveredItem && (
           <>
-            {console.log('Dish data:', dish)}
             <DishHoverCard dish={dish} position={{ x: mousePosition.x, y: mousePosition.y }} />
           </>
         )}
