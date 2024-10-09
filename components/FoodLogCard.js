@@ -110,7 +110,6 @@
 
 // export default FoodLogCard;
 
-
 import React, { useState } from 'react';
 import Link from 'next/link';
 import Card from 'react-bootstrap/Card';
@@ -119,7 +118,7 @@ import PropTypes from 'prop-types';
 import { useRouter } from 'next/router';
 import { deleteItem } from '../api/FoodLog';
 import DishHoverCard from './dishHoverCard';
-import RestaurantHoverCard from './RestaurantHoverCard'; // Adjust the import path as necessary
+// import RestaurantHoverCard from './RestaurantHoverCard'; // Adjust the import path as necessary
 
 function FoodLogCard({ itemObj, viewType, onUpdate }) {
   const router = useRouter();
@@ -204,8 +203,8 @@ function FoodLogCard({ itemObj, viewType, onUpdate }) {
         <Button variant="danger" onClick={() => deleteThisItem(itemObj.id)}>Delete</Button>
       </Card.Body>
 
-      {showDishHoverCard && <DishHoverCard dish={hoveredItem} />}
-      {showRestaurantHoverCard && <RestaurantHoverCard restaurant={hoveredItem} />}
+      {/* {showDishHoverCard && <DishHoverCard dish={hoveredItem} />} */}
+      {/* {showRestaurantHoverCard && <RestaurantHoverCard restaurant={hoveredItem} />} */}
     </Card>
   );
 }
