@@ -13,7 +13,7 @@ function FoodLogCard({ itemObj, viewType, onUpdate }) {
     if (window.confirm('Delete Entry?')) {
       deleteItem(itemId).then(() => {
         onUpdate();
-        router.push('/'); // Navigate to the home page
+        router.push('/');
       });
     }
   };
