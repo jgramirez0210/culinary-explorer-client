@@ -10,6 +10,8 @@ import { getAllCategories } from '../../api/Categories';
 import { getAllDishes, deleteDish } from '../../api/Dish';
 import DishForm from './DishForm';
 import RestaurantForm from './RestaurantForm';
+import DishHoverCard from '../DishHoverCard';
+import RestaurantHoverCard from '../RestaurantHoverCard';
 
 // Initial state for the form
 const initialState = {
@@ -19,19 +21,27 @@ const initialState = {
 };
 
 function FoodLogForm({ user, editObj }) {
+  // Default Form States
   const [formInput, setFormInput] = useState(initialState);
-  const [restaurantList, setRestaurants] = useState([]);
-  const [dishList, setDishes] = useState([]);
-  const [categoryList, setCategories] = useState([]);
-  const [showDishForm, setShowDishForm] = useState(false);
-  const [showRestaurantForm, setShowRestaurantForm] = useState(false); // eslint-disable-line no-unused-vars
-  const [showCategoryForm, setShowCategoryForm] = useState(false); // eslint-disable-line no-unused-vars
-  const [showDropdown, setShowDropdown] = useState(false); // eslint-disable-line no-unused-vars
-  const [showAddToFoodLogForm, setShowAddToFoodLogForm] = useState(true); // eslint-disable-line no-unused-vars
   const [reload, setReload] = useState(false);
   const router = useRouter();
   const { query } = useRouter();
   const { id } = query;
+  // Form Dropdown States
+  const [showDropdown, setShowDropdown] = useState(false); // eslint-disable-line no-unused-vars
+  const [restaurantList, setRestaurants] = useState([]);
+  const [dishList, setDishes] = useState([]);
+  const [categoryList, setCategories] = useState([]);
+  // Form Switching States
+  const [showDishForm, setShowDishForm] = useState(false);
+  const [showRestaurantForm, setShowRestaurantForm] = useState(false); // eslint-disable-line no-unused-vars
+  const [showCategoryForm, setShowCategoryForm] = useState(false); // eslint-disable-line no-unused-vars
+  const [showAddToFoodLogForm, setShowAddToFoodLogForm] = useState(true); // eslint-disable-line no-unused-vars
+  // Hover Card States
+  const [hoveredItem, setHoveredItem] = useState(null);
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [dish, setDish] = useState(null); // eslint-disable-line no-unused-vars
+  const [cardType, setCardType] = useState(null);
 
   // Fetches all the data needed for List items in the form
   const fetchData = async () => {
@@ -63,6 +73,7 @@ function FoodLogForm({ user, editObj }) {
 
     fetchData();
   }, [editObj, reload]);
+
 
   // Function to handle form submission
   const handleSubmit = (e) => {
@@ -97,6 +108,7 @@ function FoodLogForm({ user, editObj }) {
     }
   };
 
+  // HANDEL EVENTS
   const handleBack = () => {
     setShowAddToFoodLogForm(true);
     setShowRestaurantForm(false);
@@ -124,6 +136,32 @@ function FoodLogForm({ user, editObj }) {
     setShowDropdown(false);
   };
 
+  const determineType = (item) => {
+    // Example logic to determine the type based on item properties
+    if (item.dish_name) {
+      return 'dish';
+    }
+    if (item.restaurant_name) {
+      return 'restaurant';
+    }
+    return 'unknown'; // Default type if none match
+  };
+
+  const handleMouseEnter = (item) => {
+    const type = determineType(item); // Pass the item object here
+    setHoveredItem(item);
+    setCardType(type); // Ensure type is set correctly
+  };
+
+  const handleMouseLeave = () => {
+    setHoveredItem(null);
+    setCardType(null); // Reset the card type
+  };
+
+  const handleMouseMove = (e) => {
+    setMousePosition({ x: e.clientX, y: e.clientY });
+  };
+
   const handleMultiSelectChange = (selectedOptions) => {
     const selectedValues = selectedOptions.map((option) => option.value);
     if (selectedValues.includes('create_new')) {
@@ -136,6 +174,7 @@ function FoodLogForm({ user, editObj }) {
     }
   };
 
+  // Handles form input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
     if (value === 'create_new') {
@@ -164,7 +203,8 @@ function FoodLogForm({ user, editObj }) {
         console.error(`Error deleting ${type} with id: ${id}`, error); // Debugging log
       });
   };
-
+  
+  // Generate delete button for dropdown lists
   const generateOptions = (list, type) => list.map((item) => ({
     value: item.id,
     label: (
@@ -179,6 +219,7 @@ function FoodLogForm({ user, editObj }) {
 
   const restaurantOptions = generateOptions(restaurantList, 'restaurant');
   const dishOptions = generateOptions(dishList, 'dish');
+  // conditionally renders the form based on the sate
   const renderForm = () => {
     if (showRestaurantForm || showDishForm) {
       return (
@@ -192,7 +233,7 @@ function FoodLogForm({ user, editObj }) {
       );
     }
 
-    return (
+     return (
       <Form onSubmit={handleSubmit}>
         <Form.Group controlId="restaurant">
           <Form.Label>Restaurant</Form.Label>
@@ -264,3 +305,4 @@ FoodLogForm.defaultProps = {
 };
 
 export default FoodLogForm;
+

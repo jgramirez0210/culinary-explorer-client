@@ -13,7 +13,7 @@ function FoodLogCard({ itemObj, viewType, onUpdate }) {
     if (window.confirm('Delete Entry?')) {
       deleteItem(itemId).then(() => {
         onUpdate();
-        router.push('/'); // Navigate to the home page
+        router.push('/');
       });
     }
   };
@@ -50,9 +50,9 @@ function FoodLogCard({ itemObj, viewType, onUpdate }) {
               <label htmlFor="restaurant-address">Restaurant Address: </label>
               <span id="restaurant-address">{itemObj.restaurant?.restaurant_address}</span>
             </p>
-            <a href={itemObj.restaurant?.website_url} target="_blank" rel="noopener noreferrer" className="website-link">
+            <Link href={itemObj.restaurant?.website_url} target="_blank" rel="noopener noreferrer" className="website-link">
               Website
-            </a>
+            </Link>
             <p className="card-text">
               <label htmlFor="notes">Notes: </label>
               <span id="notes">{itemObj.dish?.notes}</span>
@@ -62,9 +62,7 @@ function FoodLogCard({ itemObj, viewType, onUpdate }) {
                 EDIT
               </Button>
             </Link>
-            <Button variant="outline-danger" onClick={deleteThisItem} className="m-2">
-              DELETE
-            </Button>
+            <button type="button" onClick={() => deleteThisItem(itemObj.id)} className="outline-danger m-2">Delete</button>
           </>
         )}
         {viewType === 'all' && (
@@ -74,13 +72,12 @@ function FoodLogCard({ itemObj, viewType, onUpdate }) {
               <span id="short-description">{itemObj.dish.description}</span>
             </p>
             <Link href={`/food_log/${itemObj.id}`} passHref>
-              <Button variant="outline-success" className="m-2 view-button">
+              <Button type="button" variant="outline-success" className="m-2 view-button">
                 VIEW
               </Button>
             </Link>
           </>
         )}
-
       </Card.Body>
     </Card>
   );

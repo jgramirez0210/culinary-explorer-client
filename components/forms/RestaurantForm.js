@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { Form } from 'react-bootstrap';
+import GooglePlacesAutocomplete from 'react-google-places-autocomplete';
 import { createRestaurant } from '../../api/Restaurants';
 
 const RestaurantForm = ({ id, updateRestaurant, onRestaurantCreated }) => {
@@ -11,8 +12,8 @@ const RestaurantForm = ({ id, updateRestaurant, onRestaurantCreated }) => {
   });
   const [errors, setErrors] = useState({});
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
+  const handleSubmit = () => {
+    // event.preventDefault();
 
     // Validate form input
     const newErrors = {};
@@ -27,7 +28,7 @@ const RestaurantForm = ({ id, updateRestaurant, onRestaurantCreated }) => {
 
     const payload = {
       restaurant_name: formInput.restaurant_name,
-      restaurant_address: formInput.restaurant_address,
+      restaurant_address: formInput.restaurant_address.label || formInput.restaurant_address,
       website_url: formInput.website_url,
     };
 
@@ -38,7 +39,7 @@ const RestaurantForm = ({ id, updateRestaurant, onRestaurantCreated }) => {
           // router.push(`/food_log`);
         })
         .catch((error) => {
-          console.error(error);
+          console.error('Error updating restaurant:', error);
         });
     } else {
       createRestaurant(payload)
@@ -48,7 +49,7 @@ const RestaurantForm = ({ id, updateRestaurant, onRestaurantCreated }) => {
           }
         })
         .catch((error) => {
-          console.error(error);
+          console.error('Error creating restaurant:', error);
         });
     }
   };
