@@ -2,42 +2,44 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { Form } from 'react-bootstrap';
 import { createRestaurant } from '../../api/Restaurants';
+import GooglePlacesAutocomplete from 'react-google-places-autocomplete';
 
 const RestaurantForm = ({ id, updateRestaurant, onRestaurantCreated }) => {
   const [formInput, setFormInput] = useState({
     restaurant_name: '',
     restaurant_address: '',
-    website_url: '',
+    website_url: ''
   });
   const [errors, setErrors] = useState({});
 
   const handleSubmit = (event) => {
-    event.preventDefault();
-
+    // event.preventDefault();
+  
     // Validate form input
     const newErrors = {};
     if (!formInput.restaurant_name) newErrors.restaurant_name = 'Restaurant name is required';
     if (!formInput.restaurant_address) newErrors.restaurant_address = 'Restaurant address is required';
     if (!formInput.website_url) newErrors.website_url = 'Website URL is required';
-
+  
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
       return;
     }
-
+  
     const payload = {
       restaurant_name: formInput.restaurant_name,
-      restaurant_address: formInput.restaurant_address,
-      website_url: formInput.website_url,
+      restaurant_address: formInput.restaurant_address.label || formInput.restaurant_address,
+      website_url: formInput.website_url
     };
-
+  
+    console.warn('Creating new restaurant with payload:', payload);
     if (id) {
       updateRestaurant(id, payload)
         .then(() => {
           // router.push(`/food_log`);
         })
         .catch((error) => {
-          console.error(error);
+          console.error('Error updating restaurant:', error);
         });
     } else {
       createRestaurant(payload)
@@ -47,7 +49,7 @@ const RestaurantForm = ({ id, updateRestaurant, onRestaurantCreated }) => {
           }
         })
         .catch((error) => {
-          console.error(error);
+          console.error('Error creating restaurant:', error);
         });
     }
   };
@@ -60,14 +62,15 @@ const RestaurantForm = ({ id, updateRestaurant, onRestaurantCreated }) => {
     }));
     setErrors((prevErrors) => ({
       ...prevErrors,
-      [name]: '',
+      [name]: ''
     }));
   };
+
 
   return (
     <Form onSubmit={handleSubmit}>
       <Form.Group controlId="dishName">
-        <Form.Label>Restaurant Name</Form.Label>
+      <Form.Label>Restaurant Name</Form.Label>
         <Form.Control
           type="text"
           name="restaurant_name"
@@ -82,13 +85,14 @@ const RestaurantForm = ({ id, updateRestaurant, onRestaurantCreated }) => {
       </Form.Group>
       <Form.Group controlId="description">
         <Form.Label>Restaurant Address</Form.Label>
-        <Form.Control
-          type="text"
-          name="restaurant_address"
-          value={formInput.restaurant_address}
-          onChange={handleChange}
-          placeholder="Restaurant Address"
-          isInvalid={!!errors.restaurant_address}
+        <GooglePlacesAutocomplete
+          apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}
+          selectProps={{
+            value: formInput.restaurant_address,
+            onChange: (value) => handleChange({ target: { name: 'restaurant_address', value } }),
+            placeholder: "Restaurant Address",
+            isInvalid: !!errors.restaurant_address,
+          }}
         />
         <Form.Control.Feedback type="invalid">
           {errors.restaurant_address}
