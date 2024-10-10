@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 const RestaurantHoverCard = ({ item, position = { x: 50, y: 50 } }) => {
   const cardStyle = {
@@ -25,6 +26,23 @@ const RestaurantHoverCard = ({ item, position = { x: 50, y: 50 } }) => {
       )}
     </div>
   );
+};
+
+RestaurantHoverCard.propTypes = {
+  item: PropTypes.shape({
+    restaurant_name: PropTypes.string,
+    restaurant_address: PropTypes.string,
+    website_url: PropTypes.string,
+  }),
+  position: PropTypes.shape({
+    x: PropTypes.number,
+    y: PropTypes.number,
+  }),
+};
+
+RestaurantHoverCard.defaultProps = {
+  item: null,
+  position: { x: 50, y: 50 },
 };
 
 export default RestaurantHoverCard;
