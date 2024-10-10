@@ -22,12 +22,6 @@ const initialState = {
   category_ids: [],
 };
 
-const optionsCursorTrueWithMargin = {
-  followCursor: true,
-  shiftX: 20,
-  shiftY: 0,
-};
-
 function FoodLogForm({ user, editObj }) {
   const [formInput, setFormInput] = useState(initialState);
   const [restaurantList, setRestaurants] = useState([]);
@@ -146,25 +140,7 @@ function FoodLogForm({ user, editObj }) {
     setShowCategoryForm(true);
     setShowDropdown(false);
   };
-  // const handleMouseEnter = (item, type) => {
-  //   console.warn('item', item);
-  //   console.warn('Type', type);
-  //   if (item.type === 'dish') {
-  //     setDish(item);
-  //     setHoveredItem(item);
-  //     setShowDishHoverCard(true);
-  //   } else if (item.type === 'restaurant') {
-  //     setRestaurant(item);
-  //     setHoveredItem(item);
-  //     setShowRestaurantHoverCard(true);
-  //   }
-  // };
 
-  // const handleMouseLeave = () => {
-  //   setHoveredItem(null);
-  //   setShowDishHoverCard(false);
-  //   setShowRestaurantHoverCard(false);
-  // };
   const determineType = (item) => {
     // Example logic to determine the type based on item properties
     if (item.dish_name) {
@@ -177,8 +153,6 @@ function FoodLogForm({ user, editObj }) {
   
   const handleMouseEnter = (item) => {
     const type = determineType(item); // Pass the item object here
-    console.warn('item', item);
-    console.warn('Type', type);
     setHoveredItem(item);
     setCardType(type); // Ensure type is set correctly
   };
