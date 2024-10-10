@@ -211,18 +211,17 @@ function FoodLogForm({ user, editObj }) {
   };
 
   // Generate delete button for dropdown lists
-  const generateOptions = (list, type) =>
-    list.map((item) => ({
-      value: item.id,
-      label: (
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} onMouseEnter={() => handleMouseEnter(item)} onMouseLeave={handleMouseLeave}>
-          <span>{type === 'restaurant' ? item.restaurant_name : item.dish_name}</span>
-          <Button variant="danger" size="sm" onClick={() => handleDelete(item.id, type)} style={{ marginLeft: '10px' }}>
-            Delete
-          </Button>
-        </div>
-      ),
-    }));
+  const generateOptions = (list, type) => list.map((item) => ({
+    value: item.id,
+    label: (
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} onMouseEnter={() => handleMouseEnter(item)} onMouseLeave={handleMouseLeave}>
+        <span>{type === 'restaurant' ? item.restaurant_name : item.dish_name}</span>
+        <Button variant="danger" size="sm" onClick={() => handleDelete(item.id, type)} style={{ marginLeft: '10px' }}>
+          Delete
+        </Button>
+      </div>
+    ),
+  }));
 
   const restaurantOptions = generateOptions(restaurantList, 'restaurant');
   const dishOptions = generateOptions(dishList, 'dish');
@@ -274,13 +273,14 @@ function FoodLogForm({ user, editObj }) {
 
           <Form.Group controlId="categories">
             <Form.Label>Select Categories</Form.Label>
-            <Select 
-            name="category_ids" 
-            value={categoryList.filter((cat) => Array.isArray(formInput.category_ids) && formInput.category_ids.includes(cat.id)).map((cat) => ({ value: cat.id, label: cat.category }))}
-            options={categoryList.map((cat) => ({ value: cat.id, label: cat.category }))} 
-            isMulti 
-            onChange={handleMultiSelectChange} 
-            placeholder="Select a Category" />
+            <Select
+              name="category_ids"
+              value={categoryList.filter((cat) => Array.isArray(formInput.category_ids) && formInput.category_ids.includes(cat.id)).map((cat) => ({ value: cat.id, label: cat.category }))}
+              options={categoryList.map((cat) => ({ value: cat.id, label: cat.category }))}
+              isMulti
+              onChange={handleMultiSelectChange}
+              placeholder="Select a Category"
+            />
           </Form.Group>
 
           <Button variant="primary" type="submit">
@@ -313,7 +313,7 @@ FoodLogForm.propTypes = {
     category: PropTypes.arrayOf(
       PropTypes.shape({
         id: PropTypes.number.isRequired,
-      })
+      }),
     ),
   }),
 };
