@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { Form } from 'react-bootstrap';
+import GooglePlacesAutocomplete from 'react-google-places-autocomplete';
 import { createRestaurant } from '../../api/Restaurants';
 
 const RestaurantForm = ({ id, updateRestaurant, onRestaurantCreated }) => {
@@ -11,8 +12,8 @@ const RestaurantForm = ({ id, updateRestaurant, onRestaurantCreated }) => {
   });
   const [errors, setErrors] = useState({});
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
+  const handleSubmit = () => {
+    // event.preventDefault();
 
     // Validate form input
     const newErrors = {};
@@ -27,17 +28,18 @@ const RestaurantForm = ({ id, updateRestaurant, onRestaurantCreated }) => {
 
     const payload = {
       restaurant_name: formInput.restaurant_name,
-      restaurant_address: formInput.restaurant_address,
+      restaurant_address: formInput.restaurant_address.label || formInput.restaurant_address,
       website_url: formInput.website_url,
     };
 
+    console.warn('Creating new restaurant with payload:', payload);
     if (id) {
       updateRestaurant(id, payload)
         .then(() => {
           // router.push(`/food_log`);
         })
         .catch((error) => {
-          console.error(error);
+          console.error('Error updating restaurant:', error);
         });
     } else {
       createRestaurant(payload)
@@ -47,7 +49,7 @@ const RestaurantForm = ({ id, updateRestaurant, onRestaurantCreated }) => {
           }
         })
         .catch((error) => {
-          console.error(error);
+          console.error('Error creating restaurant:', error);
         });
     }
   };
@@ -68,45 +70,26 @@ const RestaurantForm = ({ id, updateRestaurant, onRestaurantCreated }) => {
     <Form onSubmit={handleSubmit}>
       <Form.Group controlId="dishName">
         <Form.Label>Restaurant Name</Form.Label>
-        <Form.Control
-          type="text"
-          name="restaurant_name"
-          value={formInput.restaurant_name}
-          onChange={handleChange}
-          placeholder="Enter restaurant name"
-          isInvalid={!!errors.restaurant_name}
-        />
-        <Form.Control.Feedback type="invalid">
-          {errors.restaurant_name}
-        </Form.Control.Feedback>
+        <Form.Control type="text" name="restaurant_name" value={formInput.restaurant_name} onChange={handleChange} placeholder="Enter restaurant name" isInvalid={!!errors.restaurant_name} />
+        <Form.Control.Feedback type="invalid">{errors.restaurant_name}</Form.Control.Feedback>
       </Form.Group>
       <Form.Group controlId="description">
         <Form.Label>Restaurant Address</Form.Label>
-        <Form.Control
-          type="text"
-          name="restaurant_address"
-          value={formInput.restaurant_address}
-          onChange={handleChange}
-          placeholder="Restaurant Address"
-          isInvalid={!!errors.restaurant_address}
+        <GooglePlacesAutocomplete
+          apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}
+          selectProps={{
+            value: formInput.restaurant_address,
+            onChange: (value) => handleChange({ target: { name: 'restaurant_address', value } }),
+            placeholder: 'Restaurant Address',
+            isInvalid: !!errors.restaurant_address,
+          }}
         />
-        <Form.Control.Feedback type="invalid">
-          {errors.restaurant_address}
-        </Form.Control.Feedback>
+        <Form.Control.Feedback type="invalid">{errors.restaurant_address}</Form.Control.Feedback>
       </Form.Group>
       <Form.Group controlId="notes">
         <Form.Label>Website Url</Form.Label>
-        <Form.Control
-          type="text"
-          name="website_url"
-          value={formInput.website_url}
-          onChange={handleChange}
-          placeholder="Website URL"
-          isInvalid={!!errors.website_url}
-        />
-        <Form.Control.Feedback type="invalid">
-          {errors.website_url}
-        </Form.Control.Feedback>
+        <Form.Control type="text" name="website_url" value={formInput.website_url} onChange={handleChange} placeholder="Website URL" isInvalid={!!errors.website_url} />
+        <Form.Control.Feedback type="invalid">{errors.website_url}</Form.Control.Feedback>
       </Form.Group>
       <button type="submit">Submit a New Restaurant</button>
     </Form>
