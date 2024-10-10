@@ -1,4 +1,6 @@
 import React from 'react';
+import PropTypes from 'prop-types';
+import Image from 'next/image';
 
 const DishHoverCard = ({ item, position = { x: 50, y: 50 } }) => {
   const cardStyle = {
@@ -12,13 +14,12 @@ const DishHoverCard = ({ item, position = { x: 50, y: 50 } }) => {
     zIndex: 1000,
   };
 
-
   return (
     <div style={cardStyle}>
       {item ? (
         <>
           <p>{item.dish_name}</p>
-          {item.food_image_url && <img src={item.food_image_url} alt={item.dish_name} style={{ width: '100px', height: '100px' }} />}
+          {item.food_image_url && <Image src={item.food_image_url} alt={item.dish_name} style={{ width: '100px', height: '100px' }} />}
           <p>Description: {item.description ? item.description : 'No description available'}</p>
           <p>Notes: {item.notes}</p>
           <p>Price: {item.price}</p>
@@ -28,6 +29,24 @@ const DishHoverCard = ({ item, position = { x: 50, y: 50 } }) => {
       )}
     </div>
   );
+};
+
+DishHoverCard.propTypes = {
+  item: PropTypes.shape({
+    dish_name: PropTypes.string,
+    food_image_url: PropTypes.string,
+    description: PropTypes.string,
+    notes: PropTypes.string,
+    price: PropTypes.string,
+  }),
+  position: PropTypes.shape({
+    x: PropTypes.number.isRequired,
+    y: PropTypes.number.isRequired,
+  }).isRequired,
+};
+
+DishHoverCard.defaultProps = {
+  item: null,
 };
 
 export default DishHoverCard;
