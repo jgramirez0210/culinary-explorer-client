@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import Image from 'next/image';
 
-const DishHoverCard = ({ item, position = { x: 50, y: 50 } }) => {
+const DishHoverCard = ({ item, position }) => {
   const cardStyle = {
     position: 'absolute',
     top: `${position.y}px`,
@@ -19,7 +19,15 @@ const DishHoverCard = ({ item, position = { x: 50, y: 50 } }) => {
       {item ? (
         <>
           <p>{item.dish_name}</p>
-          {item.food_image_url && <Image src={item.food_image_url} alt={item.dish_name} style={{ width: '100px', height: '100px' }} />}
+          {item.food_image_url && (
+            <Image
+              src={item.food_image_url}
+              alt={item.dish_name}
+              width={100}
+              height={100}
+              style={{ width: '100px', height: '100px' }}
+            />
+          )}
           <p>Description: {item.description ? item.description : 'No description available'}</p>
           <p>Notes: {item.notes}</p>
           <p>Price: {item.price}</p>
