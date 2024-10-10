@@ -75,15 +75,7 @@ const RestaurantForm = ({ id, updateRestaurant, onRestaurantCreated }) => {
       </Form.Group>
       <Form.Group controlId="description">
         <Form.Label>Restaurant Address</Form.Label>
-        <GooglePlacesAutocomplete
-          apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}
-          selectProps={{
-            value: formInput.restaurant_address,
-            onChange: (value) => handleChange({ target: { name: 'restaurant_address', value } }),
-            placeholder: 'Restaurant Address',
-            isInvalid: !!errors.restaurant_address,
-          }}
-        />
+        <Form.Control type="text" name="restaurant_address" value={formInput.restaurant_address} onChange={handleChange} placeholder="Restaurant Address" isInvalid={!!errors.restaurant_address} />
         <Form.Control.Feedback type="invalid">{errors.restaurant_address}</Form.Control.Feedback>
       </Form.Group>
       <Form.Group controlId="notes">
