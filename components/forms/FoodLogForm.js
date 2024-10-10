@@ -43,10 +43,25 @@ function FoodLogForm({ user, editObj }) {
   const [dish, setDish] = useState(null); // eslint-disable-line no-unused-vars
   const [cardType, setCardType] = useState(null);
 
-  // UseEffect to get all the restaurants, dishes, and categories for dropdown lists from API
+  // Fetches all the data needed for List items in the form
+  const fetchData = async () => {
+    try {
+      const [restaurantsData, dishesData, categoriesData] = await Promise.all([
+        getAllRestaurants(),
+        getAllDishes(),
+        getAllCategories(),
+      ]);
+      setRestaurants(restaurantsData);
+      setDishes(dishesData);
+      setCategories(categoriesData);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  // Sets the form input to the edit object and sets all dropdowns
   useEffect(() => {
     if (editObj) {
-      console.warn('Edit Object:', editObj);
       setFormInput({
         restaurant_id: editObj.restaurant.id || '',
         dish_id: editObj.dish.id || '',
@@ -56,30 +71,9 @@ function FoodLogForm({ user, editObj }) {
       setFormInput(initialState);
     }
 
-    getAllRestaurants()
-      .then((restaurants) => {
-        setRestaurants(restaurants);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
+    fetchData();
+  }, [editObj, reload]);
 
-    getAllDishes()
-      .then((dishes) => {
-        setDishes(dishes);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-
-    getAllCategories()
-      .then((categories) => {
-        setCategories(categories);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-  }, [editObj]);
 
   // Function to handle form submission
   const handleSubmit = (e) => {
@@ -197,24 +191,24 @@ function FoodLogForm({ user, editObj }) {
     }
   };
 
-  // Handles form Deletion
   const handleDelete = (type) => {
+    console.log(`Deleting ${type} with id: ${id}`); // Debugging log
     const deleteFunction = type === 'restaurant' ? deleteRestaurant : deleteDish;
 
     deleteFunction(id)
       .then(() => {
-        setReload(true);
+        setReload((prev) => !prev); // Added parentheses around 'prev'
       })
       .catch((error) => {
         console.error(`Error deleting ${type} with id: ${id}`, error); // Debugging log
       });
   };
-
+  
   // Generate delete button for dropdown lists
   const generateOptions = (list, type) => list.map((item) => ({
     value: item.id,
     label: (
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} onMouseEnter={() => handleMouseEnter(item)} onMouseLeave={handleMouseLeave}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <span>{type === 'restaurant' ? item.restaurant_name : item.dish_name}</span>
         <Button variant="danger" size="sm" onClick={() => handleDelete(item.id, type)} style={{ marginLeft: '10px' }}>
           Delete
@@ -239,58 +233,45 @@ function FoodLogForm({ user, editObj }) {
       );
     }
 
-    return (
-      <div>
-        <Form onSubmit={handleSubmit}>
-          <Form.Group controlId="restaurant">
-            <Form.Label>Restaurant</Form.Label>
-            <Select
-              name="restaurant_id"
-              data-type="restaurant"
-              value={restaurantOptions.find((option) => option.value === formInput.restaurant_id) || ''}
-              onChange={(selectedOption) => handleChange({ target: { name: 'restaurant_id', value: selectedOption.value } })}
-              options={[{ value: 'create_new', label: 'Create New' }, ...restaurantOptions]}
-              placeholder="Select a Restaurant"
-              getOptionLabel={(option) => option.label || restaurantOptions.find((opt) => opt.value === formInput.restaurant_id)?.label}
-            />
-          </Form.Group>
+     return (
+      <Form onSubmit={handleSubmit}>
+        <Form.Group controlId="restaurant">
+          <Form.Label>Restaurant</Form.Label>
+          <Select
+            value={restaurantOptions.find((option) => option.value === formInput.restaurant_id) || ''}
+            onChange={(selectedOption) => handleChange({ target: { name: 'restaurant_id', value: selectedOption.value } })}
+            options={[{ value: 'create_new', label: 'Create New' }, ...restaurantOptions]}
+            placeholder="Select a Restaurant"
+          />
+        </Form.Group>
 
-          <Form.Group controlId="dish">
-            <Form.Label>Dish Name</Form.Label>
-            <Select
-              onMouseEnter={() => handleMouseEnter(dish, 'dish')}
-              onMouseLeave={handleMouseLeave}
-              onMouseMove={handleMouseMove}
-              name="dish_id"
-              data-type="dish"
-              value={dishOptions.find((option) => option.value === formInput.dish_id) || ''}
-              onChange={(selectedOption) => handleChange({ target: { name: 'dish_id', value: selectedOption.value } })}
-              options={[{ value: 'create_new', label: 'Create New' }, ...dishOptions]}
-              placeholder="Select a Dish"
-              getOptionLabel={(option) => option.label || dishOptions.find((opt) => opt.value === formInput.dish_id)?.label}
-            />
-          </Form.Group>
+        <Form.Group controlId="dishName">
+          <Form.Label>Dish Name</Form.Label>
+          <Select
+            name="dish_id"
+            value={dishOptions.find((option) => option.value === formInput.dish_id) || ''}
+            onChange={(selectedOption) => handleChange({ target: { name: 'dish_id', value: selectedOption.value } })}
+            options={[{ value: 'create_new', label: 'Create New' }, ...dishOptions]}
+            placeholder="Select a Dish"
+          />
+        </Form.Group>
 
-          <Form.Group controlId="categories">
-            <Form.Label>Select Categories</Form.Label>
-            <Select
-              name="category_ids"
-              value={categoryList.filter((cat) => Array.isArray(formInput.category_ids) && formInput.category_ids.includes(cat.id)).map((cat) => ({ value: cat.id, label: cat.category }))}
-              options={categoryList.map((cat) => ({ value: cat.id, label: cat.category }))}
-              isMulti
-              onChange={handleMultiSelectChange}
-              placeholder="Select a Category"
-            />
-          </Form.Group>
+        <Form.Group controlId="categories">
+          <Form.Label>Select Categories</Form.Label>
+          <Select
+            name="category_ids"
+            value={categoryList.filter((cat) => Array.isArray(formInput.category_ids) && formInput.category_ids.includes(cat.id)).map((cat) => ({ value: cat.id, label: cat.category }))}
+            options={categoryList.map((cat) => ({ value: cat.id, label: cat.category }))}
+            isMulti
+            onChange={handleMultiSelectChange}
+            placeholder="Select a Category"
+          />
+        </Form.Group>
 
-          <Button variant="primary" type="submit">
-            Submit
-          </Button>
-        </Form>
-
-        {cardType === 'dish' && <DishHoverCard item={hoveredItem} position={mousePosition} />}
-        {cardType === 'restaurant' && <RestaurantHoverCard item={hoveredItem} position={mousePosition} />}
-      </div>
+        <Button variant="primary" type="submit">
+          Submit
+        </Button>
+      </Form>
     );
   };
 
@@ -317,7 +298,11 @@ FoodLogForm.propTypes = {
     ),
   }),
 };
+
+// Adding defaultProps for editObj
 FoodLogForm.defaultProps = {
-  editObj: initialState,
+  editObj: null,
 };
+
 export default FoodLogForm;
+
