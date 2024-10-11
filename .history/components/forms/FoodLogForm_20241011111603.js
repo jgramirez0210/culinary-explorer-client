@@ -79,7 +79,7 @@ function FoodLogForm({ user, editObj }) {
         console.error(error);
       });
     setReload(reload);
-  }, [editObj, reload]);
+  }, [editObj, reload, formInput]);
 
   // Function to handle form submission
   const handleSubmit = (e) => {
@@ -227,7 +227,7 @@ function FoodLogForm({ user, editObj }) {
     }
   };
 
-  const handleDelete = (type) => {
+  const handleDelete = (id, type) => {
     if (!id) {
       console.warn('id', id);
       console.error('Cannot delete item: id is undefined');
