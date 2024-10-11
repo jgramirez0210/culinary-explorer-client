@@ -68,17 +68,25 @@ const RestaurantForm = ({ id, updateRestaurant, onRestaurantCreated }) => {
 
   return (
     <Form onSubmit={handleSubmit}>
-      <Form.Group controlId="dishName">
+      <Form.Group controlId="restaurantName">
         <Form.Label>Restaurant Name</Form.Label>
         <Form.Control type="text" name="restaurant_name" value={formInput.restaurant_name} onChange={handleChange} placeholder="Enter restaurant name" isInvalid={!!errors.restaurant_name} />
         <Form.Control.Feedback type="invalid">{errors.restaurant_name}</Form.Control.Feedback>
       </Form.Group>
-      <Form.Group controlId="description">
+      <Form.Group controlId="restaurantAddress">
         <Form.Label>Restaurant Address</Form.Label>
-        <Form.Control type="text" name="restaurant_address" value={formInput.restaurant_address} onChange={handleChange} placeholder="Restaurant Address" isInvalid={!!errors.restaurant_address} />
+        <GooglePlacesAutocomplete
+          apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}
+          selectProps={{
+            value: formInput.restaurant_address,
+            onChange: (value) => handleChange({ target: { name: 'restaurant_address', value } }),
+            placeholder: 'Restaurant Address',
+            isInvalid: !!errors.restaurant_address,
+          }}
+        />
         <Form.Control.Feedback type="invalid">{errors.restaurant_address}</Form.Control.Feedback>
       </Form.Group>
-      <Form.Group controlId="notes">
+      <Form.Group controlId="websiteUrl">
         <Form.Label>Website Url</Form.Label>
         <Form.Control type="text" name="website_url" value={formInput.website_url} onChange={handleChange} placeholder="Website URL" isInvalid={!!errors.website_url} />
         <Form.Control.Feedback type="invalid">{errors.website_url}</Form.Control.Feedback>
