@@ -226,8 +226,8 @@ function FoodLogForm({ user, editObj }) {
       }));
     }
   };
-
-  const handleDelete = (type) => {
+  // eslint-disable-next-line no-shadow
+  const handleDelete = (id, type) => {
     if (!id) {
       console.warn('id', id);
       console.error('Cannot delete item: id is undefined');
