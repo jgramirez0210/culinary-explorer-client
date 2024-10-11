@@ -227,7 +227,7 @@ function FoodLogForm({ user, editObj }) {
     }
   };
 
-  const handleDelete = (type) => {
+  const handleDelete = (id, type) => {
     if (!id) {
       console.warn('id', id);
       console.error('Cannot delete item: id is undefined');

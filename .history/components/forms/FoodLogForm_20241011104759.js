@@ -114,38 +114,6 @@ function FoodLogForm({ user, editObj }) {
     }
   };
 
-  // const handleSubmit = (e) => {
-  //   e.preventDefault();
-
-  //   // Constructing the Food log object
-  //   const payload = {
-  //     restaurant_id: formInput.restaurant_id,
-  //     dish_id: formInput.dish_id,
-  //     category_ids: formInput.category_ids.map(Number),
-  //     uid: user.uid,
-  //   };
-
-  //   if (id) {
-  //     // If an id is present, update the Food log
-  //     updateFoodLog(id, payload)
-  //       .then(() => {
-  //         router.push(`/food_log/${id}`);
-  //       })
-  //       .catch((error) => {
-  //         console.error(error);
-  //       });
-  //   } else {
-  //     // Otherwise, create a new Food log
-  //     createFoodLog(payload)
-  //       .then((newFoodLog) => {
-  //         router.push(`/food_log/${newFoodLog.id}`);
-  //       })
-  //       .catch((error) => {
-  //         console.error(error);
-  //       });
-  //   }
-  // };
-
   // HANDEL EVENTS
   const handleBack = () => {
     setShowAddToFoodLogForm(true);
@@ -227,7 +195,7 @@ function FoodLogForm({ user, editObj }) {
     }
   };
 
-  const handleDelete = (type) => {
+  const handleDelete = (id, type) => {
     if (!id) {
       console.warn('id', id);
       console.error('Cannot delete item: id is undefined');

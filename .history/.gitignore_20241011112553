@@ -43,4 +43,6 @@ yarn-error.log*
 
 # Environment variables
 .env
-.history/
+
+# History directory
+.history/env
