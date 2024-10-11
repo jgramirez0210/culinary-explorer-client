@@ -79,7 +79,7 @@ function FoodLogForm({ user, editObj }) {
         console.error(error);
       });
     setReload(reload);
-  }, [editObj, reload]);
+  }, [editObj, reload, formInput]);
 
   // Function to handle form submission
   const handleSubmit = (e) => {
