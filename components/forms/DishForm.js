@@ -29,8 +29,8 @@ function DishForm({ editObj, onDishCreated }) {
 
   // Function to handle form submission
   const handleSubmit = () => {
+    // e.preventDefault();
     console.warn('Form input:', formInput);
-
     // Constructing the Food log object
     const payload = {
       dish_name: formInput.dish_name,
@@ -94,7 +94,7 @@ function DishForm({ editObj, onDishCreated }) {
         <Form.Label>Price</Form.Label>
         <Form.Control type="text" name="price" value={formInput.price} onChange={handleChange} placeholder="Enter price" />
       </Form.Group>
-      <button type="submit">Submit Dish</button>
+      <button type="submit">Food Log Submit</button>
     </Form>
   );
 }

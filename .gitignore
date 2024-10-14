@@ -40,7 +40,3 @@ yarn-error.log*
 
 # firebase
 .firebase/
-
-# Environment variables
-.env
-.history/
