@@ -5,7 +5,7 @@ module.exports = withTM({
   // I don't want it to run when compiling as I trust the CI stage of the pipeline and Husky.
   ignoreDuringBuilds: true,
   images: {
-    domains: ['shorturl.at', 'imgs.search.brave.com', 'example.com'],
+    domains: ['shorturl.at', 'imgs.search.brave.com'],
   },
   webpack: (config, { isServer }) => {
     if (!isServer) {
