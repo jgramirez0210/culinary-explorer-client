@@ -158,15 +158,15 @@ function FoodLogForm({ user, editObj }) {
     setHoveredItemId(item.id);
     setCardType(type);
   };
-
   const handleDropdownMouseLeave = () => {
     // Add a delay before hiding the hover card
     setTimeout(() => {
+      console.log('hoveredItemId before reset:', hoveredItemId);
       if (!hoveredItemId) {
         setHoveredItem(null);
         setHoveredItemId(null);
         setCardType(null);
-        console.warn('type', cardType, 'hoveredItem', hoveredItem);
+        console.warn('Card Type', cardType, 'hoveredItem Data', hoveredItem);
       }
     }, 300); // Adjust the delay as needed
   };
