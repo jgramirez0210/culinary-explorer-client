@@ -1,11 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-const RestaurantHoverCard = ({ item, position = { x: 50, y: 50 } }) => {
+const RestaurantHoverCard = ({ item, position }) => {
   const cardStyle = {
     position: 'absolute',
-    top: `${position.y}px`,
-    left: `${position.x}px`,
+    top: position ? `${position.y}px` : 'auto',
+    left: position ? `${position.x}px` : 'auto',
     border: '1px solid #ccc',
     backgroundColor: '#fff',
     padding: '10px',

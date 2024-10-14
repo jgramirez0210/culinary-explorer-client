@@ -5,8 +5,8 @@ import Image from 'next/image';
 const DishHoverCard = ({ item, position }) => {
   const cardStyle = {
     position: 'absolute',
-    top: `${position.y}px`,
-    left: `${position.x}px`,
+    top: position ? `${position.y}px` : 'auto',
+    left: position ? `${position.x}px` : 'auto',
     border: '1px solid #ccc',
     backgroundColor: '#fff',
     padding: '10px',

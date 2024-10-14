@@ -39,6 +39,7 @@ function FoodLogForm({ user, editObj }) {
   const [showAddToFoodLogForm, setShowAddToFoodLogForm] = useState(true); // eslint-disable-line no-unused-vars
   // Hover Card States
   const [hoveredItem, setHoveredItem] = useState(null);
+  const [hoveredItemId, setHoveredItemId] = useState(null);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [dish, setDish] = useState(null); // eslint-disable-line no-unused-vars
   const [cardType, setCardType] = useState(null);
@@ -80,7 +81,6 @@ function FoodLogForm({ user, editObj }) {
       });
     setReload(reload);
   }, [editObj, reload]);
-
   // Function to handle form submission
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -114,7 +114,7 @@ function FoodLogForm({ user, editObj }) {
     }
   };
 
-  // HANDEL EVENTS
+  // HANDLE EVENTS
   const handleBack = () => {
     setShowAddToFoodLogForm(true);
     setShowRestaurantForm(false);
@@ -143,30 +143,38 @@ function FoodLogForm({ user, editObj }) {
   };
 
   const determineType = (item) => {
-    // Example logic to determine the type based on item properties
     if (item.dish_name) {
       return 'dish';
-    } if (item.restaurant_name) {
+    }
+    if (item.restaurant_name) {
       return 'restaurant';
     }
-    return 'unknown'; // Default type if none match
+    return 'unknown';
   };
 
   const handleMouseEnter = (item) => {
-    const type = determineType(item); // Pass the item object here
-    console.warn('item', item);
-    console.warn('Type', type);
+    const type = determineType(item);
     setHoveredItem(item);
-    setCardType(type); // Ensure type is set correctly
+    setHoveredItemId(item.id);
+    setCardType(type);
   };
 
-  const handleMouseLeave = () => {
-    setHoveredItem(null);
-    setCardType(null); // Reset the card type
+  const handleDropdownMouseLeave = () => {
+    // Add a delay before hiding the hover card
+    setTimeout(() => {
+      if (!hoveredItemId) {
+        setHoveredItem(null);
+        setHoveredItemId(null);
+        setCardType(null);
+        console.warn('type', cardType, 'hoveredItem', hoveredItem);
+      }
+    }, 300); // Adjust the delay as needed
   };
 
   const handleMouseMove = (e) => {
-    setMousePosition({ x: e.clientX, y: e.clientY });
+    if (hoveredItemId) {
+      setMousePosition({ x: e.clientX, y: e.clientY });
+    }
   };
 
   const handleMultiSelectChange = (selectedOptions) => {
@@ -196,7 +204,8 @@ function FoodLogForm({ user, editObj }) {
       }));
     }
   };
-    // eslint-disable-next-line no-shadow
+
+  // eslint-disable-next-line no-shadow
   const handleDelete = (id, type) => {
     if (!id) {
       console.error('Cannot delete item: id is undefined');
@@ -216,10 +225,10 @@ function FoodLogForm({ user, editObj }) {
   const generateOptions = (list, type) => list.map((item) => ({
     value: item.id,
     label: (
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} onMouseEnter={() => handleMouseEnter(item)} onMouseLeave={handleMouseLeave}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} onMouseEnter={() => handleMouseEnter(item)} onMouseLeave={() => handleDropdownMouseLeave(item)}>
         <span>{type === 'restaurant' ? item.restaurant_name : item.dish_name}</span>
         <Button variant="danger" size="sm" onClick={() => handleDelete(item.id, type)} style={{ marginLeft: '10px' }}>
-          Delete Me
+          Delete
         </Button>
       </div>
     ),
@@ -229,11 +238,21 @@ function FoodLogForm({ user, editObj }) {
   const dishOptions = generateOptions(dishList, 'dish');
 
   const renderForm = () => {
-    if (showRestaurantForm || showDishForm) {
+    if (showRestaurantForm) {
       return (
         <div>
-          {showRestaurantForm && <RestaurantForm user={user} onRestaurantCreated={handleSubmit} />}
-          {showDishForm && <DishForm user={user} onDishCreated={handleSubmit} />}
+          <RestaurantForm user={user} onRestaurantCreated={handleSubmit} />
+          <Button variant="primary" onClick={handleBack}>
+            Back
+          </Button>
+        </div>
+      );
+    }
+
+    if (showDishForm) {
+      return (
+        <div>
+          <DishForm user={user} onDishCreated={handleSubmit} />
           <Button variant="primary" onClick={handleBack}>
             Back
           </Button>
@@ -242,7 +261,7 @@ function FoodLogForm({ user, editObj }) {
     }
 
     return (
-      <div>
+      <div onMouseEnter={(item) => handleMouseEnter(item)} onMouseLeave={handleDropdownMouseLeave} onMouseMove={handleMouseMove}>
         <Form onSubmit={handleSubmit}>
           <Form.Group controlId="restaurant">
             <Form.Label>Restaurant</Form.Label>
@@ -251,7 +270,7 @@ function FoodLogForm({ user, editObj }) {
 
           <Form.Group controlId="dish">
             <Form.Label>Dish Name</Form.Label>
-            <Select onMouseEnter={() => handleMouseEnter(dish, 'dish')} onMouseLeave={handleMouseLeave} onMouseMove={handleMouseMove} name="dish_id" data-type="dish" value={dishOptions.find((option) => option.value === formInput.dish_id) || ''} onChange={(selectedOption) => handleChange({ target: { name: 'dish_id', value: selectedOption.value } })} options={[{ value: 'create_new', label: 'Create New' }, ...dishOptions]} placeholder="Select a Dish" />
+            <Select name="dish_id" data-type="dish" value={dishOptions.find((option) => option.value === formInput.dish_id) || ''} onChange={(selectedOption) => handleChange({ target: { name: 'dish_id', value: selectedOption.value } })} options={[{ value: 'create_new', label: 'Create New' }, ...dishOptions]} placeholder="Select a Dish" />
           </Form.Group>
 
           <Form.Group controlId="categories">
@@ -263,7 +282,6 @@ function FoodLogForm({ user, editObj }) {
             Submit
           </Button>
         </Form>
-
         {cardType === 'dish' && <DishHoverCard item={hoveredItem} position={mousePosition} />}
         {cardType === 'restaurant' && <RestaurantHoverCard item={hoveredItem} position={mousePosition} />}
       </div>
