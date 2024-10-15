@@ -28,6 +28,7 @@ function FoodLogForm({ user, editObj }) {
   const { query } = useRouter();
   const { id } = query;
   // Form Dropdown States
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false); // eslint-disable-line no-unused-vars
   const [restaurantList, setRestaurants] = useState([]);
   const [dishList, setDishes] = useState([]);
@@ -81,6 +82,7 @@ function FoodLogForm({ user, editObj }) {
       });
     setReload(reload);
   }, [editObj, reload]);
+
   // Function to handle form submission
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -92,6 +94,7 @@ function FoodLogForm({ user, editObj }) {
       category_ids: formInput.category_ids.map(Number),
       uid: user.uid,
     };
+    console.warn('Payload:', payload);
 
     if (id) {
       // If an id is present, update the Food log
@@ -161,18 +164,17 @@ function FoodLogForm({ user, editObj }) {
   const handleDropdownMouseLeave = () => {
     // Add a delay before hiding the hover card
     setTimeout(() => {
-      console.log('hoveredItemId before reset:', hoveredItemId);
       if (!hoveredItemId) {
         setHoveredItem(null);
         setHoveredItemId(null);
         setCardType(null);
-        console.warn('Card Type', cardType, 'hoveredItem Data', hoveredItem);
       }
     }, 300); // Adjust the delay as needed
   };
 
   const handleMouseMove = (e) => {
-    if (hoveredItemId) {
+    if (hoveredItemId && !isDropdownOpen) {
+      // Add a condition to check if the dropdown is open
       setMousePosition({ x: e.clientX, y: e.clientY });
     }
   };
@@ -265,17 +267,17 @@ function FoodLogForm({ user, editObj }) {
         <Form onSubmit={handleSubmit}>
           <Form.Group controlId="restaurant">
             <Form.Label>Restaurant</Form.Label>
-            <Select name="restaurant_id" data-type="restaurant" value={restaurantOptions.find((option) => option.value === formInput.restaurant_id) || ''} onChange={(selectedOption) => handleChange({ target: { name: 'restaurant_id', value: selectedOption.value } })} options={[{ value: 'create_new', label: 'Create New' }, ...restaurantOptions]} placeholder="Select a Restaurant" />
+            <Select name="restaurant_id" data-type="restaurant" value={restaurantOptions.find((option) => option.value === formInput.restaurant_id) || ''} onChange={(selectedOption) => handleChange({ target: { name: 'restaurant_id', value: selectedOption.value } })} onMenuOpen={() => setIsDropdownOpen(true)} onMenuClose={() => setIsDropdownOpen(false)} options={[{ value: 'create_new', label: 'Create New' }, ...restaurantOptions]} placeholder="Select a Restaurant" />
           </Form.Group>
 
           <Form.Group controlId="dish">
             <Form.Label>Dish Name</Form.Label>
-            <Select name="dish_id" data-type="dish" value={dishOptions.find((option) => option.value === formInput.dish_id) || ''} onChange={(selectedOption) => handleChange({ target: { name: 'dish_id', value: selectedOption.value } })} options={[{ value: 'create_new', label: 'Create New' }, ...dishOptions]} placeholder="Select a Dish" />
+            <Select name="dish_id" data-type="dish" value={dishOptions.find((option) => option.value === formInput.dish_id) || ''} onChange={(selectedOption) => handleChange({ target: { name: 'dish_id', value: selectedOption.value } })} onMenuOpen={() => setIsDropdownOpen(true)} onMenuClose={() => setIsDropdownOpen(false)} options={[{ value: 'create_new', label: 'Create New' }, ...dishOptions]} placeholder="Select a Dish" />
           </Form.Group>
 
           <Form.Group controlId="categories">
             <Form.Label>Select Categories</Form.Label>
-            <Select name="category_ids" value={categoryList.filter((cat) => Array.isArray(formInput.category_ids) && formInput.category_ids.includes(cat.id)).map((cat) => ({ value: cat.id, label: cat.category }))} options={categoryList.map((cat) => ({ value: cat.id, label: cat.category }))} isMulti onChange={handleMultiSelectChange} placeholder="Select a Category" />
+            <Select name="category_ids" value={categoryList.filter((cat) => Array.isArray(formInput.category_ids) && formInput.category_ids.includes(cat.id)).map((cat) => ({ value: cat.id, label: cat.category }))} options={categoryList.map((cat) => ({ value: cat.id, label: cat.category }))} isMulti onMenuOpen={() => setIsDropdownOpen(true)} onMenuClose={() => setIsDropdownOpen(false)} onChange={handleMultiSelectChange} placeholder="Select a Category" />
           </Form.Group>
 
           <Button variant="primary" type="submit">
