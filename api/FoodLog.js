@@ -12,6 +12,18 @@ const getAllFoodLogs = () => new Promise((resolve, reject) => {
     .catch(reject);
 });
 
+const getFoodLogByRestaurantId = (restaurantId) => new Promise((resolve, reject) => {
+  fetch(`${endpoint}/food_log/by_restaurant${restaurantId}`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  })
+    .then((response) => response.json())
+    .then((data) => resolve(data))
+    .catch(reject);
+});
+
 const getFoodLogByUser = (uid) => new Promise((resolve, reject) => {
   fetch(`${endpoint}/food_log/?uid=${uid}`, {
     method: 'GET',
@@ -85,4 +97,5 @@ export {
   deleteItem,
   updateFoodLog,
   getFoodLogByUser,
+  getFoodLogByRestaurantId
 };

@@ -5,13 +5,11 @@ import MapComponent from '../../api/GoogleMaps';
 
 const App = () => {
   useEffect(() => {
-    console.log('useEffect called');
     if (!window.root) {
       const appElement = document.getElementById('app');
       if (appElement) {
         window.root = createRoot(appElement);
         window.root.render(<MapComponent />);
-        console.log('MapComponent rendered');
       } else {
         console.error('No element with id "app" found');
       }

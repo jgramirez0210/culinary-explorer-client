@@ -79,26 +79,24 @@
 import React, { useState, useEffect } from 'react';
 import { GoogleMap, LoadScript, Marker, InfoWindow } from '@react-google-maps/api';
 import { getAllRestaurants } from './Restaurants';
+import DishListByRestaurant from '../components/DishListByRestaurant';
 
 const API_KEY = 'process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY'; // Replace with your actual API key
 
 const center = {
   lat: 29.749907,
-  lng: -95.358421
+  lng: -95.358421,
 };
 
 const fetchCoordinates = async (address) => {
   try {
-    console.log(`Fetching coordinates for address: ${address}`);
     const response = await fetch(`https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}`);
     const data = await response.json();
-    
+
     if (data.results && data.results.length > 0) {
       const { lat, lng } = data.results[0].geometry.location;
-      // console.log(`Coordinates for address ${address}: Latitude: ${lat}, Longitude: ${lng}`);
       return { lat, lng };
     } else {
-      console.warn(`No results found for address: ${address}`);
       throw new Error(`No results found for address: ${address}`);
     }
   } catch (error) {
@@ -107,27 +105,7 @@ const fetchCoordinates = async (address) => {
   }
 };
 
-const fetchDishesForRestaurant = async (restaurant) => {
-  const { restaurant_name, restaurant_address } = restaurant;
-  console.warn(`Fetching dishes for ${restaurant_name} at address: ${restaurant_address}`);
-  try {
-    const response = await fetch(`https://your-api-endpoint.com/dishes?address=${encodeURIComponent(restaurant_address)}`);
-    const data = await response.json();
-    
-    if (data.dishes && data.dishes.length > 0) {
-      console.warn(`Dishes for ${restaurant_name}:`, data.dishes);
-      return data.dishes;
-    } else {
-      console.warn(`No dishes found for ${restaurant_name} at address: ${restaurant_address}`);
-      return [];
-    }
-  } catch (error) {
-    console.error(`Error fetching dishes for ${restaurant_name} at address: ${restaurant_address}`, error);
-    throw error;
-  }
-};
-
-const MapComponent = () => {
+const MapComponent = (poi) => {
   const [googleMaps, setGoogleMaps] = useState(null);
   const [locations, setLocations] = useState([]);
   const [activeMarker, setActiveMarker] = useState(null);
@@ -135,31 +113,30 @@ const MapComponent = () => {
   useEffect(() => {
     const updateLocations = async () => {
       try {
-        const restaurants = await getAllRestaurants(); // Fetch restaurant data from local server
-        console.warn('restaurants:', restaurants);
+        const restaurants = await getAllRestaurants();
         const updatedLocations = [];
 
         for (const restaurant of restaurants) {
-          const { restaurant_name, restaurant_address } = restaurant;
+          const { restaurant_name, restaurant_address, id } = restaurant;
           try {
             const location = await fetchCoordinates(restaurant_address);
-            updatedLocations.push({ key: restaurant_name.toLowerCase().replace(/\s+/g, ''), name: restaurant_name, address: restaurant_address, location });
+            updatedLocations.push({ key: `${restaurant_name.toLowerCase().replace(/\s+/g, '')}-${id}`, restaurant_name, restaurant_address, location, id });
           } catch (error) {
             console.error(`Failed to fetch coordinates for ${restaurant_name} with address: ${restaurant_address}`, error);
-            // Retry with a simplified address
+            let simplifiedAddress;
             try {
-              const simplifiedAddress = restaurant_address.split(',')[0]; // Use only the first part of the address
+              simplifiedAddress = simplifyAddress(restaurant_address);
               const location = await fetchCoordinates(simplifiedAddress);
-              updatedLocations.push({ key: restaurant_name.toLowerCase().replace(/\s+/g, ''), name: restaurant_name, address: restaurant_address, location });
+              updatedLocations.push({ key: `${restaurant_name.toLowerCase().replace(/\s+/g, '')}-${id}`, restaurant_name, simplifiedAddress, location, id });
             } catch (retryError) {
-              console.error(`Retry failed for ${restaurant_name} with simplified address: ${simplifiedAddress}`, retryError);
+              console.error(`Retry failed to fetch coordinates for ${restaurant_name} with simplified address: ${simplifiedAddress}`, retryError);
             }
           }
         }
 
         setLocations(updatedLocations);
       } catch (error) {
-        console.error('Failed to update locations', error);
+        console.error('Failed to update locations:', error);
       }
     };
 
@@ -170,35 +147,51 @@ const MapComponent = () => {
     setGoogleMaps(window.google);
   };
 
-  const handleMarkerMouseOver = (marker) => {
-    setActiveMarker(marker);
+  const handleMarkerMouseOver = (marker, poi) => {
+    setActiveMarker(marker, poi);
   };
 
   const handleMarkerMouseOut = () => {
     setActiveMarker(null);
   };
 
+  // const getRestaurantId = (poi) => {
+  //   console.log('POI object:', poi); // Log the entire poi object for debugging
+  //   const id = poi.id; // Use the correct property
+  //   console.log(`Checking restaurant ID: ${id}`); // Add this line for debugging
+  //   if (isNaN(Number(id))) {
+  //     console.error(`Invalid restaurant ID: ${id}`);
+  //     return null;
+  //   }
+  //   console.warn('Restaurant ID:', id);
+  //   return Number(id);
+  // };
+  const getRestaurantId = (poi) => {
+    try {
+      if (!poi || typeof poi.id === 'undefined') {
+        console.error('POI does not contain an ID:', poi);
+        return null;
+      }
+      return Number(poi.id);
+    } catch (error) {
+      console.error('Error fetching restaurant ID:', error);
+      return null;
+    }
+  };
+
   return (
     <LoadScript googleMapsApiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}>
-      <GoogleMap
-        mapContainerStyle={{ height: '400px', width: '800px' }}
-        center={center}
-        zoom={10}
-        onLoad={onLoad}
-      >
+      <GoogleMap mapContainerStyle={{ height: '400px', width: '800px' }} center={center} zoom={10}>
         {locations.map((poi) => (
-          <Marker
-            key={poi.key}
-            position={poi.location}
-            title={poi.name}
-            onMouseOver={() => handleMarkerMouseOver(poi)}
-            onMouseOut={handleMarkerMouseOut}
-          >
+          // console.warn('Rendering marker:', poi),
+          <Marker key={poi.key} position={poi.location} title={poi.restaurant_name} onMouseOver={() => handleMarkerMouseOver(poi)} onMouseOut={handleMarkerMouseOut}>
             {activeMarker === poi && (
               <InfoWindow position={poi.location} onCloseClick={handleMarkerMouseOut}>
                 <div>
-                  <h3>{poi.name}</h3>
+                  <h3>{poi.restaurant_name}</h3>
                   <p>{poi.address}</p>
+                  {/* {poi.id && console.warn('POI id:', poi.id)} */}
+                  {getRestaurantId(poi) && <DishListByRestaurant restaurantId={getRestaurantId(poi)} />}
                 </div>
               </InfoWindow>
             )}
