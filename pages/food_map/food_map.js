@@ -1,7 +1,7 @@
 // food_map.js
 import React, { useEffect } from 'react';
 import { createRoot } from 'react-dom/client';
-import MapComponent from '../../api/GoogleMaps';
+import MapComponent from '../../components/GoolgeMapsCard';
 
 const App = () => {
   useEffect(() => {
