@@ -94,7 +94,6 @@ function FoodLogForm({ user, editObj }) {
       category_ids: formInput.category_ids.map(Number),
       uid: user.uid,
     };
-    console.warn('Payload:', payload);
 
     if (id) {
       // If an id is present, update the Food log

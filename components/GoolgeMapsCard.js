@@ -75,7 +75,6 @@
 // };
 
 // export default React.memo(MapComponent);
-
 import React, { useState, useEffect } from 'react';
 import {
   GoogleMap,
@@ -94,13 +93,8 @@ const center = {
 
 const getRestaurantId = (poi) => {
   try {
-    if (!poi) {
-      console.error('POI object is null or undefined:', poi);
-      return null;
-    }
-    console.warn('POI object:', poi); // Log the entire poi object for debugging
-    if (!poi.id) {
-      console.error('POI object does not have an id property:', poi);
+    if (!poi?.id) {
+      console.error('POI object or id property is missing:', poi);
       return null;
     }
     const id = Number(poi.id);
@@ -108,7 +102,6 @@ const getRestaurantId = (poi) => {
       console.error('POI ID is not a valid number:', poi.id);
       return null;
     }
-    console.warn('Setting restaurantId:', id); // Log the restaurantId being set
     return id;
   } catch (error) {
     console.error('Error fetching restaurant ID:', error);
@@ -117,7 +110,6 @@ const getRestaurantId = (poi) => {
 };
 
 const MapComponent = () => {
-  const [googleMaps, setGoogleMaps] = useState(null); // eslint-disable-line no-unused-vars
   const [locations, setLocations] = useState([]);
   const [activeMarker, setActiveMarker] = useState(null);
 
@@ -150,19 +142,19 @@ const MapComponent = () => {
         const updatedLocations = (await Promise.all(locationPromises)).filter(Boolean);
         setLocations(updatedLocations);
       } catch (error) {
-        console.error('Error updating locations', error);
+        console.error('Error updating locations:', error);
       }
     };
 
     updateLocations();
   }, []);
 
-  const handleMarkerMouseOver = (marker, poi) => {
-    setActiveMarker(marker, poi);
+  const handleMarkerMouseOver = (poi) => {
+    setActiveMarker(poi); // Open only one InfoWindow by setting the active marker
   };
 
-  const handleMarkerMouseOut = () => {
-    setActiveMarker(null);
+  const handleInfoWindowCloseClick = () => {
+    setActiveMarker(null); // Close the InfoWindow on clicking the 'x'
   };
 
   return (
@@ -170,15 +162,16 @@ const MapComponent = () => {
       <GoogleMap mapContainerStyle={{ height: '400px', width: '800px' }} center={center} zoom={10}>
         {locations.map((poi) => {
           const restaurantId = getRestaurantId(poi);
+          const isRestaurantIdValid = !Number.isNaN(Number(restaurantId));
+
           return (
-            <Marker key={restaurantId} position={poi.location} title={poi.restaurant_name} onMouseOver={() => handleMarkerMouseOver(poi)} onMouseOut={handleMarkerMouseOut}>
+            <Marker key={restaurantId} position={poi.location} title={poi.restaurant_name} onMouseOver={() => handleMarkerMouseOver(poi)}>
               {activeMarker === poi && (
-                <InfoWindow position={poi.location} onCloseClick={handleMarkerMouseOut}>
+                <InfoWindow position={poi.location} onCloseClick={handleInfoWindowCloseClick}>
                   <div>
-                    <h3>{poi.restaurant_name}</h3>
-                    <p>{poi.address}</p>
-                    {poi.id && console.warn('POI id:', poi.id)}
-                    {restaurantId && <DishListByRestaurant restaurantId={restaurantId} />}
+                    <h3>{poi.restaurantName}</h3>
+                    <p>{poi.restaurantAddress}</p>
+                    {isRestaurantIdValid ? <DishListByRestaurant restaurantId={restaurantId} /> : <p>Error: Invalid restaurant ID</p>}
                   </div>
                 </InfoWindow>
               )}

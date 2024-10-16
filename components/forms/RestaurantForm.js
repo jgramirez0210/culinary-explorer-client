@@ -32,7 +32,6 @@ const RestaurantForm = ({ id, updateRestaurant, onRestaurantCreated }) => {
       website_url: formInput.website_url,
     };
 
-    console.warn('Creating new restaurant with payload:', payload);
     if (id) {
       updateRestaurant(id, payload)
         .then(() => {
