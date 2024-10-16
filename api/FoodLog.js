@@ -12,15 +12,30 @@ const getAllFoodLogs = () => new Promise((resolve, reject) => {
     .catch(reject);
 });
 
-const getFoodLogByRestaurantId = (restaurantId) => new Promise((resolve, reject) => {
-  fetch(`${endpoint}/food_log/by_restaurant${restaurantId}`, {
+const getFoodLogByRestaurantId = (id) => new Promise((resolve, reject) => {
+  console.warn(`Fetching food log for restaurant ID: ${id}`);
+  
+  fetch(`${endpoint}/food_log/by_restaurant?restaurant_id=${id}`, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
     },
   })
-    .then((response) => response.json())
-    .then((data) => resolve(data))
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      return response.text();
+    })
+    .then((text) => {
+      try {
+        const data = JSON.parse(text);
+        console.warn('Received data:', data); // Log the received data
+        resolve(data);
+      } catch (error) {
+        throw new Error('Invalid JSON: ' + text);
+      }
+    })
     .catch(reject);
 });
 
