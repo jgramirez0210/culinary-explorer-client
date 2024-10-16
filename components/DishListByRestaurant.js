@@ -10,12 +10,12 @@ const DishListByRestaurant = ({ restaurantId }) => {
   useEffect(() => {
     const fetchRestaurantData = async () => {
       try {
-        const numericRestaurantId = Number(restaurantId);
-        if (isNaN(numericRestaurantId)) {
-          throw new Error(`Invalid restaurant ID: ${restaurantId}`);
+        console.log(`restaurantId passed to DishListByRestaurant: ${restaurantId}`);
+        const id = parseInt(restaurantId, 10);
+        if (Number.isNaN(id)) {
+          throw new Error(`Invalid restaurant ID: ${restaurantId}. Could not convert to a number.`);
         }
-        const data = await getFoodLogByRestaurantId(numericRestaurantId);
-        // console.warn('Dish List Food Log:', data);
+        const data = await getFoodLogByRestaurantId(id);
         if (data.message) {
           throw new Error(data.message);
         }
@@ -48,7 +48,7 @@ const DishListByRestaurant = ({ restaurantId }) => {
           <p>Notes: {item.dish.notes}</p>
           <img src={item.dish.food_image_url} alt={item.dish.dish_name} />
           <p>Price: ${item.dish.price}</p>
-          <p>Categories: {item.category.map(cat => cat.category).join(', ')}</p>
+          <p>Categories: {item.category.map((cat) => cat.category).join(', ')}</p>
         </div>
       ))}
     </div>
@@ -56,7 +56,7 @@ const DishListByRestaurant = ({ restaurantId }) => {
 };
 
 DishListByRestaurant.propTypes = {
-  restaurantId: PropTypes.string.isRequired,
+  restaurantId: PropTypes.number.isRequired,
 };
 
 export default DishListByRestaurant;
