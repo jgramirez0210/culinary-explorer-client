@@ -17,8 +17,82 @@ a {
   box-sizing: border-box;
 }
 
+.navbar {
+  background-color: #00796b; /* Dark teal background */
+  color: #ffffff; /* White text */
+  padding: 10px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.navbar a,
+.navbar .navbar-brand,
+.navbar .nav-link {
+  color: #ffffff; /* White text */
+  text-decoration: none;
+  margin: 0 10px;
+}
+
+.navbar a:hover,
+.navbar .nav-link:hover {
+  color: #b2dfdb; /* Light teal text on hover */
+}
+.custom-search-form {
+  display: flex;
+  align-items: center;
+  margin-left: auto; /* Aligns the search form to the right */
+}
+
+.custom-search-input {
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  margin-right: 10px;
+}
+
+.custom-search-button {
+  padding: 5px 10px;
+  background-color: #28a745; /* Green background */
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.custom-search-button:hover {
+  background-color: #218838; /* Darker green on hover */
+}
+
+
 body {
-  background-color: #2C3E50;
+  background-color: #ecf0f1; /* Light gray background */
+  color: #2c3e50; /* Dark gray text */
+  font-family: Arial, sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+}
+.card {
+  background-color: #ffe0b2; /* Light orange background */
+  border: 1px solid #ffcc80; /* Light orange border */
+  border-radius: 8px; /* Rounded corners */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+  padding: 20px; /* Padding inside the card */
+  transition: transform 0.2s ease; /* Smooth transition for hover effect */
+}
+
+.card:hover {
+  transform: translateY(-5px); /* Slight lift on hover */
+}
+.card-title {
+  font-size: 1.5em;
+  margin-bottom: 8px;
+  color: #2C2C2C;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: inherit;
+  color: #EAEAEA; /* Match your text color */
 }
 
 .full-width-block {
@@ -32,7 +106,6 @@ body {
   align-items: center;
   justify-content: center;
 }
-
 .button-container {
   display: flex;
   justify-content: center;
@@ -43,23 +116,43 @@ body {
   align-items: center;
   justify-content: flex-end;
 }
-.card {
-  border: 1px solid #EAEAEA;
-  padding: 16px;
-  border-radius: 8px;
-  background-color: #EAEAEA;
+/* Common button style */
+.button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  margin: 5px;
+  text-align: center;
+}
+/* Specific styles for each button */
+.button-view {
+  background-color: #3498db; /* Primary color */
+  color: white;
 }
 
-.card-title {
-  font-size: 1.5em;
-  margin-bottom: 8px;
-  color: #2C2C2C;
+.button-edit {
+  background-color: #2ecc71; /* Secondary color */
+  color: white;
 }
 
-.card-body {
-  padding: 20px;
-  color: #2C2C2C;
+.button-delete {
+  background-color: #e74c3c; /* Accent color */
+  color: white;
 }
+
+
+a, .website-link {
+  color: #F4C430; /* Accent color */
+  text-decoration: none;
+}
+
+a:hover, .website-link:hover {
+  color: #FFD700; /* Slightly lighter accent color */
+}
+
+
 .about-the-site-label {
   display: flex;
   justify-content: center;
@@ -102,14 +195,6 @@ body {
   text-decoration: underline;
   margin-bottom: 20px;
 }
-/* .card-text {
-  font-size: 14px;
-  color: #333;
-}
-
-.bold {
-  font-weight: bold;
-} */
 
 .card-text label {
   font-weight: bold;
@@ -122,6 +207,16 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: flex-end;
+  background-color: #3498db; /* Bootstrap primary button color */
+  color: #ffffff;
+  padding: 10px 20px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+.view-button:hover {
+  background-color: #2980b9; /* Slightly darker shade */
 }
 
 .loading {
@@ -164,13 +259,45 @@ body {
   border-radius: 8px;
 }
 
-.quote {
-  font-style: italic;
-  margin: 10px 0;
+
+@media (max-width: 768px) {
+  .full-width-block {
+    height: auto;
+    padding: 20px;
+    text-align: center;
+  }
+
+  .creator-profile-image {
+    width: 100%; /* Ensure full width on mobile */
+  }
+}
+.about-the-site-label {
+  font-size: 2.5em;
+  font-weight: bold;
 }
 
-.people {
-  text-align: right;
-  font-weight: bold;
-  margin-top: 10px;
+.about-the-site {
+  font-size: 1.75em;
+}
+.food-map {
+  padding: 20px;
+  background-color: #34495e;
+  border-radius: 12px;
+}
+
+.food-map h1 {
+  margin-bottom: 20px;
+  color: #F4C430; /* Ensure contrast */
+}
+
+.food-map p {
+  color: #bdc3c7;
+}
+.hover {
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.card:hover .hover {
+  opacity: 1;
 }

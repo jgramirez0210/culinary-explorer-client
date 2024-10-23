@@ -58,11 +58,13 @@ function FoodLogCard({ itemObj, viewType, onUpdate }) {
               <span id="notes">{itemObj.dish?.notes}</span>
             </p>
             <Link href={`/food_log/edit/${itemObj.id}`} passHref>
-              <Button variant="outline-dark" color="success">
+              <Button className="button button-edit">
                 EDIT
               </Button>
             </Link>
-            <button type="button" onClick={() => deleteThisItem(itemObj.id)} className="outline-danger m-2">Delete</button>
+            <Button type="button" onClick={() => deleteThisItem(itemObj.id)} className="button button-delete">
+              Delete
+            </Button>
           </>
         )}
         {viewType === 'all' && (
@@ -72,9 +74,7 @@ function FoodLogCard({ itemObj, viewType, onUpdate }) {
               <span id="short-description">{itemObj.dish.description}</span>
             </p>
             <Link href={`/food_log/${itemObj.id}`} passHref>
-              <Button type="button" variant="outline-success" className="m-2 view-button">
-                VIEW
-              </Button>
+              <button type="button" className="button button-view">VIEW</button>
             </Link>
           </>
         )}
