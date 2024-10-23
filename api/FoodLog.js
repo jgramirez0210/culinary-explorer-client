@@ -104,6 +104,21 @@ const updateFoodLog = (id, payload) => new Promise((resolve, reject) => {
     .catch(reject);
 });
 
+const searchItems = (searchValue) => new Promise((resolve, reject) => {
+  console.warn('Search value:', searchValue); // Log the search value
+  getAllFoodLogs()
+    .then((items) => {
+      console.log('Items received:', items); // Log the items received
+      const filteredItems = items.filter((item) => 
+        item.item_name.toLowerCase().includes(searchValue.toLowerCase()) ||
+        item.category.category_name.toLowerCase().includes(searchValue.toLowerCase()) ||
+        item.restaurant_name.toLowerCase().includes(searchValue.toLowerCase())
+      );
+      resolve(filteredItems);
+    })
+    .catch(reject);
+});
+
 
 export {
   getAllFoodLogs,
@@ -112,5 +127,6 @@ export {
   deleteItem,
   updateFoodLog,
   getFoodLogByUser,
-  getFoodLogByRestaurantId
+  getFoodLogByRestaurantId,
+  searchItems
 };
