@@ -110,9 +110,9 @@ const searchItems = (searchValue) => new Promise((resolve, reject) => {
     .then((items) => {
       console.log('Items received:', items); // Log the items received
       const filteredItems = items.filter((item) => 
-        item.item_name.toLowerCase().includes(searchValue.toLowerCase()) ||
-        item.category.category_name.toLowerCase().includes(searchValue.toLowerCase()) ||
-        item.restaurant_name.toLowerCase().includes(searchValue.toLowerCase())
+        item.dish.dish_name.toLowerCase().includes(searchValue.toLowerCase()) ||
+        item.restaurant.restaurant_name.toLowerCase().includes(searchValue.toLowerCase()) ||
+        item.category.some(cat => cat.category.toLowerCase().includes(searchValue.toLowerCase()))
       );
       resolve(filteredItems);
     })

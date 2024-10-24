@@ -4,6 +4,8 @@ import {
   Container,
   Nav,
   Button,
+  Form,
+  FormControl,
 } from 'react-bootstrap';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
@@ -13,11 +15,20 @@ export default function NavBar() {
   const [searchQuery, setSearchQuery] = useState('');
   const router = useRouter();
 
+  // const handleSearchSubmit = (e) => {
+  //   e.preventDefault();
+  //   if (searchQuery.trim()) {
+  //     router.push(`/search?query=${searchQuery}`);
+  //   }
+  // };
+  const handleSearchChange = (e) => {
+    setSearchQuery(e.target.value);
+  };
+
   const handleSearchSubmit = (e) => {
     e.preventDefault();
-    if (searchQuery.trim()) {
-      router.push(`/search?query=${searchQuery}`);
-    }
+    console.log('searchQuery:', searchQuery); // Check this log in the console
+    router.push(`/search?query=${encodeURIComponent(searchQuery.trim())}`);
   };
 
   return (
@@ -39,7 +50,18 @@ export default function NavBar() {
               Sign Out
             </Button>
           </Nav>
-          <form className="custom-search-form" role="search" onSubmit={handleSearchSubmit}>
+          <Form className="d-flex" onSubmit={handleSearchSubmit}>
+            <FormControl
+              type="search"
+              placeholder="Search"
+              className="me-2"
+              aria-label="Search"
+              value={searchQuery}
+              onChange={handleSearchChange} // Corrected this line
+            />
+            <Button variant="outline-success" type="submit">Search</Button>
+          </Form>
+          {/* <form className="custom-search-form" role="search" onSubmit={handleSearchSubmit}>
             <input
               className="custom-search-input"
               type="search"
@@ -51,7 +73,7 @@ export default function NavBar() {
             <button className="custom-search-button" type="submit">
               Search
             </button>
-          </form>
+          </form> */}
         </Navbar.Collapse>
       </Container>
     </Navbar>
