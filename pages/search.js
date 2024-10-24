@@ -1,8 +1,8 @@
 import { useRouter } from 'next/router';
 import { useState, useEffect } from 'react';
+import { searchItems } from '../api/FoodLog';
 import Loading from '../components/Loading';
 import FoodLogCard from '../components/FoodLogCard';
-import { searchItems } from '../api/FoodLog';
 
 const Search = () => {
   const router = useRouter();
@@ -25,6 +25,10 @@ const Search = () => {
     }
   }, [query]);
 
+  const handleItemClick = (id) => {
+    router.push(`/food_log/${id}`);
+  };
+
   if (loading) {
     return <Loading />;
   }
@@ -36,7 +40,11 @@ const Search = () => {
       ) : (
         <div className="d-flex flex-wrap justify-content-evenly">
           {items.map((item) => (
-            <FoodLogCard key={item.id} itemObj={item} onUpdate={() => {}} />
+            <FoodLogCard
+              key={item.id}
+              itemObj={item}
+              onClick={() => handleItemClick(item.id)}
+            />
           ))}
         </div>
       )}
