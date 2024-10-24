@@ -1,4 +1,5 @@
-import MapComponent from '../../components/GoolgeMapsCard';
+import React from 'react';
+import MapComponent from '../../components/GoogleMapsCard';
 
 function Map() {
   return (

@@ -12,10 +12,10 @@ const getAllFoodLogs = () => new Promise((resolve, reject) => {
     .catch(reject);
 });
 
-const getFoodLogByRestaurantId = (id) => new Promise((resolve, reject) => {
-  console.warn(`Fetching food log for restaurant ID: ${id}`);
+const getFoodLogByRestaurantId = (restaurantId) => new Promise((resolve, reject) => {
+
   
-  fetch(`${endpoint}/food_log/by_restaurant?restaurant_id=${id}`, {
+  fetch(`${endpoint}/food_log/by_restaurant?restaurant_id=${restaurantId}`, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
@@ -30,7 +30,6 @@ const getFoodLogByRestaurantId = (id) => new Promise((resolve, reject) => {
     .then((text) => {
       try {
         const data = JSON.parse(text);
-        console.warn('Received data:', data); // Log the received data
         resolve(data);
       } catch (error) {
         throw new Error('Invalid JSON: ' + text);
@@ -38,7 +37,6 @@ const getFoodLogByRestaurantId = (id) => new Promise((resolve, reject) => {
     })
     .catch(reject);
 });
-
 const getFoodLogByUser = (uid) => new Promise((resolve, reject) => {
   fetch(`${endpoint}/food_log/?uid=${uid}`, {
     method: 'GET',
@@ -105,10 +103,8 @@ const updateFoodLog = (id, payload) => new Promise((resolve, reject) => {
 });
 
 const searchItems = (searchValue) => new Promise((resolve, reject) => {
-  console.warn('Search value:', searchValue); // Log the search value
   getAllFoodLogs()
     .then((items) => {
-      console.log('Items received:', items); // Log the items received
       const filteredItems = items.filter((item) => 
         item.dish.dish_name.toLowerCase().includes(searchValue.toLowerCase()) ||
         item.restaurant.restaurant_name.toLowerCase().includes(searchValue.toLowerCase()) ||

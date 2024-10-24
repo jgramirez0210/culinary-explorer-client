@@ -17,8 +17,7 @@ const Search = () => {
           setItems(data);
           setLoading(false);
         })
-        .catch((error) => {
-          console.error('Error fetching search results:', error);
+        .catch(() => {
           setLoading(false);
         });
     } else {

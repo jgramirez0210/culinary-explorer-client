@@ -15,19 +15,12 @@ export default function NavBar() {
   const [searchQuery, setSearchQuery] = useState('');
   const router = useRouter();
 
-  // const handleSearchSubmit = (e) => {
-  //   e.preventDefault();
-  //   if (searchQuery.trim()) {
-  //     router.push(`/search?query=${searchQuery}`);
-  //   }
-  // };
   const handleSearchChange = (e) => {
     setSearchQuery(e.target.value);
   };
 
   const handleSearchSubmit = (e) => {
     e.preventDefault();
-    console.log('searchQuery:', searchQuery); // Check this log in the console
     router.push(`/search?query=${encodeURIComponent(searchQuery.trim())}`);
   };
 
