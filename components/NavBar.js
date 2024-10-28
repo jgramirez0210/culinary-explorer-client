@@ -27,17 +27,17 @@ export default function NavBar() {
   return (
     <Navbar collapseOnSelect expand="lg">
       <Container>
-        <Link passHref href="/">
-          <Navbar.Brand>Culinary Explorer</Navbar.Brand>
+        <Link href="/" className="navbar-brand">
+          Culinary Explorer
         </Link>
         <Navbar.Toggle aria-controls="responsive-navbar-nav" />
         <Navbar.Collapse id="responsive-navbar-nav">
           <Nav className="me-auto">
-            <Link passHref href="/food_log/new">
-              <Nav.Link as="a">Add To Food Log</Nav.Link>
+            <Link href="/food_log/new" className="nav-link">
+              Add To Food Log
             </Link>
-            <Link passHref href="/food_map/food_map">
-              <Nav.Link as="a">Food Map</Nav.Link>
+            <Link href="/food_map/food_map" className="nav-link">
+              Food Map
             </Link>
             <Button variant="danger" onClick={signOut}>
               Sign Out
@@ -50,23 +50,9 @@ export default function NavBar() {
               className="me-2"
               aria-label="Search"
               value={searchQuery}
-              onChange={handleSearchChange} // Corrected this line
+              onChange={handleSearchChange}
             />
-            <Button variant="outline-success" type="submit">Search</Button>
           </Form>
-          {/* <form className="custom-search-form" role="search" onSubmit={handleSearchSubmit}>
-            <input
-              className="custom-search-input"
-              type="search"
-              placeholder="Search"
-              aria-label="Search"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-            <button className="custom-search-button" type="submit">
-              Search
-            </button>
-          </form> */}
         </Navbar.Collapse>
       </Container>
     </Navbar>
