@@ -10,8 +10,8 @@ import { getAllCategories } from '../../api/Categories';
 import { getAllDishes, deleteDish } from '../../api/Dish';
 import DishForm from './DishForm';
 import RestaurantForm from './RestaurantForm';
-import DishHoverCard from '../DishHoverCard';
-import RestaurantHoverCard from '../RestaurantHoverCard';
+import DishHoverCard from '../hover cards/DishHoverCard';
+import RestaurantHoverCard from '../hover cards/RestaurantHoverCard';
 
 // Initial state for the form
 const initialState = {

@@ -1,12 +1,6 @@
 import React from 'react';
-import MapComponent from '../../components/GoogleMapsCard';
+import LocationFetcher from '../../utils/googleMapsMarkers';
 
-function Map() {
-  return (
-    <div id="app">
-      <MapComponent />
-    </div>
-  );
-}
+const GoogleMapsCard = () => <LocationFetcher />;
 
-export default Map;
+export default GoogleMapsCard;
