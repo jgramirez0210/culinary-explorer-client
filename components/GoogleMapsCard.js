@@ -1,44 +1,57 @@
-import React, { useEffect, useRef, useState } from 'react';
+import {
+  GoogleMap,
+  Marker,
+  InfoWindow,
+  useJsApiLoader,
+} from '@react-google-maps/api';
+import { useState } from 'react';
 import PropTypes from 'prop-types';
 import GoogleMapsHoverCard from './hover cards/GoogleMapsHoverCard';
 
-const Map = ({ locations }) => {
-  const mapRef = useRef(null);
-  const [activeMarker, setActiveMarker] = useState(null);
+const center = { lat: 29.749907, lng: -95.358421 };
 
-  useEffect(() => {
-    if (mapRef.current) {
-      const map = new window.google.maps.Map(mapRef.current, {
-        center: { lat: 29.749907, lng: -95.358421 },
-        zoom: 8,
-      });
+/**
+ * Renders a Google Map component with markers and info windows.
+ *
+ * @param {Object[]} locations - An array of locations to be displayed as markers on the map.
+ * @returns {JSX.Element} The rendered Google Map component.
+ */
+const MapComponent = ({ locations }) => {
+  const [selectedLocation, setSelectedLocation] = useState(null);
 
-      const createMarker = ({ location, restaurantName }) => {
-        const marker = new window.google.maps.Marker({
-          position: location,
-          map,
-          title: restaurantName,
-        });
+  const handleInfoWindowCloseClick = () => {
+    setSelectedLocation(null);
+  };
 
-        marker.addListener('click', () => {
-          setActiveMarker(marker);
-        });
+  const handleMarkerClick = (location) => {
+    setSelectedLocation(location);
+  };
 
-        return marker;
-      };
+  const { isLoaded } = useJsApiLoader({
+    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY,
+  });
 
-      locations.forEach(createMarker);
-    }
-  }, [locations]);
+  if (!isLoaded) return <div>Loading...</div>;
 
   return (
-    <div ref={mapRef} style={{ height: '500px', width: '100%' }}>
-      {activeMarker && <GoogleMapsHoverCard poi={activeMarker} restaurantId={activeMarker.restaurantId} />}
-    </div>
+    <GoogleMap mapContainerStyle={{ height: '400px', width: '800px' }} center={center} zoom={10}>
+      {locations.map((poi) => {
+        const restaurantId = poi.id;
+
+        return <Marker key={restaurantId} position={poi.location} title={poi.restaurantName} onClick={() => handleMarkerClick(poi)} />;
+      })}
+      {selectedLocation && (
+        <InfoWindow position={selectedLocation.location} onCloseClick={handleInfoWindowCloseClick}>
+          <>
+            <GoogleMapsHoverCard poi={selectedLocation} restaurantId={selectedLocation.id} />
+          </>
+        </InfoWindow>
+      )}
+    </GoogleMap>
   );
 };
 
-Map.propTypes = {
+MapComponent.propTypes = {
   locations: PropTypes.arrayOf(
     PropTypes.shape({
       location: PropTypes.shape({
@@ -46,8 +59,8 @@ Map.propTypes = {
         lng: PropTypes.number.isRequired,
       }).isRequired,
       restaurantName: PropTypes.string.isRequired,
-    }),
+    }).isRequired,
   ).isRequired,
 };
 
-export default Map;
+export default MapComponent;

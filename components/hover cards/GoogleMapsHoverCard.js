@@ -1,36 +1,34 @@
-import React, { useState } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
-import { InfoWindow } from '@react-google-maps/api';
 import DishListByRestaurant from '../DishListByRestaurant';
 
-const GoogleMapsHoverCard = ({ poi, restaurantId }) => { /* eslint-disable no-unused-vars */
-  const [activeMarker, setActiveMarker] = useState(null);/* eslint-disable no-unused-vars */
-
-  const handleInfoWindowCloseClick = () => {
-    setActiveMarker(null);
-  };
-
-  const handleMarkerMouseClick = (marker) => { /* eslint-disable no-unused-vars */
-    setActiveMarker(marker);
-  };
-
-  return (
-    <InfoWindow position={poi.getPosition()} onCloseClick={handleInfoWindowCloseClick}>
-      <div>
-        <h3>{poi.getTitle()}</h3>
-        <p>{poi.getPosition().toString()}</p>
-        {restaurantId ? <DishListByRestaurant restaurantId={restaurantId} /> : <p>Error: Invalid restaurant ID</p>}
-      </div>
-    </InfoWindow>
-  );
-};
+/**
+ * A hover card component for displaying information about a restaurant on Google Maps.
+ *
+ * @component
+ * @param {Object} props - The component props.
+ * @param {Object} props.poi - The point of interest object containing restaurant information.
+ * @param {number} props.restaurantId - The ID of the restaurant.
+ * @returns {JSX.Element} The rendered GoogleMapsHoverCard component.
+ */
+const GoogleMapsHoverCard = ({ poi, restaurantId }) => (
+  <div>
+    <h1>{poi.restaurantName}</h1>
+    <p>{poi.restaurantAddress}</p>
+    <DishListByRestaurant restaurantId={restaurantId} />
+  </div>
+);
 
 GoogleMapsHoverCard.propTypes = {
   poi: PropTypes.shape({
-    getPosition: PropTypes.func.isRequired,
-    getTitle: PropTypes.func.isRequired,
+    location: PropTypes.shape({
+      lat: PropTypes.number.isRequired,
+      lng: PropTypes.number.isRequired,
+    }).isRequired,
+    restaurantName: PropTypes.string.isRequired,
+    restaurantAddress: PropTypes.string.isRequired,
   }).isRequired,
-  restaurantId: PropTypes.string.isRequired,
+  restaurantId: PropTypes.number.isRequired,
 };
 
 export default GoogleMapsHoverCard;
