@@ -23,7 +23,8 @@ const LocationFetcher = () => {
             return null;
           }
           try {
-            const location = await fetchCoordinates(restaurantAddress);
+            console.log(`Fetching coordinates for restaurantId: ${numericId}`); // Add this line
+            const location = await fetchCoordinates(restaurantAddress, restaurant);
             return {
               restaurantName,
               restaurantAddress,
