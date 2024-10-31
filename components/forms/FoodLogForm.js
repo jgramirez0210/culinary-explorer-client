@@ -275,7 +275,7 @@ function FoodLogForm({ user, editObj }) {
             <Select
               name="restaurant_id"
               data-type="restaurant"
-              value={restaurantOptions.find((option) => option.value === formInput.restaurant_id) || ''}
+              value={restaurantOptions.find((option) => option.value === formInput.restaurant) || ''}
               onChange={(selectedOption) => handleChange({ target: { name: 'restaurant_id', value: selectedOption.value } })}
               onMenuOpen={() => {
                 setIsDropdownOpen(true);
