@@ -20,7 +20,7 @@ const initialState = {
   category_ids: [],
 };
 
-function FoodLogForm({ user, editObj }) {
+function FoodLogForm({ user, editObj = initialState }) {
   // Default Form States
   const [formInput, setFormInput] = useState(initialState);
   const [reload, setReload] = useState(false);
@@ -48,12 +48,12 @@ function FoodLogForm({ user, editObj }) {
 
   useEffect(() => {
     if (editObj) {
-      setFormInput({
-        ...formInput,
+      setFormInput((prevFormInput) => ({
+        ...prevFormInput,
         restaurant_id: editObj.restaurant.id || '',
         dish_id: editObj.dish.id || '',
         category_ids: Array.isArray(editObj.category) ? editObj.category.map((cat) => cat.id) : [],
-      });
+      }));
     } else {
       setFormInput(initialState);
     }
@@ -353,7 +353,5 @@ FoodLogForm.propTypes = {
     ),
   }),
 };
-FoodLogForm.defaultProps = {
-  editObj: initialState,
-};
+
 export default FoodLogForm;

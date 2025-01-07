@@ -14,7 +14,7 @@ const initialState = {
   price: '',
 };
 
-function DishForm({ editObj, onDishCreated }) {
+function DishForm({ editObj = {}, onDishCreated }) {
   const [formInput, setFormInput] = useState(initialState);
   const { query } = useRouter();
   const { id } = query;
@@ -110,10 +110,6 @@ DishForm.propTypes = {
     uid: PropTypes.string.isRequired,
   }).isRequired,
   onDishCreated: PropTypes.func.isRequired,
-};
-
-DishForm.defaultProps = {
-  editObj: {},
 };
 
 export default DishForm;

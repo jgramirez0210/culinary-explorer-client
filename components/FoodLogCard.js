@@ -5,12 +5,12 @@ import PropTypes from 'prop-types';
 import { useRouter } from 'next/router';
 import { deleteItem } from '../api/FoodLog';
 
-function FoodLogCard({
+const FoodLogCard = ({
   itemObj,
   viewType,
   onUpdate,
-  onClick,
-}) {
+  onClick = () => {},
+}) => {
   const router = useRouter();
   const categoryNames = Array.isArray(itemObj.category) ? itemObj.category.map((cat) => cat.category) : [];
 
@@ -23,11 +23,14 @@ function FoodLogCard({
     }
   };
 
+  // console.warn('ItemObj:', itemObj);
+  // console.warn('Image URL:', itemObj.dish.food_image_url);
+
   return (
     <Card className="card" style={{ width: '18rem', margin: '10px', border: '1px solid' }} onClick={onClick}>
       <Card.Title style={{ textAlign: 'center', paddingTop: '10px' }}>{itemObj.restaurant?.restaurant_name}</Card.Title>
       <Card.Body className="card-body">
-        <Card.Img variant="top" src={itemObj.dish?.food_image_url} alt={itemObj.dish?.dish_name} style={{ height: '175px', borderRadius: '0.5rem' }} />
+        <Card.Img variant="top" src={itemObj.dish.food_image_url} alt={itemObj.dish?.dish_name} style={{ height: '175px', borderRadius: '0.5rem' }} />
         <div className="card-text">
           <label htmlFor="dishName">Dish Name:</label>
           <span id="dishName">{itemObj.dish?.dish_name}</span>
@@ -68,7 +71,7 @@ function FoodLogCard({
               </Button>
             </Link>
             <Button type="button" onClick={() => deleteThisItem(itemObj.id)} className="button button-delete">
-              Delete
+              DELETE
             </Button>
           </>
         )}
@@ -86,7 +89,7 @@ function FoodLogCard({
       </Card.Body>
     </Card>
   );
-}
+};
 
 FoodLogCard.propTypes = {
   itemObj: PropTypes.shape({
@@ -111,11 +114,7 @@ FoodLogCard.propTypes = {
   }).isRequired,
   viewType: PropTypes.string.isRequired,
   onUpdate: PropTypes.func.isRequired,
-  onClick: PropTypes.func,
-};
-
-FoodLogCard.defaultProps = {
-  onClick: () => {},
+  onClick: PropTypes.func.isRequired,
 };
 
 export default FoodLogCard;
