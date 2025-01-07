@@ -1,7 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-const RestaurantHoverCard = ({ item, position }) => {
+const RestaurantHoverCard = ({
+  item = null,
+  position = { x: 50, y: 50 },
+}) => {
   const cardStyle = {
     position: 'absolute',
     top: position ? `${position.y}px` : 'auto',
@@ -38,11 +41,6 @@ RestaurantHoverCard.propTypes = {
     x: PropTypes.number,
     y: PropTypes.number,
   }),
-};
-
-RestaurantHoverCard.defaultProps = {
-  item: null,
-  position: { x: 50, y: 50 },
 };
 
 export default RestaurantHoverCard;

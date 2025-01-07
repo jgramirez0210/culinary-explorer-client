@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import Image from 'next/image';
 
-const DishHoverCard = ({ item, position }) => {
+const DishHoverCard = ({ item = null, position }) => {
   const cardStyle = {
     position: 'absolute',
     top: position ? `${position.y}px` : 'auto',
@@ -13,6 +13,8 @@ const DishHoverCard = ({ item, position }) => {
     boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
     zIndex: 1000,
   };
+
+  // console.warn('Image URL:', item?.food_image_url);
 
   return (
     <div style={cardStyle}>
@@ -38,7 +40,6 @@ const DishHoverCard = ({ item, position }) => {
     </div>
   );
 };
-
 DishHoverCard.propTypes = {
   item: PropTypes.shape({
     dish_name: PropTypes.string,
@@ -51,10 +52,6 @@ DishHoverCard.propTypes = {
     x: PropTypes.number.isRequired,
     y: PropTypes.number.isRequired,
   }).isRequired,
-};
-
-DishHoverCard.defaultProps = {
-  item: null,
 };
 
 export default DishHoverCard;

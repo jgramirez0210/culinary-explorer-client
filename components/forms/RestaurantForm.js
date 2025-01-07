@@ -4,7 +4,7 @@ import { Form } from 'react-bootstrap';
 import GooglePlacesAutocomplete from 'react-google-places-autocomplete';
 import { createRestaurant } from '../../api/Restaurants';
 
-const RestaurantForm = ({ id, updateRestaurant, onRestaurantCreated }) => {
+const RestaurantForm = ({ id = null, updateRestaurant, onRestaurantCreated }) => {
   const [formInput, setFormInput] = useState({
     restaurant_name: '',
     restaurant_address: '',
@@ -109,10 +109,6 @@ RestaurantForm.propTypes = {
     restaurant_address: PropTypes.string,
     website_url: PropTypes.string,
   }).isRequired,
-};
-
-RestaurantForm.defaultProps = {
-  id: null,
 };
 
 export default RestaurantForm;
