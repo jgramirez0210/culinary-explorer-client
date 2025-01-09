@@ -1,13 +1,24 @@
 import { useState, useEffect } from 'react';
+import { useAuth } from '../utils/context/authContext';
 import FoodLogCard from '../components/FoodLogCard';
-import { getAllFoodLogs } from '../api/FoodLog';
+import { getFoodLogByUser } from '../api/FoodLog';
 
 function Home() {
   const [foodLog, setFoodLog] = useState([]);
+  const { user } = useAuth();
 
   useEffect(() => {
-    getAllFoodLogs().then((data) => setFoodLog(data));
-  }, []);
+    if (user) {
+      const { uid } = user;
+      console.warn('User object:', user);
+      console.warn('uid:', uid);
+      getFoodLogByUser(uid).then((data) => {
+        setFoodLog(data);
+      }).catch((error) => {
+        console.error('Error fetching food log:', error);
+      });
+    }
+  }, [user]);
 
   const handleUpdate = (deletedItemId) => {
     setFoodLog((prevFoodLog) => prevFoodLog.filter((item) => item.id !== deletedItemId));

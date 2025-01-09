@@ -14,8 +14,6 @@ const DishHoverCard = ({ item = null, position }) => {
     zIndex: 1000,
   };
 
-  // console.warn('Image URL:', item?.food_image_url);
-
   return (
     <div style={cardStyle}>
       {item ? (

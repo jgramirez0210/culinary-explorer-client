@@ -1,5 +1,6 @@
 const endpoint = process.env.NEXT_PUBLIC_DATABASE_URL;
 
+
 const getAllFoodLogs = () => new Promise((resolve, reject) => {
   fetch(`${endpoint}/food_log`, {
     method: 'GET',
