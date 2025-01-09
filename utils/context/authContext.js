@@ -24,8 +24,8 @@ const AuthProvider = (props) => {
   // an object/value = user is logged in
 
   const updateUser = useMemo(
-    () => (uid) => checkUser(uid).then((gamerInfo) => {
-      setUser({ fbUser: oAuthUser, ...gamerInfo });
+    () => (uid) => checkUser(uid).then((userInfo) => {
+      setUser({ fbUser: oAuthUser, ...userInfo });
     }),
     [oAuthUser],
   );
@@ -34,12 +34,12 @@ const AuthProvider = (props) => {
     firebase.auth().onAuthStateChanged((fbUser) => {
       if (fbUser) {
         setOAuthUser(fbUser);
-        checkUser(fbUser.uid).then((gamerInfo) => {
+        checkUser(fbUser.uid).then((userInfo) => {
           let userObj = {};
-          if ('null' in gamerInfo) {
-            userObj = gamerInfo;
+          if ('null' in userInfo) {
+            userObj = userInfo;
           } else {
-            userObj = { fbUser, uid: fbUser.uid, ...gamerInfo };
+            userObj = { fbUser, uid: fbUser.uid, ...userInfo };
           }
           setUser(userObj);
         });

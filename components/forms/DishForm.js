@@ -1,7 +1,7 @@
 // Importing necessary modules and functions
-import { useRouter } from 'next/router';
+import { useRouter, Router } from 'next/router';
 import PropTypes from 'prop-types';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import Form from 'react-bootstrap/Form';
 import { createDish, updateDish } from '../../api/Dish';
 
@@ -14,23 +14,21 @@ const initialState = {
   price: '',
 };
 
-function DishForm({ editObj = {}, onDishCreated }) {
+function DishForm({ onDishCreated }) {
   const [formInput, setFormInput] = useState(initialState);
   const { query } = useRouter();
   const { id } = query;
 
-  useEffect(() => {
-    if (editObj) {
-      setFormInput(editObj);
-    } else {
-      setFormInput(initialState);
-    }
-  }, [editObj]);
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormInput((prevState) => ({
+      ...prevState,
+      [name]: value,
+    }));
+  };
 
   // Function to handle form submission
-  const handleSubmit = (e) => {
-    e.preventDefault();
-
+  const handleSubmit = () => {
     // Constructing the Food log object
     const payload = {
       dish_name: formInput.dish_name,
@@ -56,19 +54,12 @@ function DishForm({ editObj = {}, onDishCreated }) {
           if (onDishCreated) {
             onDishCreated();
           }
+          Router.push('/food_log');
         })
         .catch((error) => {
           console.error(error);
         });
     }
-  };
-
-  const handleChange = (event) => {
-    const { name, value } = event.target;
-    setFormInput((prevState) => ({
-      ...prevState,
-      [name]: value,
-    }));
   };
 
   return (
