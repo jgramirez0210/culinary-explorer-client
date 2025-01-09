@@ -10,8 +10,6 @@ function Home() {
   useEffect(() => {
     if (user) {
       const { uid } = user;
-      console.warn('User object:', user);
-      console.warn('uid:', uid);
       getFoodLogByUser(uid).then((data) => {
         setFoodLog(data);
       }).catch((error) => {

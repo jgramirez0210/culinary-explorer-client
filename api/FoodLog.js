@@ -38,16 +38,48 @@ const getFoodLogByRestaurantId = (restaurantId) => new Promise((resolve, reject)
     })
     .catch(reject);
 });
+
+
+// const getFoodLogByUser = (uid) => new Promise((resolve, reject) => {
+//   fetch(`${endpoint}/food_log/?uid=${uid}`, {
+//     method: 'GET',
+//     headers: {
+//       'Content-Type': 'application/json',
+//     },
+//   })
+//     .then((response) => response.json())
+//     .then((data) => {
+//       resolve(data);
+//     })
+//     .catch((error) => {
+//       console.error('Error:', error);
+//       reject(error);
+//     });
+// });
+
 const getFoodLogByUser = (uid) => new Promise((resolve, reject) => {
-  fetch(`${endpoint}/food_log/?uid=${uid}`, {
+  fetch(`${endpoint}/food_log?uid=${uid}`, {  // Removed trailing slash here
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
     },
   })
-    .then((response) => response.json())
+    .then((response) => {
+      if (!response.ok) {
+        return response.text().then((text) => {
+          throw new Error(`HTTP error! status: ${response.status}, message: ${text}`);
+        });
+      }
+      return response.json();
+    })
     .then((data) => {
-      resolve(data);
+      if (data.length === 0) {
+        const errorMessage = 'No food logs found. Try adding a new entry in the food log.';
+        console.error(errorMessage);
+        reject(new Error(errorMessage));
+      } else {
+        resolve(data);
+      }
     })
     .catch((error) => {
       console.error('Error:', error);
