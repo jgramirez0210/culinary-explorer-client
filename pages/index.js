@@ -25,12 +25,11 @@ function Home() {
   return (
     <div>
       <div width="50rem" className="d-flex flex-wrap justify-content-evenly">
-        {foodLog.map((item) => (
+        {foodLog.filter((item) => item.uid === user.uid).map((item) => (
           <FoodLogCard key={item.id} itemObj={item} onUpdate={handleUpdate} viewType="all" />
         ))}
       </div>
     </div>
   );
 }
-
 export default Home;
