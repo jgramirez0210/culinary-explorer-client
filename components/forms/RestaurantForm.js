@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { Form } from 'react-bootstrap';
 import GooglePlacesAutocomplete from 'react-google-places-autocomplete';
+import useGoogleMapsScript from '../../api/GoogleMapScript';
 import { createRestaurant } from '../../api/Restaurants';
 
 const RestaurantForm = ({ id = null, updateRestaurant, onRestaurantCreated }) => {
@@ -11,6 +12,13 @@ const RestaurantForm = ({ id = null, updateRestaurant, onRestaurantCreated }) =>
     website_url: '',
   });
   const [errors, setErrors] = useState({});
+
+  const apiKey = process.env.REACT_APP_GOOGLE_MAPS_API_KEY;
+  const scriptLoaded = useGoogleMapsScript(apiKey);
+
+  if (!scriptLoaded) {
+    return <div>Loading...</div>;
+  }
 
   const handleSubmit = () => {
     // event.preventDefault();

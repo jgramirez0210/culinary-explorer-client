@@ -17,7 +17,7 @@ function Home() {
       });
     }
   }, [user]);
-  // console.warn(user.email_address);
+  console.warn(user.email_address);
   const handleUpdate = (deletedItemId) => {
     setFoodLog((prevFoodLog) => prevFoodLog.filter((item) => item.id !== deletedItemId));
   };
