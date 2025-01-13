@@ -1,13 +1,31 @@
-import firebase from 'firebase/app';
-import 'firebase/auth';
-import { firebaseCredentials } from './client';
+import { initializeApp, getApps, getApp } from 'firebase/app';
+import { getAuth, GoogleAuthProvider, signInWithPopup, signOut as firebaseSignOut } from 'firebase/auth';
+import dotenv from 'dotenv';
+
+// Load environment variables
+dotenv.config();
+
+console.log('Firebase API Key:', process.env.NEXT_PUBLIC_FIREBASE_API_KEY);
+console.log('Firebase Auth Domain:', process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN);
+console.log('Firebase Database URL:', process.env.NEXT_PUBLIC_DATABASE_URL);
+
+const firebaseCredentials = {
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+  databaseURL: process.env.NEXT_PUBLIC_DATABASE_URL,
+};
+
+const firebaseApp = !getApps().length ? initializeApp(firebaseCredentials) : getApp();
+const auth = getAuth(firebaseApp);
+
+if (!firebaseCredentials.databaseURL) {
+  throw new Error('Firebase databaseURL is not defined in firebaseCredentials');
+}
 
 const checkUser = (uid) => new Promise((resolve, reject) => {
   fetch(`${firebaseCredentials.databaseURL}/checkuser`, {
     method: 'POST',
-    body: JSON.stringify({
-      uid,
-    }),
+    body: JSON.stringify({ uid }),
     headers: {
       'Content-Type': 'application/json',
       Accept: 'application/json',
@@ -18,8 +36,6 @@ const checkUser = (uid) => new Promise((resolve, reject) => {
 });
 
 const registerUser = (userInfo) => new Promise((resolve, reject) => {
-  // Log the payload being sent
-
   fetch(`${firebaseCredentials.databaseURL}/register`, {
     method: 'POST',
     body: JSON.stringify(userInfo),
@@ -39,16 +55,16 @@ const registerUser = (userInfo) => new Promise((resolve, reject) => {
 });
 
 const signIn = () => {
-  const provider = new firebase.auth.GoogleAuthProvider();
-  firebase.auth().signInWithPopup(provider);
+  const provider = new GoogleAuthProvider();
+  signInWithPopup(auth, provider);
 };
 
 const signOut = () => {
-  firebase.auth().signOut();
+  firebaseSignOut(auth);
 };
 
 export {
-  signIn, //
+  signIn,
   signOut,
   checkUser,
   registerUser,
