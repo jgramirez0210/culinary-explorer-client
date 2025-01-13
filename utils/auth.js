@@ -1,9 +1,9 @@
 import firebase from 'firebase/app';
 import 'firebase/auth';
-import { clientCredentials } from './client';
+import { firebaseCredentials } from './client';
 
 const checkUser = (uid) => new Promise((resolve, reject) => {
-  fetch(`${clientCredentials.databaseURL}/checkuser`, {
+  fetch(`${firebaseCredentials.databaseURL}/checkuser`, {
     method: 'POST',
     body: JSON.stringify({
       uid,
@@ -20,7 +20,7 @@ const checkUser = (uid) => new Promise((resolve, reject) => {
 const registerUser = (userInfo) => new Promise((resolve, reject) => {
   // Log the payload being sent
 
-  fetch(`${clientCredentials.databaseURL}/register`, {
+  fetch(`${firebaseCredentials.databaseURL}/register`, {
     method: 'POST',
     body: JSON.stringify(userInfo),
     headers: {

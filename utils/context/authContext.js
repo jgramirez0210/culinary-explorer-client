@@ -1,27 +1,94 @@
-// Context API Docs: https://beta.reactjs.org/learn/passing-data-deeply-with-context
+// import React, {
+//   createContext,
+//   useContext,
+//   useEffect,
+//   useMemo,
+//   useState,
+// } from 'react';
+// import { checkUser } from '../auth.js';
+// import firebase from 'firebase/app';
+
+// const AuthContext = createContext();
+
+// AuthContext.displayName = 'AuthContext';
+
+// const AuthProvider = (props) => {
+//   const [user, setUser] = useState(null);
+//   const [oAuthUser, setOAuthUser] = useState(null);
+
+//   const updateUser = useMemo(
+//     () => (uid) => checkUser(uid).then((userInfo) => {
+//       setUser({ fbUser: oAuthUser, ...userInfo });
+//     }),
+//     [oAuthUser],
+//   );
+
+//   useEffect(() => {
+//     firebase.auth().onAuthStateChanged((fbUser) => {
+//       if (fbUser) {
+//         setOAuthUser(fbUser);
+//         checkUser(fbUser.uid).then((userInfo) => {
+//           let userObj = {};
+//           if ('null' in userInfo) {
+//             userObj = userInfo;
+//           } else {
+//             userObj = { fbUser, uid: fbUser.uid, ...userInfo };
+//           }
+//           setUser(userObj);
+//         });
+//       } else {
+//         setOAuthUser(false);
+//         setUser(false);
+//       }
+//     });
+//   }, []);
+
+//   const value = useMemo(
+//     () => ({
+//       user,
+//       updateUser,
+//       userLoading: user === null || oAuthUser === null,
+//     }),
+//     [user, oAuthUser, updateUser],
+//   );
+
+//   return <AuthContext.Provider value={value} {...props} />;
+// };
+
+// export { AuthProvider, AuthContext };
 
 import React, {
-  createContext, //
+  createContext,
   useContext,
   useEffect,
   useMemo,
   useState,
 } from 'react';
-import { checkUser } from '../auth';
-import { firebase } from '../client';
+import { checkUser } from '../auth.js';
+import { initializeApp, getApps, getApp } from 'firebase/app';
+import { getAuth, onAuthStateChanged } from 'firebase/auth';
+
+// Firebase configuration
+const firebaseConfig = {
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
+};
+
+// Initialize Firebase
+const firebaseApp = !getApps().length ? initializeApp(firebaseConfig) : getApp();
+const auth = getAuth(firebaseApp);
 
 const AuthContext = createContext();
 
-AuthContext.displayName = 'AuthContext'; // Context object accepts a displayName string property. React DevTools uses this string to determine what to display for the context. https://reactjs.org/docs/context.html#contextdisplayname
+AuthContext.displayName = 'AuthContext';
 
 const AuthProvider = (props) => {
   const [user, setUser] = useState(null);
   const [oAuthUser, setOAuthUser] = useState(null);
-
-  // there are 3 states for the user:
-  // null = application initial state, not yet loaded
-  // false = user is not logged in, but the app has loaded
-  // an object/value = user is logged in
 
   const updateUser = useMemo(
     () => (uid) => checkUser(uid).then((userInfo) => {
@@ -31,7 +98,7 @@ const AuthProvider = (props) => {
   );
 
   useEffect(() => {
-    firebase.auth().onAuthStateChanged((fbUser) => {
+    const unsubscribe = onAuthStateChanged(auth, (fbUser) => {
       if (fbUser) {
         setOAuthUser(fbUser);
         checkUser(fbUser.uid).then((userInfo) => {
@@ -47,32 +114,23 @@ const AuthProvider = (props) => {
         setOAuthUser(false);
         setUser(false);
       }
-    }); // creates a single global listener for auth state changed
+    });
+
+    return () => unsubscribe(); // Clean up the listener on unmount
   }, []);
 
   const value = useMemo(
-    // https://reactjs.org/docs/hooks-reference.html#usememo
     () => ({
       user,
       updateUser,
       userLoading: user === null || oAuthUser === null,
-      // as long as user === null, will be true
-      // As soon as the user value !== null, value will be false
     }),
     [user, oAuthUser, updateUser],
   );
 
   return <AuthContext.Provider value={value} {...props} />;
 };
-const AuthConsumer = AuthContext.Consumer;
 
-const useAuth = () => {
-  const context = useContext(AuthContext);
+const useAuth = () => useContext(AuthContext);
 
-  if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
-  return context;
-};
-
-export { AuthProvider, useAuth, AuthConsumer };
+export { AuthProvider, useAuth };
