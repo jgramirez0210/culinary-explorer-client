@@ -1,30 +1,9 @@
-// import firebase from 'firebase/app';
-// import 'firebase/auth';
-// import 'firebase/database';
-
-// const firebaseCredentials = {
-//   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
-//   authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
-// };
-
-// const clientCredentials = {
-//   ...firebaseCredentials,
-//   databaseURL: process.env.NEXT_PUBLIC_DATABASE_URL,
-// };
-
-// if (!firebase.apps.length) {
-//   firebase?.initializeApp(firebaseCredentials);
-// }
-
-// export { firebase, clientCredentials };
-
-
-// utils/client.js
-
-// utils/client.js
-import { initializeApp, getApps } from 'firebase/app';
+import { initializeApp, getApps, getApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
-import { getDatabase } from 'firebase/database';
+import dotenv from 'dotenv';
+
+// Load environment variables
+dotenv.config();
 
 const firebaseCredentials = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -32,15 +11,9 @@ const firebaseCredentials = {
   databaseURL: process.env.NEXT_PUBLIC_DATABASE_URL,
 };
 
-let firebaseApp;
-
-if (!getApps().length) {
-  firebaseApp = initializeApp(firebaseCredentials);
-} else {
-  firebaseApp = getApps()[0];
-}
-
+const firebaseApp = !getApps().length ? initializeApp(firebaseCredentials) : getApp();
 const auth = getAuth(firebaseApp);
-const database = getDatabase(firebaseApp);
 
-export { firebaseApp, auth, database, firebaseCredentials };
+if (!firebaseCredentials.databaseURL) {
+  throw new Error('Firebase databaseURL is not defined in firebaseCredentials');
+}

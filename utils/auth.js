@@ -5,10 +5,6 @@ import dotenv from 'dotenv';
 // Load environment variables
 dotenv.config();
 
-console.log('Firebase API Key:', process.env.NEXT_PUBLIC_FIREBASE_API_KEY);
-console.log('Firebase Auth Domain:', process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN);
-console.log('Firebase Database URL:', process.env.NEXT_PUBLIC_DATABASE_URL);
-
 const firebaseCredentials = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
   authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
