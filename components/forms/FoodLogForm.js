@@ -4,9 +4,9 @@ import { useState, useEffect } from 'react';
 import Select from 'react-select';
 import Form from 'react-bootstrap/Form';
 import { Button } from 'react-bootstrap';
+import { useJsApiLoader } from '@react-google-maps/api';
 import { updateFoodLog, createFoodLog } from '../../api/FoodLog';
 import { getAllRestaurants, deleteRestaurant } from '../../api/Restaurants';
-import { getAllCategories } from '../../api/Categories';
 import { getAllDishes, deleteDish } from '../../api/Dish';
 import DishForm from './DishForm';
 import RestaurantForm from './RestaurantForm';
@@ -33,7 +33,7 @@ function FoodLogForm({ user, editObj = initialState }) {
   const [showDropdown, setShowDropdown] = useState(false); // eslint-disable-line no-unused-vars
   const [restaurantList, setRestaurants] = useState([]);
   const [dishList, setDishes] = useState([]);
-  const [categoryList, setCategories] = useState([]);
+  const [categoryList, setCategories] = useState([]); // eslint-disable-line no-unused-vars
   // Form Switching States
   const [showDishForm, setShowDishForm] = useState(false);
   const [showRestaurantForm, setShowRestaurantForm] = useState(false); // eslint-disable-line no-unused-vars
@@ -46,6 +46,11 @@ function FoodLogForm({ user, editObj = initialState }) {
   const [dish, setDish] = useState(null); // eslint-disable-line no-unused-vars
   const [cardType, setCardType] = useState(null);
 
+  const { isLoaded } = useJsApiLoader({
+    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY,
+  });
+
+  // load Google Maps Script Asynchronously
   useEffect(() => {
     if (editObj) {
       setFormInput((prevFormInput) => ({
@@ -73,17 +78,11 @@ function FoodLogForm({ user, editObj = initialState }) {
       .catch((error) => {
         console.error(error);
       });
+  }, [editObj, initialState, getAllRestaurants, getAllDishes]);
 
-    getAllCategories()
-      .then((categories) => {
-        setCategories(categories);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-    setReload(reload);
-  }, [editObj, reload]);
-
+  if (!isLoaded) {
+    return <div>Loading...</div>;
+  }
   // Function to handle form submission
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -265,6 +264,10 @@ function FoodLogForm({ user, editObj = initialState }) {
           </Button>
         </div>
       );
+    }
+
+    if (!isLoaded) {
+      return <div>Loading...</div>;
     }
 
     return (
