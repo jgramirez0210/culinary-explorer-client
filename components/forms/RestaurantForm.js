@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { Form } from 'react-bootstrap';
+import { useJsApiLoader } from '@react-google-maps/api';
 import GooglePlacesAutocomplete from 'react-google-places-autocomplete';
-import useGoogleMapsScript from '../../api/GoogleMapScript';
 import { createRestaurant } from '../../api/Restaurants';
 
 const RestaurantForm = ({ id = null, updateRestaurant, onRestaurantCreated }) => {
@@ -13,10 +13,11 @@ const RestaurantForm = ({ id = null, updateRestaurant, onRestaurantCreated }) =>
   });
   const [errors, setErrors] = useState({});
 
-  const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
-  const scriptLoaded = useGoogleMapsScript(apiKey);
+  const { isLoaded } = useJsApiLoader({
+    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY,
+  });
 
-  if (!scriptLoaded) {
+  if (!isLoaded) {
     return <div>Loading...</div>;
   }
 
