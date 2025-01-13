@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { useAuth } from './context/authContext';
+import { useAuth } from '../utils/context/authContext';
 import Loading from '../components/Loading';
 import Signin from '../components/Signin';
 import NavBar from '../components/NavBar';
