@@ -13,7 +13,7 @@ const RestaurantForm = ({ id = null, updateRestaurant, onRestaurantCreated }) =>
   });
   const [errors, setErrors] = useState({});
 
-  const apiKey = process.env.REACT_APP_GOOGLE_MAPS_API_KEY;
+  const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
   const scriptLoaded = useGoogleMapsScript(apiKey);
 
   if (!scriptLoaded) {
@@ -111,6 +111,7 @@ RestaurantForm.propTypes = {
     restaurant_name: PropTypes.string.isRequired,
     restaurant_address: PropTypes.string.isRequired,
     website_url: PropTypes.string.isRequired,
+
   }),
   errors: PropTypes.shape({
     restaurant_name: PropTypes.string,
