@@ -105,18 +105,18 @@ const RestaurantForm = ({ id = null, updateRestaurant, onRestaurantCreated }) =>
 
 RestaurantForm.propTypes = {
   id: PropTypes.string,
-  updateRestaurant: PropTypes.func.isRequired,
+  updateRestaurant: PropTypes.func,
   onRestaurantCreated: PropTypes.func.isRequired,
   formInput: PropTypes.shape({
     restaurant_name: PropTypes.string.isRequired,
     restaurant_address: PropTypes.string.isRequired,
     website_url: PropTypes.string.isRequired,
-  }).isRequired,
+  }),
   errors: PropTypes.shape({
     restaurant_name: PropTypes.string,
     restaurant_address: PropTypes.string,
     website_url: PropTypes.string,
-  }).isRequired,
+  }),
 };
 
 export default RestaurantForm;
