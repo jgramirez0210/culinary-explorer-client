@@ -1,30 +1,29 @@
 import React, { useState } from 'react';
-import PropTypes from 'prop-types';
 import { Form } from 'react-bootstrap';
 import { useJsApiLoader } from '@react-google-maps/api';
 import GooglePlacesAutocomplete from 'react-google-places-autocomplete';
-import { createRestaurant } from '../../api/Restaurants';
+import PropTypes from 'prop-types';
 
-const RestaurantForm = ({ id = null, updateRestaurant, onRestaurantCreated }) => {
+const RestaurantForm = ({
+  id,
+  onRestaurantCreated,
+  createRestaurant,
+  updateRestaurant,
+}) => {
   const [formInput, setFormInput] = useState({
     restaurant_name: '',
     restaurant_address: '',
     website_url: '',
   });
   const [errors, setErrors] = useState({});
-
   const { isLoaded } = useJsApiLoader({
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY,
   });
 
-  if (!isLoaded) {
-    return <div>Loading...</div>;
-  }
+  if (!isLoaded) return <div>Loading...</div>;
 
-  const handleSubmit = () => {
-    // event.preventDefault();
-
-    // Validate form input
+  const handleSubmit = (event) => {
+    event.preventDefault();
     const newErrors = {};
     if (!formInput.restaurant_name) newErrors.restaurant_name = 'Restaurant name is required';
     if (!formInput.restaurant_address) newErrors.restaurant_address = 'Restaurant address is required';
@@ -44,7 +43,9 @@ const RestaurantForm = ({ id = null, updateRestaurant, onRestaurantCreated }) =>
     if (id) {
       updateRestaurant(id, payload)
         .then(() => {
-          // router.push(`/food_log`);
+          if (onRestaurantCreated) {
+            onRestaurantCreated();
+          }
         })
         .catch((error) => {
           console.error('Error updating restaurant:', error);
@@ -73,6 +74,10 @@ const RestaurantForm = ({ id = null, updateRestaurant, onRestaurantCreated }) =>
       [name]: '',
     }));
   };
+
+  if (!isLoaded) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <Form onSubmit={handleSubmit}>
@@ -107,18 +112,8 @@ const RestaurantForm = ({ id = null, updateRestaurant, onRestaurantCreated }) =>
 RestaurantForm.propTypes = {
   id: PropTypes.string,
   updateRestaurant: PropTypes.func,
-  onRestaurantCreated: PropTypes.func.isRequired,
-  formInput: PropTypes.shape({
-    restaurant_name: PropTypes.string.isRequired,
-    restaurant_address: PropTypes.string.isRequired,
-    website_url: PropTypes.string.isRequired,
-
-  }),
-  errors: PropTypes.shape({
-    restaurant_name: PropTypes.string,
-    restaurant_address: PropTypes.string,
-    website_url: PropTypes.string,
-  }),
+  createRestaurant: PropTypes.func,
+  onRestaurantCreated: PropTypes.func,
 };
 
 export default RestaurantForm;

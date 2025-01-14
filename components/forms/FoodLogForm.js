@@ -7,6 +7,7 @@ import { Button } from 'react-bootstrap';
 import { useJsApiLoader } from '@react-google-maps/api';
 import { updateFoodLog, createFoodLog } from '../../api/FoodLog';
 import { getAllRestaurants, deleteRestaurant } from '../../api/Restaurants';
+import { getAllCategories } from '../../api/Categories';
 import { getAllDishes, deleteDish } from '../../api/Dish';
 import DishForm from './DishForm';
 import RestaurantForm from './RestaurantForm';
@@ -78,7 +79,15 @@ function FoodLogForm({ user, editObj = initialState }) {
       .catch((error) => {
         console.error(error);
       });
-  }, [editObj, initialState, getAllRestaurants, getAllDishes]);
+
+    getAllCategories()
+      .then((categories) => {
+        setCategories(categories);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }, [editObj]);
 
   if (!isLoaded) {
     return <div>Loading...</div>;
@@ -231,15 +240,23 @@ function FoodLogForm({ user, editObj = initialState }) {
   const generateOptions = (list, type) => list.map((item) => ({
     value: item.id,
     label: (
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} onMouseEnter={() => handleMouseEnter(item)} onMouseLeave={() => handleDropdownMouseLeave(item)}>
+      <div
+        style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
+        onMouseEnter={() => handleMouseEnter(item)}
+        onMouseLeave={() => handleDropdownMouseLeave(item)}
+      >
         <span>{type === 'restaurant' ? item.restaurant_name : item.dish_name}</span>
-        <Button variant="danger" size="sm" onClick={() => handleDelete(item.id, type)} style={{ marginLeft: '10px' }}>
+        <Button
+          variant="danger"
+          size="sm"
+          onClick={() => handleDelete(item.id, type)}
+          style={{ marginLeft: '10px' }}
+        >
           Delete
         </Button>
       </div>
     ),
   }));
-
   const restaurantOptions = generateOptions(restaurantList, 'restaurant');
   const dishOptions = generateOptions(dishList, 'dish');
 
@@ -278,7 +295,7 @@ function FoodLogForm({ user, editObj = initialState }) {
             <Select
               name="restaurant_id"
               data-type="restaurant"
-              value={restaurantOptions.find((option) => option.value === formInput.restaurant) || ''}
+              value={restaurantOptions.find((option) => option.value === formInput.restaurant_id) || ''}
               onChange={(selectedOption) => handleChange({ target: { name: 'restaurant_id', value: selectedOption.value } })}
               onMenuOpen={() => {
                 setIsDropdownOpen(true);
