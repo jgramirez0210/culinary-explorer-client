@@ -1,4 +1,3 @@
-import { useEffect, useState } from 'react';
 /**
  * Fetches the coordinates (latitude and longitude) for a given address using the Google Maps Geocoding API.
  * @param {string} address - The address to fetch coordinates for.
@@ -25,28 +24,23 @@ const fetchCoordinates = (address, restaurantId) => {
   });
 };
 
-function useGoogleMapsScript(apiKey) {
-  const [loaded, setLoaded] = useState(false);
+// utils/loadGoogleMapsScript.js
+const loadGoogleMapsScript = (options) => {
+  const existingScript = document.getElementById('google-maps-script');
+  if (existingScript) {
+    existingScript.remove();
+  }
 
-  useEffect(() => {
-    const existingScript = document.querySelector(`script[src="https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places"]`);
-    if (existingScript) {
-      setLoaded(true);
-      return;
-    }
+  const script = document.createElement('script');
+  script.id = 'google-maps-script';
+  script.src = `https://maps.googleapis.com/maps/api/js?key=${options.apiKey}&libraries=${options.libraries.join(',')}&language=${options.language}&region=${options.region}`;
+  script.async = true;
+  script.defer = true;
+  document.head.appendChild(script);
 
-    const script = document.createElement('script');
-    script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places`;
-    script.async = true;
-    script.onload = () => setLoaded(true);
-    document.body.appendChild(script);
+  return new Promise((resolve) => {
+    script.onload = () => resolve();
+  });
+};
 
-    return () => {
-      document.body.removeChild(script);
-    };
-  }, [apiKey]);
-
-  return loaded;
-}
-
-export { fetchCoordinates, useGoogleMapsScript };
+export { fetchCoordinates, loadGoogleMapsScript };
