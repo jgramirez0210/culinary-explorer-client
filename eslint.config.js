@@ -1,19 +1,28 @@
+const reactPlugin = require('eslint-plugin-react');
+const prettierPlugin = require('eslint-plugin-prettier');
+const jsxA11yPlugin = require('eslint-plugin-jsx-a11y');
+
 module.exports = {
-  extends: ['next', 'next/core-web-vitals', 'prettier', 'airbnb'],
-  env: {
-    browser: true,
-    es2021: true,
-  },
-  parserOptions: {
-    ecmaFeatures: {
-      jsx: true,
-    },
-    ecmaVersion: 12,
+  languageOptions: {
     sourceType: 'module',
+    parserOptions: {
+      ecmaFeatures: {
+        jsx: true,
+      },
+    },
+    globals: {
+      window: 'readonly',
+      document: 'readonly',
+    },
   },
-  plugins: ['react', 'prettier'],
+  plugins: {
+    react: reactPlugin,
+    prettier: prettierPlugin,
+    'jsx-a11y': jsxA11yPlugin,
+  },
+  ignores: ['node_modules/', 'dist/', 'webpack.config.js/', 'build/'],
   rules: {
-    'no-unused-vars': 'error',
+    'no-unused-vars': 'warn',
     'react/jsx-props-no-spreading': 'off',
     'react/react-in-jsx-scope': 'off',
     'no-alert': 'off',
@@ -25,12 +34,7 @@ module.exports = {
       },
     ],
     'react/jsx-one-expression-per-line': [0],
-    'no-console': [
-      1,
-      {
-        allow: ['error', 'warn'],
-      },
-    ],
+    'no-console': 'off',
     'comma-dangle': ['error'],
     'no-debugger': 1,
     'linebreak-style': 0,
@@ -44,17 +48,8 @@ module.exports = {
     'jsx-a11y/label-has-associated-control': [
       'error',
       {
-        required: {
-          some: ['nesting', 'id'],
-        },
-      },
-    ],
-    'jsx-a11y/label-has-for': [
-      'error',
-      {
-        required: {
-          some: ['nesting', 'id'],
-        },
+        assert: 'either',
+        depth: 3,
       },
     ],
   },
