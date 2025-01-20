@@ -1,29 +1,27 @@
 import React, { useState } from 'react';
 import { Form } from 'react-bootstrap';
-import { useJsApiLoader } from '@react-google-maps/api';
 import GooglePlacesAutocomplete from 'react-google-places-autocomplete';
 import PropTypes from 'prop-types';
+import { createRestaurant } from '../../api/Restaurants';
 
-const RestaurantForm = ({
-  id,
-  onRestaurantCreated,
-  createRestaurant,
-  updateRestaurant,
-}) => {
+const libraries = ['places'];
+
+const RestaurantForm = ({ id, onRestaurantCreated, updateRestaurant, isLoaded }) => {
   const [formInput, setFormInput] = useState({
     restaurant_name: '',
     restaurant_address: '',
     website_url: '',
   });
+
   const [errors, setErrors] = useState({});
-  const { isLoaded } = useJsApiLoader({
-    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY,
-  });
 
-  if (!isLoaded) return <div>Loading...</div>;
+  if (!isLoaded) {
+    return <div>Loading...</div>;
+  }
+  console.log('RestaurantForm props:', { isLoaded });
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
+  const handleSubmit = () => {
+    // event.preventDefault();
     const newErrors = {};
     if (!formInput.restaurant_name) newErrors.restaurant_name = 'Restaurant name is required';
     if (!formInput.restaurant_address) newErrors.restaurant_address = 'Restaurant address is required';
@@ -88,32 +86,33 @@ const RestaurantForm = ({
       </Form.Group>
       <Form.Group controlId="restaurantAddress">
         <Form.Label>Restaurant Address</Form.Label>
-        <GooglePlacesAutocomplete
-          apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}
-          selectProps={{
-            value: formInput.restaurant_address,
-            onChange: (value) => handleChange({ target: { name: 'restaurant_address', value } }),
-            placeholder: 'Restaurant Address',
-            isInvalid: !!errors.restaurant_address,
-          }}
-        />
-        <Form.Control.Feedback type="invalid">{errors.restaurant_address}</Form.Control.Feedback>
+        {isLoaded && (
+          <GooglePlacesAutocomplete
+            selectProps={{
+              value: formInput.restaurant_address,
+              onChange: (value) => setFormInput({ ...formInput, restaurant_address: value }),
+              placeholder: 'Restaurant Address',
+            }}
+          />
+        )}
       </Form.Group>
+
       <Form.Group controlId="websiteUrl">
         <Form.Label>Website Url</Form.Label>
-        <Form.Control type="text" name="website_url" value={formInput.website_url} onChange={handleChange} placeholder="Website URL" isInvalid={!!errors.website_url} />
+        <Form.Control type="text" name="website_url" value={formInput.website_url} onChange={handleChange} placeholder="Enter website URL" isInvalid={!!errors.website_url} />
         <Form.Control.Feedback type="invalid">{errors.website_url}</Form.Control.Feedback>
       </Form.Group>
-      <button type="submit">Submit a New Restaurant</button>
+      <button type="submit">Submit</button>
     </Form>
   );
 };
 
 RestaurantForm.propTypes = {
   id: PropTypes.string,
-  updateRestaurant: PropTypes.func,
+  onRestaurantCreated: PropTypes.func.isRequired,
   createRestaurant: PropTypes.func,
-  onRestaurantCreated: PropTypes.func,
+  updateRestaurant: PropTypes.func,
+  isLoaded: PropTypes.bool.isRequired,
 };
 
 export default RestaurantForm;

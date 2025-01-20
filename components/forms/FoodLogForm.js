@@ -21,7 +21,7 @@ const initialState = {
   category_ids: [],
 };
 
-function FoodLogForm({ user, editObj = initialState }) {
+function FoodLogForm({ isLoaded, user, editObj = initialState }) {
   // Default Form States
   const [formInput, setFormInput] = useState(initialState);
   const [reload, setReload] = useState(false);
@@ -34,10 +34,10 @@ function FoodLogForm({ user, editObj = initialState }) {
   const [showDropdown, setShowDropdown] = useState(false); // eslint-disable-line no-unused-vars
   const [restaurantList, setRestaurants] = useState([]);
   const [dishList, setDishes] = useState([]);
-  const [categoryList, setCategories] = useState([]); // eslint-disable-line no-unused-vars
+  const [categoryList, setCategories] = useState([]);
   // Form Switching States
   const [showDishForm, setShowDishForm] = useState(false);
-  const [showRestaurantForm, setShowRestaurantForm] = useState(false); // eslint-disable-line no-unused-vars
+  const [showRestaurantForm, setShowRestaurantForm] = useState(false);
   const [showCategoryForm, setShowCategoryForm] = useState(false); // eslint-disable-line no-unused-vars
   const [showAddToFoodLogForm, setShowAddToFoodLogForm] = useState(true); // eslint-disable-line no-unused-vars
   // Hover Card States
@@ -46,10 +46,6 @@ function FoodLogForm({ user, editObj = initialState }) {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [dish, setDish] = useState(null); // eslint-disable-line no-unused-vars
   const [cardType, setCardType] = useState(null);
-
-  const { isLoaded } = useJsApiLoader({
-    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY,
-  });
 
   // load Google Maps Script Asynchronously
   useEffect(() => {
@@ -199,7 +195,7 @@ function FoodLogForm({ user, editObj = initialState }) {
       }));
     }
   };
-
+  // HANDEL WHAT HAPPENS WHEN SOMETHING CHANGES
   const handleChange = (e) => {
     const { name, value } = e.target;
     if (value === 'create_new') {
@@ -219,44 +215,70 @@ function FoodLogForm({ user, editObj = initialState }) {
   const handleDropdownClick = () => {
     setIsDropdownClicked(true);
   };
+  // // GENERATE DELETE BUTTON
+  // // eslint-disable-next-line no-shadow
+  // const handleDelete = (id, type) => {
+  //   if (!id) {
+  //     console.error('Cannot delete item: id is undefined');
+  //     return;
+  //   }
+  //   const deleteFunction = type === 'restaurant' ? deleteRestaurant : deleteDish;
+  //   deleteFunction(id)
+  //     .then(() => {
+  //       setReload((prev) => !prev);
+  //     })
+  //     .catch((error) => {
+  //       console.error(`Error deleting ${type} with id: ${id}`, error);
+  //     });
+  // };
 
-  // eslint-disable-next-line no-shadow
+  // // Generate delete button for dropdown lists
+  // const generateOptions = (list, type) => list.map((item) => ({
+  //   value: item.id,
+  //   label: (
+  //     <div
+  //       style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
+  //       onMouseEnter={() => handleMouseEnter(item)}
+  //       onMouseLeave={() => handleDropdownMouseLeave(item)}
+  //     >
+  //       <span>{type === 'restaurant' ? item.restaurant_name : item.dish_name}</span>
+  //       <Button
+  //         variant="danger"
+  //         size="sm"
+  //         onClick={() => handleDelete(item.id, type)}
+  //         style={{ marginLeft: '10px' }}
+  //       >
+  //         Delete
+  //       </Button>
+  //     </div>
+  //   ),
+  // }));
   const handleDelete = (id, type) => {
-    if (!id) {
-      console.error('Cannot delete item: id is undefined');
-      return;
-    }
     const deleteFunction = type === 'restaurant' ? deleteRestaurant : deleteDish;
     deleteFunction(id)
       .then(() => {
-        setReload((prev) => !prev);
+        if (type === 'restaurant') {
+          setRestaurants((prev) => prev.filter((item) => item.id !== id));
+        } else {
+          setDishes((prev) => prev.filter((item) => item.id !== id));
+        }
       })
-      .catch((error) => {
-        console.error(`Error deleting ${type} with id: ${id}`, error);
-      });
+      .catch(console.error);
   };
 
-  // Generate delete button for dropdown lists
-  const generateOptions = (list, type) => list.map((item) => ({
-    value: item.id,
-    label: (
-      <div
-        style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
-        onMouseEnter={() => handleMouseEnter(item)}
-        onMouseLeave={() => handleDropdownMouseLeave(item)}
-      >
-        <span>{type === 'restaurant' ? item.restaurant_name : item.dish_name}</span>
-        <Button
-          variant="danger"
-          size="sm"
-          onClick={() => handleDelete(item.id, type)}
-          style={{ marginLeft: '10px' }}
-        >
-          Delete
-        </Button>
-      </div>
-    ),
-  }));
+  const generateOptions = (list, type) =>
+    list.map((item) => ({
+      value: item.id,
+      label: (
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <span>{type === 'restaurant' ? item.restaurant_name : item.dish_name}</span>
+          <Button variant="danger" size="sm" onClick={() => handleDelete(item.id, type)}>
+            Delete
+          </Button>
+        </div>
+      ),
+    }));
+
   const restaurantOptions = generateOptions(restaurantList, 'restaurant');
   const dishOptions = generateOptions(dishList, 'dish');
 
@@ -264,7 +286,7 @@ function FoodLogForm({ user, editObj = initialState }) {
     if (showRestaurantForm) {
       return (
         <div>
-          <RestaurantForm user={user} onRestaurantCreated={handleSubmit} />
+          <RestaurantForm user={user} onRestaurantCreated={handleSubmit} isLoaded={isLoaded} />
           <Button variant="primary" onClick={handleBack}>
             Back
           </Button>
@@ -275,7 +297,7 @@ function FoodLogForm({ user, editObj = initialState }) {
     if (showDishForm) {
       return (
         <div>
-          <DishForm user={user} onDishCreated={handleSubmit} />
+          <DishForm user={user} onDishCreated={handleSubmit} isLoaded={isLoaded} />
           <Button variant="primary" onClick={handleBack}>
             Back
           </Button>
