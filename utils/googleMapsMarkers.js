@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { useJsApiLoader } from '@react-google-maps/api';
 import { getAllRestaurants } from '../api/Restaurants';
 import fetchCoordinates from './GoogleMapsScripts';
 import Map from '../components/GoogleMapsCard';

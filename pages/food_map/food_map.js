@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { loadGoogleMapsScript } from '../../utils/GoogleMapsScripts';
 import LocationFetcher from '../../utils/googleMapsMarkers';
+import { loadGoogleMapsScript } from '../../utils/GoogleMapsScripts';
 
 const GoogleMapsCard = () => {
   const [isLoaded, setIsLoaded] = useState(false);

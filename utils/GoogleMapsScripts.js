@@ -28,18 +28,20 @@ const fetchCoordinates = (address, restaurantId) => {
 const loadGoogleMapsScript = (options) => {
   const existingScript = document.getElementById('google-maps-script');
   if (existingScript) {
-    existingScript.remove();
+    return Promise.resolve();
   }
 
   const script = document.createElement('script');
   script.id = 'google-maps-script';
-  script.src = `https://maps.googleapis.com/maps/api/js?key=${options.apiKey}&libraries=${options.libraries.join(',')}&language=${options.language}&region=${options.region}`;
+  script.src = `https://maps.googleapis.com/maps/api/js?key=${options.apiKey}&libraries=${options.libraries.join(',')}&language=${options.language}&region=${options.region}&callback=initMap`;
   script.async = true;
   script.defer = true;
   document.head.appendChild(script);
 
   return new Promise((resolve) => {
-    script.onload = () => resolve();
+    window.initMap = () => {
+      resolve();
+    };
   });
 };
 
