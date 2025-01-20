@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useJsApiLoader } from '@react-google-maps/api';
 import { getAllRestaurants } from '../api/Restaurants';
-import fetchCoordinates from '../api/GoogleMapsApi';
+import fetchCoordinates from './GoogleMapsScripts';
 import Map from '../components/GoogleMapsCard';
 // Fetch Locations for Map
 /**
@@ -13,11 +13,8 @@ import Map from '../components/GoogleMapsCard';
  *
  * @returns {JSX.Element} The LocationFetcher component.
  */
-const LocationFetcher = () => {
+const LocationFetcher = (isLoaded) => {
   const [locations, setLocations] = useState([]);
-  // const { isLoaded } = useJsApiLoader({
-  //   googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY,
-  // });
 
   useEffect(() => {
     const updateLocations = async () => {
