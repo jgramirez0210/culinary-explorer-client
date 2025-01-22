@@ -18,7 +18,6 @@ const RestaurantForm = ({ id, onRestaurantCreated, updateRestaurant, isLoaded })
   if (!isLoaded) {
     return <div>Loading...</div>;
   }
-  console.log('RestaurantForm props:', { isLoaded });
 
   const handleSubmit = () => {
     // event.preventDefault();
