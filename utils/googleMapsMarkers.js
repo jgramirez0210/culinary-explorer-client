@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { getAllRestaurants } from '../api/Restaurants';
-import fetchCoordinates from './GoogleMapsScripts';
+import { fetchCoordinates } from './GoogleMapsScripts';
 import Map from '../components/GoogleMapsCard';
 // Fetch Locations for Map
 /**
