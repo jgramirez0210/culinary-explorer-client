@@ -1,3 +1,20 @@
+
+// import React, { useState, useEffect } from 'react';
+// import { getAllRestaurants } from '../api/Restaurants';
+// import { fetchCoordinates } from './GoogleMapsScripts';
+// import Map from '../components/GoogleMapsCard';
+// Fetch Locations for Map
+/**
+ * Fetches and updates the locations of restaurants using Google Maps API.
+ * @returns {JSX.Element} The map component displaying the locations.
+ */
+/**
+ * Fetches and displays locations on a map.
+ *
+ * @returns {JSX.Element} The LocationFetcher component.
+//  */
+// const LocationFetcher = (isLoaded) => {
+
 // import React, { useEffect, useState } from 'react';
 // import { GoogleMap, AdvancedMarkerElement } from '@react-google-maps/api';
 // import { getAllRestaurants } from '../api/Restaurants';
@@ -134,6 +151,7 @@ import { getAllRestaurants } from '../api/Restaurants'; // Ensure correct import
 import Map from '../components/GoogleMapsCard'; // Ensure correct import
 
 const LocationFetcher = ({ isLoaded }) => {
+
   const [locations, setLocations] = useState([]);
 
   useEffect(() => {
