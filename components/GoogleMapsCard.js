@@ -60,15 +60,16 @@ import React, { useEffect } from 'react';
 import { loadGoogleMapsScript } from '../utils/GoogleMapsScripts';
 
 // Initialize and add the map
-const initMap = () => {
-  const position = { lat: -25.344, lng: 131.031 };
+const initMap = async () => {
+  const position = { lat: 29.7604, lng: -95.3698 };
   const map = new google.maps.Map(document.getElementById('map'), {
-    zoom: 4,
+    zoom: 8,
     center: position,
     mapId: 'DEMO_MAP_ID',
   });
+  const { AdvancedMarkerElement } = await google.maps.importLibrary('marker');
 
-  const marker = new google.maps.AdvancedMarkerElement({
+  new AdvancedMarkerElement({
     position: position,
     map: map,
     title: 'Uluru',
