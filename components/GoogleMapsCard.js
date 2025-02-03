@@ -1,48 +1,3 @@
-// components/GoogleMapsCard.js
-// import React, { useEffect, useState } from 'react';
-// import { loadGoogleMapsScript } from '../utils/GoogleMapsScripts';
-// import LocationFetcher from '../utils/googleMapsMarkers';
-
-// const GoogleMapsCard = ({ locations }) => {
-//   const [scriptLoaded, setScriptLoaded] = useState(false);
-//   const [loadError, setLoadError] = useState(false);
-//   const [fetchedLocations, setFetchedLocations] = useState([]);
-
-//   useEffect(() => {
-//     let isMounted = true;
-
-//     loadGoogleMapsScript()
-//       .then(() => {
-//         if (isMounted) setScriptLoaded(true);
-//       })
-//       .catch(() => {
-//         if (isMounted) setLoadError(true);
-//       });
-
-//     return () => {
-//       isMounted = false;
-//     };
-//   }, []);
-
-//   if (loadError) {
-//     return <div>Error loading Google Maps script</div>;
-//   }
-
-//   if (!scriptLoaded) {
-//     return <div>Loading...</div>;
-//   }
-
-//   return (
-//     <div>
-//       <LocationFetcher isLoaded={isLoaded} onLocationsFetched={handleLocationsFetched} />
-//       <Map locations={locations} />
-//     </div>
-//   );
-// };
-
-// export default GoogleMapsCard;
-
-// In your main component file where you load the Google Maps API
 import React, { useState, useEffect } from 'react';
 import { loadGoogleMapsAPI } from '../utils/GoogleMapsScripts';
 import LocationFetcher from '../utils/googleMapsMarkers';
@@ -75,22 +30,10 @@ const GoogleMapsCard = () => {
     }
   }, [isLoaded, locations]);
 
-  const handleLocationsFetched = (fetchedLocations) => {
-    setLocations(fetchedLocations);
-  };
-
-  if (loadError) {
-    return <div>Error loading Google Maps script</div>;
-  }
-
-  if (!isLoaded) {
-    return <div>Loading...</div>;
-  }
-
   return (
     <div>
-      <LocationFetcher isLoaded={isLoaded} onLocationsFetched={handleLocationsFetched} />
-      <div id="map" style={{ height: '500px', width: '100%' }}></div>
+      <LocationFetcher isLoaded={isLoaded} onLocationsFetched={setLocations} />
+      <div id="map" style={{ height: '400px', width: '100%' }}></div>
     </div>
   );
 };

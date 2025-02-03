@@ -26,28 +26,37 @@
 //       });
 //   });
 // };
+const fetchCoordinates = (restaurant_address, restaurantId) => {
+  console.warn(`Fetching coordinates for address: ${restaurant_address}, restaurantId: ${restaurantId}`);
 
-const fetchCoordinates = (address, restaurantId) => {
-  // Implementation for fetching coordinates based on address
   return new Promise((resolve, reject) => {
-    fetch(`https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}`)
+    fetch(`https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(restaurant_address)}&key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}`)
       .then((response) => response.json())
       .then((data) => {
-        if (data.results && data.results.length > 0) {
+        console.log('API response:', data); // Log the entire response for debugging
+        if (data.status === 'OK' && data.results && data.results.length > 0) {
           const { lat, lng } = data.results[0].geometry.location;
-          resolve({ lat, lng });
+          if (typeof lat === 'number' && typeof lng === 'number') {
+            console.warn(`Coordinates found: lat=${lat}, lng=${lng} for address: ${restaurant_address}, restaurantId: ${restaurantId}`);
+            resolve({ lat, lng });
+          } else {
+            console.warn(`Invalid coordinates received for address: ${restaurant_address}, restaurantId: ${restaurantId}`);
+            resolve({ lat: 0, lng: 0 }); // Provide default coordinates as fallback
+          }
+        } else if (data.status === 'REQUEST_DENIED') {
+          console.error('API key is restricted or invalid. Please check your API key settings.');
+          reject(new Error('API key is restricted or invalid.'));
         } else {
-          reject(new Error(`No results found for address: ${address}, restaurantId: ${restaurantId}`));
+          console.warn(`No results found for address: ${restaurant_address}, restaurantId: ${restaurantId}`);
+          resolve({ lat: 0, lng: 0 }); // Provide default coordinates as fallback
         }
       })
       .catch((error) => {
-        console.error(`Error fetching coordinates for address: ${address}, restaurantId: ${restaurantId}`, error);
-        reject(error);
+        console.error(`Error fetching coordinates for address: ${restaurant_address}, restaurantId: ${restaurantId}`, error);
+        resolve({ lat: 0, lng: 0 }); // Provide default coordinates as fallback
       });
   });
 };
-
-export default fetchCoordinates;
 
 // // GoogleMapsScripts.js
 // let scriptLoaded = false;
@@ -80,14 +89,23 @@ export default fetchCoordinates;
 // };
 const loadGoogleMapsAPI = (callback, onError) => {
   if (typeof document !== 'undefined') {
-    const script = document.createElement('script');
-    script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&callback=initMap`;
-    script.async = true;
-    script.defer = true;
-    script.onerror = onError;
-    window.initMap = callback;
-    document.head.appendChild(script);
+    if (!document.querySelector('script[src*="maps.googleapis.com"]')) {
+      const script = document.createElement('script');
+      script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&callback=initMap`;
+      script.async = true;
+      script.defer = true;
+      script.setAttribute('loading', 'async');
+      script.onerror = onError;
+      window.initMap = callback;
+      document.head.appendChild(script);
+    } else {
+      // If script is already present, directly call the callback
+      if (window.google && window.google.maps) {
+        callback();
+      } else {
+        window.initMap = callback;
+      }
+    }
   }
 };
-
 export { loadGoogleMapsAPI, fetchCoordinates };
