@@ -1,10 +1,14 @@
-// utils/fetchCoordinates.js
-const fetchCoordinates = (address) => {};
-
+// // utils/fetchCoordinates.js
 // const fetchCoordinates = (address, restaurantId) => {
 //   return new Promise((resolve, reject) => {
+//     console.warn(`fetchCoordinates called with address: ${address}, restaurantId: ${restaurantId}`);
 //     fetch(`https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}`)
-//       .then((response) => response.json())
+//       .then((response) => {
+//         if (!response.ok) {
+//           throw new Error(`Network response was not ok: ${response.statusText}`);
+//         }
+//         return response.json();
+//       })
 //       .then((data) => {
 //         if (data.results && data.results.length > 0) {
 //           const { lat, lng } = data.results[0].geometry.location;
@@ -12,54 +16,78 @@ const fetchCoordinates = (address) => {};
 //           console.warn(`Fetched coordinates for address: ${address}, restaurantId: ${restaurantId}`, coordinates);
 //           resolve(coordinates);
 //         } else {
-//           reject(new Error(`No results found for address: ${address}, restaurantId: ${restaurantId}`));
+//           console.error(`No results found for address: ${address}, restaurantId: ${restaurantId}`);
+//           resolve({ lat: 0, lng: 0 }); // Provide default coordinates as fallback
 //         }
 //       })
 //       .catch((error) => {
 //         console.error(`Error fetching coordinates for address: ${address}, restaurantId: ${restaurantId}`, error);
-//         reject(error);
+//         resolve({ lat: 0, lng: 0 }); // Provide default coordinates as fallback
 //       });
 //   });
 // };
 
-// utils/loadGoogleMapsScript.js
-// const loadGoogleMapsScript = (options) => {
-//   const existingScript = document.getElementById('google-maps-script');
-//   if (existingScript) {
+const fetchCoordinates = (address, restaurantId) => {
+  // Implementation for fetching coordinates based on address
+  return new Promise((resolve, reject) => {
+    fetch(`https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}`)
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.results && data.results.length > 0) {
+          const { lat, lng } = data.results[0].geometry.location;
+          resolve({ lat, lng });
+        } else {
+          reject(new Error(`No results found for address: ${address}, restaurantId: ${restaurantId}`));
+        }
+      })
+      .catch((error) => {
+        console.error(`Error fetching coordinates for address: ${address}, restaurantId: ${restaurantId}`, error);
+        reject(error);
+      });
+  });
+};
+
+export default fetchCoordinates;
+
+// // GoogleMapsScripts.js
+// let scriptLoaded = false;
+// let scriptLoadingPromise = null;
+
+// const loadGoogleMapsScript = () => {
+//   if (scriptLoaded) {
 //     return Promise.resolve();
 //   }
 
-//   const script = document.createElement('script');
-//   script.id = 'google-maps-script';
-//   script.src = `https://maps.googleapis.com/maps/api/js?key=${options.apiKey}&libraries=${options.libraries.join(',')}&language=${options.language}&region=${options.region}&callback=initMap`;
-//   script.async = true;
-//   script.defer = true;
-//   document.head.appendChild(script);
+//   if (scriptLoadingPromise) {
+//     return scriptLoadingPromise;
+//   }
 
-//   return new Promise((resolve) => {
-//     window.initMap = () => {
+//   scriptLoadingPromise = new Promise((resolve, reject) => {
+//     const script = document.createElement('script');
+//     script.src = `https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=places`;
+//     script.async = true;
+//     script.onload = () => {
+//       scriptLoaded = true;
 //       resolve();
 //     };
+//     script.onerror = (error) => {
+//       reject(error);
+//     };
+//     document.head.appendChild(script);
 //   });
+
+//   return scriptLoadingPromise;
 // };
-
-// utils/GoogleMapsScripts.js
-
-export const loadGoogleMapsScript = (callback) => {
-  const existingScript = document.getElementById('googleMaps');
-
-  if (!existingScript) {
+const loadGoogleMapsAPI = (callback, onError) => {
+  if (typeof document !== 'undefined') {
     const script = document.createElement('script');
-    script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&libraries=marker`;
-    script.id = 'googleMaps';
+    script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&callback=initMap`;
     script.async = true;
     script.defer = true;
-    document.body.appendChild(script);
-
-    script.onload = () => {
-      if (callback) callback();
-    };
-  } else if (callback) {
-    callback();
+    script.onerror = onError;
+    window.initMap = callback;
+    document.head.appendChild(script);
   }
 };
+
+export { loadGoogleMapsAPI, fetchCoordinates };

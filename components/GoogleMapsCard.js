@@ -1,87 +1,98 @@
-// import { GoogleMap, Marker, InfoWindow, useJsApiLoader } from '@react-google-maps/api';
-// import { useState } from 'react';
-// import PropTypes from 'prop-types';
-// import GoogleMapsHoverCard from './hover cards/GoogleMapsHoverCard';
+// components/GoogleMapsCard.js
+// import React, { useEffect, useState } from 'react';
+// import { loadGoogleMapsScript } from '../utils/GoogleMapsScripts';
+// import LocationFetcher from '../utils/googleMapsMarkers';
 
-// const center = { lat: 29.749907, lng: -95.358421 };
+// const GoogleMapsCard = ({ locations }) => {
+//   const [scriptLoaded, setScriptLoaded] = useState(false);
+//   const [loadError, setLoadError] = useState(false);
+//   const [fetchedLocations, setFetchedLocations] = useState([]);
 
-// /**
-//  * Renders a Google Map component with markers and info windows.
-//  *
-//  * @param {Object[]} locations - An array of locations to be displayed as markers on the map.
-//  * @returns {JSX.Element} The rendered Google Map component.
-//  */
-// const MapComponent = ({ locations, isLoaded }) => {
-//   const [selectedLocation, setSelectedLocation] = useState(null);
+//   useEffect(() => {
+//     let isMounted = true;
 
-//   const handleInfoWindowCloseClick = () => {
-//     setSelectedLocation(null);
-//   };
+//     loadGoogleMapsScript()
+//       .then(() => {
+//         if (isMounted) setScriptLoaded(true);
+//       })
+//       .catch(() => {
+//         if (isMounted) setLoadError(true);
+//       });
 
-//   const handleMarkerClick = (location) => {
-//     setSelectedLocation(location);
-//   };
+//     return () => {
+//       isMounted = false;
+//     };
+//   }, []);
 
-//   if (!isLoaded) return <div>Loading...</div>;
+//   if (loadError) {
+//     return <div>Error loading Google Maps script</div>;
+//   }
+
+//   if (!scriptLoaded) {
+//     return <div>Loading...</div>;
+//   }
 
 //   return (
-//     <GoogleMap mapContainerStyle={{ height: '400px', width: '800px' }} center={center} zoom={10}>
-//       {locations.map((poi) => {
-//         const restaurantId = poi.id;
-
-//         return <Marker key={restaurantId} position={poi.location} title={poi.restaurantName} onClick={() => handleMarkerClick(poi)} />;
-//       })}
-//       {selectedLocation && (
-//         <InfoWindow position={selectedLocation.location} onCloseClick={handleInfoWindowCloseClick}>
-//           <>
-//             <GoogleMapsHoverCard poi={selectedLocation} restaurantId={selectedLocation.id} />
-//           </>
-//         </InfoWindow>
-//       )}
-//     </GoogleMap>
+//     <div>
+//       <LocationFetcher isLoaded={isLoaded} onLocationsFetched={handleLocationsFetched} />
+//       <Map locations={locations} />
+//     </div>
 //   );
 // };
 
-// MapComponent.propTypes = {
-//   locations: PropTypes.arrayOf(
-//     PropTypes.shape({
-//       location: PropTypes.shape({
-//         lat: PropTypes.number.isRequired,
-//         lng: PropTypes.number.isRequired,
-//       }).isRequired,
-//       restaurantName: PropTypes.string.isRequired,
-//     }).isRequired,
-//   ).isRequired,
-// };
+// export default GoogleMapsCard;
 
-// export default MapComponent;
-
-import React, { useEffect } from 'react';
-import { loadGoogleMapsScript } from '../utils/GoogleMapsScripts';
-
-// Initialize and add the map
-const initMap = async () => {
-  const position = { lat: 29.7604, lng: -95.3698 };
-  const map = new google.maps.Map(document.getElementById('map'), {
-    zoom: 8,
-    center: position,
-    mapId: 'DEMO_MAP_ID',
-  });
-  const { AdvancedMarkerElement } = await google.maps.importLibrary('marker');
-
-  new AdvancedMarkerElement({
-    position: position,
-    map: map,
-    title: 'Uluru',
-  });
-};
+// In your main component file where you load the Google Maps API
+import React, { useState, useEffect } from 'react';
+import { loadGoogleMapsAPI } from '../utils/GoogleMapsScripts';
+import LocationFetcher from '../utils/googleMapsMarkers';
 
 const GoogleMapsCard = () => {
+  const [isLoaded, setIsLoaded] = useState(false);
+  const [loadError, setLoadError] = useState(false);
+  const [locations, setLocations] = useState([]);
+
   useEffect(() => {
-    loadGoogleMapsScript(initMap);
+    loadGoogleMapsAPI(
+      () => setIsLoaded(true),
+      () => setLoadError(true),
+    );
   }, []);
 
-  return <div id="map" style={{ height: '400px', width: '800px' }}></div>;
+  useEffect(() => {
+    if (isLoaded) {
+      const map = new google.maps.Map(document.getElementById('map'), {
+        center: { lat: 29.7604, lng: -95.3698 }, // Houston coordinates
+        zoom: 8,
+      });
+
+      locations.forEach((location) => {
+        new google.maps.Marker({
+          position: location,
+          map: map,
+        });
+      });
+    }
+  }, [isLoaded, locations]);
+
+  const handleLocationsFetched = (fetchedLocations) => {
+    setLocations(fetchedLocations);
+  };
+
+  if (loadError) {
+    return <div>Error loading Google Maps script</div>;
+  }
+
+  if (!isLoaded) {
+    return <div>Loading...</div>;
+  }
+
+  return (
+    <div>
+      <LocationFetcher isLoaded={isLoaded} onLocationsFetched={handleLocationsFetched} />
+      <div id="map" style={{ height: '500px', width: '100%' }}></div>
+    </div>
+  );
 };
 
 export default GoogleMapsCard;
