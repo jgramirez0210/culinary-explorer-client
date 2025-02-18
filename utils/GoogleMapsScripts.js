@@ -29,31 +29,32 @@
 const fetchCoordinates = (restaurant_address, restaurantId) => {
   console.warn(`Fetching coordinates for address: ${restaurant_address}, restaurantId: ${restaurantId}`);
 
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
+    // Remove reject from Promise constructor
     fetch(`https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(restaurant_address)}&key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}`)
       .then((response) => response.json())
       .then((data) => {
-        console.log('API response:', data); // Log the entire response for debugging
+        console.log('API response:', data);
         if (data.status === 'OK' && data.results && data.results.length > 0) {
           const { lat, lng } = data.results[0].geometry.location;
           if (typeof lat === 'number' && typeof lng === 'number') {
-            console.warn(`Coordinates found: lat=${lat}, lng=${lng} for address: ${restaurant_address}, restaurantId: ${restaurantId}`);
+            console.warn(`Coordinates found: lat=${lat}, lng=${lng}`);
             resolve({ lat, lng });
           } else {
-            console.warn(`Invalid coordinates received for address: ${restaurant_address}, restaurantId: ${restaurantId}`);
-            resolve({ lat: 0, lng: 0 }); // Provide default coordinates as fallback
+            console.warn(`Invalid coordinates received`);
+            resolve({ lat: 29.7604, lng: -95.3698 }); // Default to Houston coordinates
           }
         } else if (data.status === 'REQUEST_DENIED') {
-          console.error('API key is restricted or invalid. Please check your API key settings.');
-          reject(new Error('API key is restricted or invalid.'));
+          console.error('API key is restricted or invalid. Using default coordinates.');
+          resolve({ lat: 29.7604, lng: -95.3698 }); // Default to Houston coordinates
         } else {
-          console.warn(`No results found for address: ${restaurant_address}, restaurantId: ${restaurantId}`);
-          resolve({ lat: 0, lng: 0 }); // Provide default coordinates as fallback
+          console.warn(`No results found for address`);
+          resolve({ lat: 29.7604, lng: -95.3698 }); // Default to Houston coordinates
         }
       })
       .catch((error) => {
-        console.error(`Error fetching coordinates for address: ${restaurant_address}, restaurantId: ${restaurantId}`, error);
-        resolve({ lat: 0, lng: 0 }); // Provide default coordinates as fallback
+        console.error(`Error fetching coordinates:`, error);
+        resolve({ lat: 29.7604, lng: -95.3698 }); // Default to Houston coordinates
       });
   });
 };
