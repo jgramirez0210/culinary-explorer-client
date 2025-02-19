@@ -14,10 +14,11 @@ const GoogleMapsCard = () => {
   const [errorMessage, setErrorMessage] = useState('');
   const [userLocation, setUserLocation] = useState(HOUSTON_CENTER);
   const [map, setMap] = useState(null);
+  const [activeInfoWindow, setActiveInfoWindow] = useState(null);
+  const [markersInitialized, setMarkersInitialized] = useState(false);
 
-  // First useEffect: Get user location and load Google Maps API
+  // First useEffect remains the same
   useEffect(() => {
-    // Request user location first
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
@@ -29,12 +30,10 @@ const GoogleMapsCard = () => {
         },
         (error) => {
           console.warn('Error getting user location:', error);
-          // Keep default Houston coordinates if geolocation fails
         },
       );
     }
 
-    // Then load Google Maps API
     try {
       loadGoogleMapsAPI(
         () => setIsLoaded(true),
@@ -51,15 +50,15 @@ const GoogleMapsCard = () => {
     }
   }, []);
 
-  // Second useEffect: Initialize map once API is loaded and we have user location
+  // Initialize map
   useEffect(() => {
     if (isLoaded) {
       try {
         const newMap = new google.maps.Map(document.getElementById('map'), {
           center: userLocation,
-          zoom: 5, // Set a reasonable initial zoom level
-          minZoom: 5, // Prevent zooming out too far
-          maxZoom: 18, // Prevent zooming in too close
+          zoom: 11,
+          minZoom: 5,
+          maxZoom: 18,
           gestureHandling: 'cooperative',
           fullscreenControl: true,
           mapTypeControl: true,
@@ -67,18 +66,7 @@ const GoogleMapsCard = () => {
         });
         setMap(newMap);
 
-        // Create bounds with padding around user location
-        const bounds = new google.maps.LatLngBounds();
-        bounds.extend(new google.maps.LatLng(userLocation.lat - 0.1, userLocation.lng - 0.1));
-        bounds.extend(new google.maps.LatLng(userLocation.lat + 0.1, userLocation.lng + 0.1));
-        newMap.fitBounds(bounds);
-
-        // Force a slightly wider view after bounds are set
-        google.maps.event.addListenerOnce(newMap, 'bounds_changed', () => {
-          newMap.setZoom(11);
-        });
-
-        // Add marker for user's location
+        // Add user location marker
         new google.maps.Marker({
           position: userLocation,
           map: newMap,
@@ -99,54 +87,102 @@ const GoogleMapsCard = () => {
     }
   }, [isLoaded, userLocation]);
 
-  // Handle locations updates
+  // Handle locations updates with hover functionality
   useEffect(() => {
     if (map && locations?.length > 0) {
-      console.log('Attempting to add markers for locations:', locations);
       const bounds = new google.maps.LatLngBounds();
-
-      // Add user location to bounds
-      console.log('Adding user location to bounds:', userLocation);
       bounds.extend(userLocation);
 
-      // Clear existing markers (if needed)
-      locations.forEach((location) => {
-        // Check for nested coordinates structure
-        const coords = location.coordinates || location;
-        if (coords?.lat && coords?.lng) {
-          console.log('Creating marker for location:', location.restaurant_name);
-          const marker = new google.maps.Marker({
-            position: coords,
-            map: map,
-            title: location.name || 'Restaurant', // Add title if available
-            animation: google.maps.Animation.DROP, // Add animation
-          });
-          bounds.extend(marker.getPosition());
-        } else {
-          console.warn('Invalid location data:', location);
+      // Add click listener to map to close active info window
+      map.addListener('click', () => {
+        if (activeInfoWindow) {
+          activeInfoWindow.close();
+          setActiveInfoWindow(null);
         }
       });
 
-      // Adjust bounds with some padding
+      locations.forEach((location) => {
+        const coords = location.coordinates || location;
+        if (coords?.lat && coords?.lng) {
+          // Create info window content
+          const infoContent = `
+            <div style="padding: 12px; max-width: 300px;">
+              <h3 style="margin: 0 0 8px 0; color: #1a1a1a; font-size: 16px;">
+                ${location.restaurant_name || 'Restaurant'}
+              </h3>
+              ${
+                location.restaurant_address
+                  ? `<p style="margin: 0 0 8px 0; color: #666; font-size: 14px;">
+                  ${location.restaurant_address}
+                </p>`
+                  : ''
+              }
+              ${
+                location.website_url
+                  ? `<a href="${location.website_url}" 
+                   target="_blank" 
+                   style="color: #4285F4; text-decoration: none; font-size: 14px;">
+                  Visit Website
+                </a>`
+                  : ''
+              }
+            </div>
+          `;
+
+          const infoWindow = new google.maps.InfoWindow({
+            content: infoContent,
+            maxWidth: 300,
+          });
+
+          // Add close listener to the info window
+          infoWindow.addListener('closeclick', () => {
+            setActiveInfoWindow(null);
+          });
+
+          const marker = new google.maps.Marker({
+            position: coords,
+            map: map,
+            title: location.restaurant_name || 'Restaurant',
+            // Only animate markers on initial load
+            animation: !markersInitialized ? google.maps.Animation.DROP : null,
+          });
+
+          // Add click listener to marker
+          marker.addListener('click', (e) => {
+            e.stop();
+            if (activeInfoWindow) {
+              activeInfoWindow.close();
+            }
+            infoWindow.open(map, marker);
+            setActiveInfoWindow(infoWindow);
+          });
+
+          bounds.extend(marker.getPosition());
+        }
+      });
+
+      // Set markers as initialized after first render
+      if (!markersInitialized) {
+        setMarkersInitialized(true);
+      }
+
+      // Add padding to bounds
       const ne = bounds.getNorthEast();
       const sw = bounds.getSouthWest();
       bounds.extend(new google.maps.LatLng(ne.lat() + 0.01, ne.lng() + 0.01));
       bounds.extend(new google.maps.LatLng(sw.lat() - 0.01, sw.lng() - 0.01));
 
-      console.log('Fitting bounds to show all markers');
       map.fitBounds(bounds);
 
-      // Set minimum zoom level
+      // Set maximum zoom level
       const listener = google.maps.event.addListener(map, 'idle', function () {
         if (map.getZoom() > 15) {
           map.setZoom(15);
         }
         google.maps.event.removeListener(listener);
       });
-    } else {
-      console.warn('Map or locations not ready:', { map: !!map, locationsLength: locations?.length });
     }
-  }, [map, locations, userLocation]);
+  }, [map, locations, userLocation, activeInfoWindow, markersInitialized]);
 
   if (loadError) {
     return <div className="error-message">{errorMessage || 'Error loading map'}</div>;
