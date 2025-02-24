@@ -11,13 +11,18 @@ function Home() {
   useEffect(() => {
     if (user) {
       const { uid } = user;
+      console.warn('Fetching food log for user with uid:', uid);
       getFoodLogByUser(uid)
         .then((data) => {
+          console.warn('Successfully fetched food log data:', data);
           setFoodLog(data);
         })
         .catch((error) => {
-          console.error('Error fetching food log:', error);
+          console.warn('Error fetching food log:', error);
+          setFoodLog([]); // Set empty array on error to prevent undefined
         });
+    } else {
+      console.warn('No user available, skipping food log fetch');
     }
   }, [user]);
   // Handle Update (what happens when the user updates)
