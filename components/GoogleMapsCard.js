@@ -7,7 +7,7 @@ const HOUSTON_CENTER = {
   lng: -95.3676974,
 };
 
-const GoogleMapsCard = () => {
+const GoogleMapsCard = ({ currentUser }) => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [loadError, setLoadError] = useState(false);
   const [locations, setLocations] = useState([]);
@@ -16,6 +16,7 @@ const GoogleMapsCard = () => {
   const [map, setMap] = useState(null);
   const [activeInfoWindow, setActiveInfoWindow] = useState(null);
   const [markersInitialized, setMarkersInitialized] = useState(false);
+  const [locationError, setLocationError] = useState('');
 
   // First useEffect remains the same
   useEffect(() => {
@@ -27,11 +28,37 @@ const GoogleMapsCard = () => {
             lng: position.coords.longitude,
           };
           setUserLocation(userPos);
+          setLocationError(''); // Clear any previous error
         },
         (error) => {
-          console.warn('Error getting user location:', error);
+          let errorMsg = '';
+          switch (error.code) {
+            case error.PERMISSION_DENIED:
+              errorMsg = 'Please enable location services to see your position on the map.';
+              break;
+            case error.POSITION_UNAVAILABLE:
+              errorMsg = 'Unable to determine your location. Using default location.';
+              break;
+            case error.TIMEOUT:
+              errorMsg = 'Location request timed out. Using default location.';
+              break;
+            default:
+              errorMsg = 'An error occurred getting your location. Using default location.';
+              break;
+          }
+          console.warn('Geolocation error:', error.code, error.message);
+          setLocationError(errorMsg);
+          setUserLocation(HOUSTON_CENTER);
+        },
+        {
+          enableHighAccuracy: true,
+          timeout: 10000, // Increased timeout to 10 seconds
+          maximumAge: 30000, // Cache location for 30 seconds
         },
       );
+    } else {
+      setLocationError('Your browser does not support geolocation. Using default location.');
+      setUserLocation(HOUSTON_CENTER);
     }
 
     try {
@@ -190,7 +217,33 @@ const GoogleMapsCard = () => {
 
   return (
     <div style={{ height: '100%', width: '100%', position: 'relative' }}>
-      <LocationFetcher isLoaded={isLoaded} onLocationsFetched={setLocations} />
+      {locationError && (
+        <div
+          style={{
+            position: 'absolute',
+            top: '20px',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            zIndex: 1000,
+            backgroundColor: 'rgba(255, 255, 255, 0.95)',
+            padding: '12px 20px',
+            borderRadius: '8px',
+            boxShadow: '0 2px 6px rgba(0,0,0,0.2)',
+            maxWidth: '80%',
+            textAlign: 'center',
+            color: '#666',
+            fontSize: '14px',
+          }}
+        >
+          <div style={{ marginBottom: '4px', color: '#333', fontWeight: 'bold' }}>Location Notice</div>
+          {locationError}
+        </div>
+      )}
+      <LocationFetcher
+        isLoaded={isLoaded}
+        onLocationsFetched={setLocations}
+        currentUser={currentUser} // Add this prop
+      />
       <div id="map" style={{ height: '100vh', width: '100vw', position: 'absolute' }}></div>
     </div>
   );

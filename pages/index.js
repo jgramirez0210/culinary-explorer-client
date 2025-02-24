@@ -13,6 +13,15 @@ function Home() {
       const { uid } = user;
       getFoodLogByUser(uid)
         .then((data) => {
+          console.warn('getFoodLogByUser Response:', {
+            fullResponse: data,
+            type: typeof data,
+            isArray: Array.isArray(data),
+            length: data?.length,
+            firstItem: data?.[0],
+            restaurantData: data?.[0]?.restaurant,
+            uid: uid,
+          });
           setFoodLog(data);
         })
         .catch((error) => {

@@ -1,24 +1,38 @@
-const fetchCoordinates = (restaurant_address, restaurantId) => {
-  console.warn(`Fetching coordinates for address: ${restaurant_address}, restaurantId: ${restaurantId}`);
+const fetchCoordinates = async (address, options = {}) => {
+  try {
+    console.warn('Converting address to coordinates:', address);
 
-  return new Promise((resolve) => {
-    fetch(`https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(restaurant_address)}&key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}`)
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.status === 'OK' && data.results?.[0]?.geometry?.location) {
-          const location = data.results[0].geometry.location;
-          if (typeof location.lat === 'number' && typeof location.lng === 'number' && !isNaN(location.lat) && !isNaN(location.lng)) {
-            resolve(location);
-            return;
-          }
-        }
-        throw new Error('Invalid coordinates');
-      })
-      .catch((error) => {
-        console.error('Error fetching coordinates:', error);
-        resolve(null);
+    const encodedAddress = encodeURIComponent(address);
+    const queryParams = new URLSearchParams({
+      address: encodedAddress,
+      key: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY,
+    });
+
+    const response = await fetch(`https://maps.googleapis.com/maps/api/geocode/json?${queryParams}`);
+
+    if (!response.ok) {
+      throw new Error(`Geocoding request failed: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+
+    if (data.status === 'OK' && data.results[0]) {
+      const { lat, lng } = data.results[0].geometry.location;
+      console.warn('Geocoding result:', {
+        originalAddress: address,
+        formattedAddress: data.results[0].formatted_address,
+        coordinates: { lat, lng },
+        placeId: data.results[0].place_id,
       });
-  });
+      return { lat, lng };
+    }
+
+    console.warn('Geocoding failed for address:', address, 'Status:', data.status);
+    return null; // Return null instead of throwing an error
+  } catch (error) {
+    console.error('Geocoding error:', error);
+    return null;
+  }
 };
 
 const loadGoogleMapsAPI = (callback, onError) => {
@@ -42,4 +56,5 @@ const loadGoogleMapsAPI = (callback, onError) => {
     }
   }
 };
+
 export { loadGoogleMapsAPI, fetchCoordinates };
