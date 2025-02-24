@@ -1,12 +1,13 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { loadGoogleMapsAPI } from '../utils/GoogleMapsScripts';
+import { GoogleMapsLoader } from '../utils/GoogleMapsLoader';
+import { fetchCoordinates } from '../utils/GoogleMapsScripts';
 
 const HOUSTON_CENTER = {
   lat: 29.7589382,
   lng: -95.3676974,
 };
 
-const GoogleMapsCard = ({ currentUser }) => {
+const GoogleMapsCard = ({ currentUser, restaurants }) => {
   const [map, setMap] = useState(null);
   const [isLoaded, setIsLoaded] = useState(false);
   const [loadError, setLoadError] = useState(false);
@@ -16,8 +17,71 @@ const GoogleMapsCard = ({ currentUser }) => {
   const [userLocation, setUserLocation] = useState(HOUSTON_CENTER);
   const [locations, setLocations] = useState([]);
   const [activeInfoWindow, setActiveInfoWindow] = useState(null);
+  const [userMarker, setUserMarker] = useState(null);
+
+  const createUserMarker = useCallback(async (position, currentMap) => {
+    if (!window.google?.maps) return null;
+
+    const userLocationGlyph = document.createElement('div');
+    userLocationGlyph.innerHTML = `
+      <div style="
+        background-color: #4285F4;
+        border: 2px solid white;
+        border-radius: 50%;
+        width: 16px;
+        height: 16px;
+        transform: scale(1.2);
+      "></div>
+    `;
+
+    try {
+      const { AdvancedMarkerElement } = await google.maps.importLibrary('marker');
+      return new AdvancedMarkerElement({
+        position,
+        map: currentMap,
+        title: 'Your Location',
+        content: userLocationGlyph,
+      });
+    } catch (error) {
+      console.error('Error creating marker:', error);
+      return null;
+    }
+  }, []);
+
+  const initMap = useCallback(async () => {
+    try {
+      const mapElement = document.getElementById('map');
+      if (!mapElement || !window.google?.maps) {
+        return;
+      }
+
+      const newMap = new window.google.maps.Map(mapElement, {
+        center: userLocation,
+        zoom: 11,
+        minZoom: 5,
+        maxZoom: 18,
+        gestureHandling: 'cooperative',
+        fullscreenControl: true,
+        mapTypeControl: true,
+        zoomControl: true,
+        mapId: process.env.NEXT_PUBLIC_GOOGLE_MAP_ID,
+      });
+
+      // Create initial user location marker
+      const marker = await createUserMarker(userLocation, newMap);
+      setUserMarker(marker);
+      setMap(newMap);
+      setIsLoaded(true);
+    } catch (error) {
+      console.error('Error initializing map:', error);
+      setLoadError(true);
+      setErrorMessage('Failed to load Google Maps');
+    }
+  }, [userLocation, createUserMarker]);
 
   const getCurrentLocation = useCallback(async () => {
+    if (!map || !window.google?.maps) return;
+
     const useHoustonLocation = () => {
       setUserLocation(HOUSTON_CENTER);
       setLocationError('Using default Houston location.');
@@ -26,11 +90,6 @@ const GoogleMapsCard = ({ currentUser }) => {
         map.setZoom(11);
       }
     };
-
-    if (!navigator.geolocation) {
-      useHoustonLocation();
-      return;
-    }
 
     setIsGettingLocation(true);
     setLocationError('');
@@ -52,9 +111,16 @@ const GoogleMapsCard = ({ currentUser }) => {
       setUserLocation(userPos);
       setLocationError('');
 
-      if (map) {
-        map.panTo(userPos);
-        map.setZoom(13);
+      // Update map position
+      map.panTo(userPos);
+      map.setZoom(13);
+
+      // Update marker position
+      if (userMarker) {
+        userMarker.position = userPos;
+      } else {
+        const newMarker = await createUserMarker(userPos, map);
+        setUserMarker(newMarker);
       }
     } catch (error) {
       console.warn('Browser geolocation failed:', error);
@@ -62,82 +128,90 @@ const GoogleMapsCard = ({ currentUser }) => {
     } finally {
       setIsGettingLocation(false);
     }
-  }, [map]);
+  }, [map, userMarker, createUserMarker]);
 
-  // Initialize map
+  // Initialize map when Google Maps script is loaded
   useEffect(() => {
-    let mounted = true;
+    if (window.google?.maps && !map) {
+      initMap();
+    }
+  }, [initMap, map]);
 
-    const initMap = async () => {
-      if (!mounted) return;
+  // Handle script load
+  const handleScriptLoad = useCallback(() => {
+    console.log('Google Maps script loaded');
+    if (!map) {
+      initMap();
+    }
+  }, [initMap, map]);
 
-      try {
-        await loadGoogleMapsAPI();
+  // Handle restaurant data
+  useEffect(() => {
+    if (!restaurants || !Array.isArray(restaurants)) {
+      console.log('No restaurants data available or invalid format:', restaurants);
+      setLocations([]);
+      return;
+    }
 
-        const mapElement = document.getElementById('map');
-        if (!mapElement) {
-          console.error('Map element not found');
-          return;
-        }
+    const processRestaurants = async () => {
+      const formattedLocations = await Promise.all(
+        restaurants.map(async (restaurant) => {
+          // If we already have coordinates, use them
+          if (restaurant.latitude != null && restaurant.longitude != null) {
+            return {
+              restaurant_name: restaurant.restaurant?.restaurant_name,
+              restaurant_address: restaurant.restaurant?.restaurant_address,
+              rating: restaurant.rating,
+              coords: {
+                lat: restaurant.latitude,
+                lng: restaurant.longitude,
+              },
+            };
+          }
 
-        const newMap = new google.maps.Map(mapElement, {
-          center: userLocation,
-          zoom: 11,
-          minZoom: 5,
-          maxZoom: 18,
-          gestureHandling: 'cooperative',
-          fullscreenControl: true,
-          mapTypeControl: true,
-          zoomControl: true,
-          mapId: process.env.NEXT_PUBLIC_GOOGLE_MAP_ID,
-        });
+          // If we have coords object, use it
+          if (restaurant.coords?.lat != null && restaurant.coords?.lng != null) {
+            return {
+              restaurant_name: restaurant.restaurant?.restaurant_name,
+              restaurant_address: restaurant.restaurant?.restaurant_address,
+              rating: restaurant.rating,
+              coords: restaurant.coords,
+            };
+          }
 
-        if (!mounted) return;
+          // Try to fetch coordinates using the existing function
+          const coords = await fetchCoordinates(restaurant.restaurant?.restaurant_address, restaurant.restaurant?.id);
 
-        // Create user location marker
-        const userLocationGlyph = document.createElement('div');
-        userLocationGlyph.innerHTML = `
-          <div style="
-            background-color: #4285F4;
-            border: 2px solid white;
-            border-radius: 50%;
-            width: 16px;
-            height: 16px;
-            transform: scale(1.2);
-          "></div>
-        `;
+          if (!coords) {
+            console.warn('Skipping restaurant due to missing coordinates:', restaurant.restaurant?.restaurant_name);
+            return null;
+          }
 
-        const { AdvancedMarkerElement } = await google.maps.importLibrary('marker');
-        const marker = new AdvancedMarkerElement({
-          position: userLocation,
-          map: newMap,
-          title: 'Your Location',
-          content: userLocationGlyph,
-        });
+          return {
+            restaurant_name: restaurant.restaurant?.restaurant_name,
+            restaurant_address: restaurant.restaurant?.restaurant_address,
+            rating: restaurant.rating,
+            coords,
+          };
+        }),
+      );
 
-        setMap(newMap);
-        setIsLoaded(true);
-
-        // Get user location after map is initialized
-        getCurrentLocation();
-      } catch (error) {
-        console.error('Error initializing map:', error);
-        setLoadError(true);
-        setErrorMessage('Failed to load Google Maps');
-      }
+      // Filter out null values and set locations
+      const validLocations = formattedLocations.filter(Boolean);
+      console.warn('Setting locations with valid coordinates:', validLocations);
+      setLocations(validLocations);
     };
 
-    initMap();
-
-    return () => {
-      mounted = false;
-    };
-  }, [userLocation]);
+    processRestaurants();
+  }, [restaurants]);
 
   // Handle restaurant markers
   useEffect(() => {
     const createMarkers = async () => {
-      if (!map || !locations.length) return;
+      if (!map || !locations.length) {
+        console.log('No map or locations available:', { map, locationsLength: locations.length });
+        return;
+      }
 
       // Clear existing markers
       if (window.currentMarkers) {
@@ -147,8 +221,13 @@ const GoogleMapsCard = ({ currentUser }) => {
       }
       window.currentMarkers = [];
 
+      console.log('Creating markers for locations:', locations);
+
       for (const location of locations) {
-        if (!location.coords) continue;
+        if (!location.coords?.lat || !location.coords?.lng) {
+          console.log('Invalid coordinates for location:', location);
+          continue;
+        }
 
         const coords = {
           lat: parseFloat(location.coords.lat),
@@ -188,23 +267,27 @@ const GoogleMapsCard = ({ currentUser }) => {
           </div>
         `;
 
-        const { AdvancedMarkerElement } = await google.maps.importLibrary('marker');
-        const marker = new AdvancedMarkerElement({
-          position: coords,
-          map: map,
-          title: location.restaurant_name || 'Restaurant',
-          content: restaurantPin,
-        });
+        try {
+          const { AdvancedMarkerElement } = await google.maps.importLibrary('marker');
+          const marker = new AdvancedMarkerElement({
+            position: coords,
+            map: map,
+            title: location.restaurant_name || 'Restaurant',
+            content: restaurantPin,
+          });
 
-        window.currentMarkers.push(marker);
+          window.currentMarkers.push(marker);
 
-        marker.addListener('click', () => {
-          if (activeInfoWindow) {
-            activeInfoWindow.close();
-          }
-          infoWindow.open(map, marker);
-          setActiveInfoWindow(infoWindow);
-        });
+          marker.addListener('click', () => {
+            if (activeInfoWindow) {
+              activeInfoWindow.close();
+            }
+            infoWindow.open(map, marker);
+            setActiveInfoWindow(infoWindow);
+          });
+        } catch (error) {
+          console.error('Error creating marker:', error);
+        }
       }
     };
 
@@ -212,57 +295,67 @@ const GoogleMapsCard = ({ currentUser }) => {
   }, [map, locations, activeInfoWindow]);
 
   return (
-    <div className="map-container" style={{ width: '100%', height: '400px', position: 'relative' }}>
-      {locationError && (
-        <div
-          className="alert alert-warning"
-          role="alert"
-          style={{
-            position: 'absolute',
-            top: '10px',
-            left: '50%',
-            transform: 'translateX(-50%)',
-            zIndex: 1,
-            backgroundColor: 'rgba(255, 243, 205, 0.9)',
-            padding: '10px 20px',
-            borderRadius: '4px',
-            maxWidth: '80%',
-            textAlign: 'center',
-          }}
-        >
-          {locationError}
-        </div>
-      )}
-      {loadError ? (
-        <div className="alert alert-danger" role="alert">
-          {errorMessage}
-        </div>
-      ) : (
-        <div id="map" style={{ width: '100%', height: '100%' }}>
-          <button
-            onClick={getCurrentLocation}
-            disabled={isGettingLocation}
+    <>
+      <GoogleMapsLoader
+        onLoad={handleScriptLoad}
+        onError={(e) => {
+          console.error('Error loading Google Maps script:', e);
+          setLoadError(true);
+          setErrorMessage('Failed to load Google Maps');
+        }}
+      />
+      <div className="map-container" style={{ width: '100%', height: '400px', position: 'relative' }}>
+        {locationError && (
+          <div
+            className="alert alert-warning"
+            role="alert"
             style={{
               position: 'absolute',
               top: '10px',
-              right: '10px',
+              left: '50%',
+              transform: 'translateX(-50%)',
               zIndex: 1,
-              padding: '8px 16px',
-              backgroundColor: '#4285F4',
-              color: 'white',
-              border: 'none',
+              backgroundColor: 'rgba(255, 243, 205, 0.9)',
+              padding: '10px 20px',
               borderRadius: '4px',
-              cursor: isGettingLocation ? 'wait' : 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px',
+              maxWidth: '80%',
+              textAlign: 'center',
             }}
           >
-            {isGettingLocation ? 'Getting Location...' : 'Get My Location'}
-          </button>
-        </div>
-      )}
-    </div>
+            {locationError}
+          </div>
+        )}
+        {loadError ? (
+          <div className="alert alert-danger" role="alert">
+            {errorMessage}
+          </div>
+        ) : (
+          <div id="map" style={{ width: '100%', height: '100%' }}>
+            <button
+              onClick={getCurrentLocation}
+              disabled={isGettingLocation}
+              style={{
+                position: 'absolute',
+                top: '10px',
+                right: '10px',
+                zIndex: 1,
+                padding: '8px 16px',
+                backgroundColor: '#4285F4',
+                color: 'white',
+                border: 'none',
+                borderRadius: '4px',
+                cursor: isGettingLocation ? 'wait' : 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+              }}
+            >
+              {isGettingLocation ? 'Getting Location...' : 'Get My Location'}
+            </button>
+          </div>
+        )}
+      </div>
+    </>
   );
 };
 
