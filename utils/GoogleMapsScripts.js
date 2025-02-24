@@ -25,21 +25,39 @@ const loadGoogleMapsAPI = (callback, onError) => {
   if (typeof document !== 'undefined') {
     if (!document.querySelector('script[src*="maps.googleapis.com"]')) {
       const script = document.createElement('script');
-      script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&callback=initMap`;
+      script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&v=beta&libraries=marker`;
       script.async = true;
       script.defer = true;
-      script.setAttribute('loading', 'async');
+      script.loading = 'async';
       script.onerror = onError;
-      window.initMap = callback;
+
+      // Create a promise to handle the script load
+      const loadPromise = new Promise((resolve) => {
+        script.addEventListener('load', () => {
+          resolve();
+          if (callback) callback();
+        });
+      });
+
       document.head.appendChild(script);
+      return loadPromise;
     } else {
-      // If script is already present, directly call the callback
+      // If script is already present, return a resolved promise
       if (window.google && window.google.maps) {
-        callback();
+        if (callback) callback();
+        return Promise.resolve();
       } else {
-        window.initMap = callback;
+        // Wait for the existing script to load
+        return new Promise((resolve) => {
+          window.initMap = () => {
+            resolve();
+            if (callback) callback();
+          };
+        });
       }
     }
   }
+  return Promise.resolve();
 };
+
 export { loadGoogleMapsAPI, fetchCoordinates };
