@@ -1,6 +1,10 @@
-import React, { useState, useEffect, useCallback } from 'react';
+// GoogleMapsCard.jsx (or .js)
+import React, { useState, useEffect, useCallback, useRef } from 'react';
+import ReactDOM from 'react-dom'; // Import ReactDOM
+import { createRoot } from 'react-dom/client';
 import { GoogleMapsLoader } from '../utils/GoogleMapsLoader';
 import { fetchCoordinates } from '../utils/GoogleMapsScripts';
+import GoogleMapsHoverCard from './hover cards/GoogleMapsHoverCard';
 
 const HOUSTON_CENTER = {
   lat: 29.7589382,
@@ -18,6 +22,7 @@ const GoogleMapsCard = ({ currentUser, restaurants }) => {
   const [locations, setLocations] = useState([]);
   const [activeInfoWindow, setActiveInfoWindow] = useState(null);
   const [userMarker, setUserMarker] = useState(null);
+  const infoWindowRef = useRef(document.createElement('div')); // Moved and initialized here
 
   const createUserMarker = useCallback(async (position, currentMap) => {
     if (!window.google?.maps) return null;
@@ -128,6 +133,7 @@ const GoogleMapsCard = ({ currentUser, restaurants }) => {
 
   // Handle script load
   const handleScriptLoad = useCallback(() => {
+    console.log('Google Maps script loaded');
     if (!map) {
       initMap();
     }
@@ -155,7 +161,6 @@ const GoogleMapsCard = ({ currentUser, restaurants }) => {
               },
             };
           }
-
           // If we have coords object, use it
           if (restaurant.coords?.lat != null && restaurant.coords?.lng != null) {
             return {
@@ -193,34 +198,30 @@ const GoogleMapsCard = ({ currentUser, restaurants }) => {
   // Handle restaurant markers
   useEffect(() => {
     const createMarkers = async () => {
-      if (!map || !locations.length) {
+      if (!map || !locations.length || !isLoaded) {
         return;
       }
 
       // Clear existing markers
       if (window.currentMarkers) {
         window.currentMarkers.forEach((marker) => {
-          marker.map = null;
+          marker.setMap(null);
         });
       }
       window.currentMarkers = [];
 
       for (const location of locations) {
-        const coords = await fetchCoordinates(location.restaurant_address, location.restaurant_id);
-        if (!coords) {
-          console.warn('No coordinates found for:', location.restaurant_address);
+        if (!location.coords?.lat || !location.coords?.lng) {
           continue;
         }
 
-        const infoWindow = new google.maps.InfoWindow({
-          content: `
-            <div style="padding: 10px;">
-              <h3 style="margin: 0 0 10px;">${location.restaurant_name || 'Restaurant'}</h3>
-              <p style="margin: 0 0 5px;">${location.restaurant_address || 'Address not available'}</p>
-              ${location.rating ? `<p style="margin: 0;">Rating: ${location.rating}/5</p>` : ''}
-            </div>
-          `,
-        });
+        const coords = {
+          lat: parseFloat(location.coords.lat),
+          lng: parseFloat(location.coords.lng),
+        };
+
+        // Create the info window *outside* the marker creation
+        const infoWindow = new google.maps.InfoWindow();
 
         const restaurantPin = document.createElement('div');
         restaurantPin.className = 'restaurant-pin';
@@ -231,21 +232,47 @@ const GoogleMapsCard = ({ currentUser, restaurants }) => {
         try {
           const { AdvancedMarkerElement } = await google.maps.importLibrary('marker');
           const marker = new AdvancedMarkerElement({
-            position: coords,
+            position: userLocation,
             map: map,
-            title: location.restaurant_name,
-            content: restaurantPin,
+            title: 'Your Location',
           });
+          marker.addListener('click', (newMap) => {
+            // Capture newMap as a variable
+            const hoverCard = new google.maps.InfoWindow({
+              position: userLocation,
+              content: 'This is the hover card content',
+            });
 
-          window.currentMarkers.push(marker);
-
-          // Change the event listener to use 'click' instead of 'gmp-click'
-          marker.addListener('click', () => {
-            console.log(`Marker for ${location.restaurant_name} clicked!`);
             if (activeInfoWindow) {
               activeInfoWindow.close();
             }
-            infoWindow.setPosition(coords);
+
+            // Use the same infoWindowDiv for all markers
+            const infoWindowDiv = infoWindowRef.current;
+
+            // Create root for React 18
+            const root = ReactDOM.createRoot(infoWindowDiv);
+
+            // Render using root.render
+            root.render(
+              <GoogleMapsHoverCard
+                location={{
+                  restaurant_name: location.restaurant_name,
+                  restaurant_address: location.restaurant_address,
+                  rating: location.rating,
+                  coords: coords,
+                }}
+              />,
+            );
+
+            // Set the content of the info window
+            infoWindow.setContent(infoWindowDiv);
+
+            infoWindow.setPosition({
+              lat: coords.lat + 0.0001,
+              lng: coords.lng,
+            });
+
             infoWindow.open({
               map: map,
               anchor: marker,
@@ -260,7 +287,7 @@ const GoogleMapsCard = ({ currentUser, restaurants }) => {
     };
 
     createMarkers();
-  }, [map, locations, activeInfoWindow]);
+  }, [map, locations, activeInfoWindow, isLoaded]);
 
   return (
     <>

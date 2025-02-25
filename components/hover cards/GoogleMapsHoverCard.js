@@ -11,24 +11,24 @@ import DishListByRestaurant from '../DishListByRestaurant';
  * @param {number} props.restaurantId - The ID of the restaurant.
  * @returns {JSX.Element} The rendered GoogleMapsHoverCard component.
  */
-const GoogleMapsHoverCard = ({ poi, restaurantId }) => (
-  <div>
-    <h1>{poi.restaurantName}</h1>
-    <p>{poi.restaurantAddress}</p>
-    <DishListByRestaurant restaurantId={restaurantId} />
-  </div>
-);
+const GoogleMapsHoverCard = ({ location }) => {
+  return (
+    <div style={{ padding: '15px', maxWidth: '300px' }}>
+      <h3 style={{ margin: '0 0 10px', fontSize: '16px', fontWeight: '600' }}>{location.restaurant_name || 'Restaurant'}</h3>
+      <p style={{ margin: '0 0 8px', fontSize: '14px', color: '#666' }}>{location.restaurant_address || 'Address not available'}</p>
+      {location.rating && <p style={{ margin: '0', fontSize: '14px', color: '#444' }}>Rating: {location.rating}/5</p>}
+    </div>
+  );
+};
 
 GoogleMapsHoverCard.propTypes = {
-  poi: PropTypes.shape({
-    location: PropTypes.shape({
-      lat: PropTypes.number.isRequired,
-      lng: PropTypes.number.isRequired,
-    }).isRequired,
-    restaurantName: PropTypes.string.isRequired,
-    restaurantAddress: PropTypes.string.isRequired,
+  location: PropTypes.shape({
+    lat: PropTypes.number.isRequired,
+    lng: PropTypes.number.isRequired,
+    restaurant_name: PropTypes.string.isRequired,
+    restaurant_address: PropTypes.string.isRequired,
+    rating: PropTypes.number,
   }).isRequired,
-  restaurantId: PropTypes.number.isRequired,
 };
 
 export default GoogleMapsHoverCard;
