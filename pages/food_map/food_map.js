@@ -41,29 +41,36 @@
 // export default GoogleMapsCard;
 
 // food_map.js
-import React, { useState, useEffect } from 'react';
-import { useAuth } from '../../utils/context/authContext';
-import GoogleMapsCard from '../../components/GoogleMapsCard';
-import { getFoodLogByUser } from '../../api/FoodLog';
+// import React, { useState, useEffect } from 'react';
+// import { useAuth } from '../../utils/context/authContext';
+// import GoogleMapsCard from '../../components/GoogleMapsCard';
+// import { getFoodLogByUser } from '../../api/FoodLog';
 
-const FoodMap = () => {
-  const [restaurants, setRestaurants] = useState([]);
-  const { user } = useAuth();
+// const FoodMap = () => {
+//   const [restaurants, setRestaurants] = useState([]);
+//   const { user } = useAuth();
 
-  useEffect(() => {
-    if (user) {
-      getFoodLogByUser(user.uid)
-        .then((data) => {
-          setRestaurants(data);
-        })
-        .catch((error) => {
-          console.warn('FoodMap: Error fetching restaurants:', error);
-          setRestaurants([]);
-        });
-    }
-  }, [user]);
+//   useEffect(() => {
+//     if (user) {
+//       getFoodLogByUser(user.uid)
+//         .then((data) => {
+//           setRestaurants(data);
+//         })
+//         .catch((error) => {
+//           console.warn('FoodMap: Error fetching restaurants:', error);
+//           setRestaurants([]);
+//         });
+//     }
+//   }, [user]);
 
-  return <GoogleMapsCard currentUser={user} restaurants={restaurants} />;
-};
+//   return <GoogleMapsCard currentUser={user} restaurants={restaurants} />;
+// };
 
-export default FoodMap;
+// export default FoodMap;
+
+import React from 'react';
+import LocationFetcher from '../../utils/googleMapsMarkers';
+
+const GoogleMapsCard = () => <LocationFetcher />;
+
+export default GoogleMapsCard;

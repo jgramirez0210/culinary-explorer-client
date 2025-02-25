@@ -1,34 +1,47 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
+import DishListByRestaurant from '../DishListByRestaurant';
 
-/**
- * A hover card component for displaying information about a restaurant on Google Maps.
- *
- * @component
- * @param {Object} props - The component props.
- * @param {Object} props.location - The location object containing restaurant information.
- * @returns {JSX.Element} The rendered GoogleMapsHoverCard component.
- */
-const GoogleMapsHoverCard = ({ location }) => {
+const GoogleMapsHoverCard = ({ poi, restaurantId, onClose }) => {
+  const cardRef = useRef();
+
   useEffect(() => {
-    console.log('Rendering GoogleMapsHoverCard for:', location);
-  }, [location]);
+    console.log('GoogleMapsHoverCard rendered with:', { poi, restaurantId });
+    const handleClickOutside = (event) => {
+      if (cardRef.current && !cardRef.current.contains(event.target)) {
+        onClose();
+      }
+    };
 
-  if (!location) return null; // Ensure valid data
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [onClose]);
 
   return (
-    <div className="hover-card">
-      <h3>{location.restaurant_name || 'Restaurant'}</h3>
-      <p>{location.restaurant_address || 'Address not available'}</p>
+    <div ref={cardRef} className="hover-card">
+      <button className="close-button" onClick={onClose}>
+        ×
+      </button>
+      <h1>{poi.restaurantName}</h1>
+      <p>{poi.restaurantAddress}</p>
+      {restaurantId && <DishListByRestaurant restaurantId={restaurantId} />}
     </div>
   );
 };
 
 GoogleMapsHoverCard.propTypes = {
-  location: PropTypes.shape({
-    restaurant_name: PropTypes.string.isRequired,
-    restaurant_address: PropTypes.string.isRequired,
+  poi: PropTypes.shape({
+    location: PropTypes.shape({
+      lat: PropTypes.number.isRequired,
+      lng: PropTypes.number.isRequired,
+    }).isRequired,
+    restaurantName: PropTypes.string.isRequired,
+    restaurantAddress: PropTypes.string.isRequired,
   }).isRequired,
+  restaurantId: PropTypes.number.isRequired,
+  onClose: PropTypes.func.isRequired,
 };
 
 export default GoogleMapsHoverCard;
