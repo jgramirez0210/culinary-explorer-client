@@ -23,16 +23,7 @@ const GoogleMapsCard = ({ currentUser, restaurants }) => {
     if (!window.google?.maps) return null;
 
     const userLocationGlyph = document.createElement('div');
-    userLocationGlyph.innerHTML = `
-      <div style="
-        background-color: #4285F4;
-        border: 2px solid white;
-        border-radius: 50%;
-        width: 16px;
-        height: 16px;
-        transform: scale(1.2);
-      "></div>
-    `;
+    userLocationGlyph.className = 'user-location-glyph new-class';
 
     try {
       const { AdvancedMarkerElement } = await google.maps.importLibrary('marker');
@@ -57,9 +48,7 @@ const GoogleMapsCard = ({ currentUser, restaurants }) => {
 
       const newMap = new window.google.maps.Map(mapElement, {
         center: userLocation,
-        zoom: 11,
-        minZoom: 5,
-        maxZoom: 18,
+        zoom: 15,
         gestureHandling: 'cooperative',
         fullscreenControl: true,
         mapTypeControl: true,
@@ -238,27 +227,10 @@ const GoogleMapsCard = ({ currentUser, restaurants }) => {
         });
 
         const restaurantPin = document.createElement('div');
-        restaurantPin.innerHTML = `
-          <div style="
-            background-color: #FF5252;
-            width: 24px;
-            height: 24px;
-            border-radius: 8px 8px 0 8px;
-            transform: rotate(45deg);
-            transform-origin: 0 100%;
-            position: relative;
-          ">
-            <div style="
-              width: 8px;
-              height: 8px;
-              background: white;
-              border-radius: 50%;
-              position: absolute;
-              top: 8px;
-              left: 8px;
-            "></div>
-          </div>
-        `;
+        restaurantPin.className = 'restaurant-pin';
+        const innerPin = document.createElement('div');
+        innerPin.className = 'restaurant-pin-inner';
+        restaurantPin.appendChild(innerPin);
 
         try {
           const { AdvancedMarkerElement } = await google.maps.importLibrary('marker');
@@ -298,7 +270,7 @@ const GoogleMapsCard = ({ currentUser, restaurants }) => {
           setErrorMessage('Failed to load Google Maps');
         }}
       />
-      <div className="map-container" style={{ width: '100%', height: '400px', position: 'relative' }}>
+      <div className="map-container" id="map">
         {locationError && (
           <div
             className="alert alert-warning"
@@ -324,7 +296,7 @@ const GoogleMapsCard = ({ currentUser, restaurants }) => {
             {errorMessage}
           </div>
         ) : (
-          <div id="map" style={{ width: '100%', height: '100%' }}>
+          <div id="map" className="map">
             <button
               onClick={getCurrentLocation}
               disabled={isGettingLocation}

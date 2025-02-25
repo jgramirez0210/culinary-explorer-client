@@ -259,6 +259,11 @@ a:hover, .website-link:hover {
   border-radius: 8px;
 }
 
+.map-container {
+  width: 100%;  /* or a specific width */
+  height: 100vh;  /* Set height to 100% of the viewport height */
+  position: relative;
+}
 
 @media (max-width: 768px) {
   .full-width-block {
@@ -300,4 +305,33 @@ a:hover, .website-link:hover {
 
 .card:hover .hover {
   opacity: 1;
+}
+
+.restaurant-pin {
+  background-color: #FF5252;
+  width: 24px;
+  height: 24px;
+  border-radius: 8px 8px 0 8px;
+  transform: rotate(45deg);
+  transform-origin: 0 100%;
+  position: relative;
+}
+
+.restaurant-pin-inner {
+  width: 8px;
+  height: 8px;
+  background: white;
+  border-radius: 50%;
+  position: absolute;
+  top: 8px;
+  left: 8px;
+}
+
+.user-location-glyph {
+  background-color: #4285F4;
+  border: 2px solid white;
+  border-radius: 50%;
+  width: 16px;
+  height: 16px;
+  transform: scale(1.2);
 }
