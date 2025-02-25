@@ -1,5 +1,4 @@
-import React from 'react';
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 
 /**
@@ -18,9 +17,9 @@ const GoogleMapsHoverCard = ({ location }) => {
   if (!location) return null; // Ensure valid data
 
   return (
-    <div style={{ padding: '15px', maxWidth: '300px' }}>
-      <h3 style={{ margin: '0 0 10px', fontSize: '16px', fontWeight: '600' }}>{location.restaurant_name || 'Restaurant'}</h3>
-      <p style={{ margin: '0 0 8px', fontSize: '14px', color: '#666' }}>{location.restaurant_address || 'Address not available'}</p>
+    <div className="hover-card">
+      <h3>{location.restaurant_name || 'Restaurant'}</h3>
+      <p>{location.restaurant_address || 'Address not available'}</p>
     </div>
   );
 };
