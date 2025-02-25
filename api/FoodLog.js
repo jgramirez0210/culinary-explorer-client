@@ -46,25 +46,9 @@ const getFoodLogByUser = (uid) =>
         'Content-Type': 'application/json',
       },
     })
-      .then((response) => {
-        if (!response.ok) {
-          return response.text().then((text) => {
-            throw new Error(`HTTP error! status: ${response.status}, message: ${text}`);
-          });
-        }
-        return response.json();
-      })
-      .then((data) => {
-        if (!data || data.length === 0) {
-          const errorMessage = 'No food logs found. Try adding a new entry in the food log.';
-          reject(new Error(errorMessage));
-        } else {
-          resolve(data);
-        }
-      })
-      .catch((error) => {
-        reject(error);
-      });
+      .then((response) => response.json())
+      .then((data) => resolve(data))
+      .catch(reject);
   });
 
 const getSingleFoodLog = (id) =>
