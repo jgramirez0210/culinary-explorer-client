@@ -128,7 +128,6 @@ const GoogleMapsCard = ({ currentUser, restaurants }) => {
 
   // Handle script load
   const handleScriptLoad = useCallback(() => {
-    console.log('Google Maps script loaded');
     if (!map) {
       initMap();
     }
@@ -207,14 +206,11 @@ const GoogleMapsCard = ({ currentUser, restaurants }) => {
       window.currentMarkers = [];
 
       for (const location of locations) {
-        if (!location.coords?.lat || !location.coords?.lng) {
+        const coords = await fetchCoordinates(location.restaurant_address, location.restaurant_id);
+        if (!coords) {
+          console.warn('No coordinates found for:', location.restaurant_address);
           continue;
         }
-
-        const coords = {
-          lat: parseFloat(location.coords.lat),
-          lng: parseFloat(location.coords.lng),
-        };
 
         const infoWindow = new google.maps.InfoWindow({
           content: `
@@ -237,18 +233,24 @@ const GoogleMapsCard = ({ currentUser, restaurants }) => {
           const marker = new AdvancedMarkerElement({
             position: coords,
             map: map,
-            title: location.restaurant_name || 'Restaurant',
+            title: location.restaurant_name,
             content: restaurantPin,
           });
 
           window.currentMarkers.push(marker);
 
-          marker.addEventListener('gmp-click', () => {
+          // Change the event listener to use 'click' instead of 'gmp-click'
+          marker.addListener('click', () => {
             console.log(`Marker for ${location.restaurant_name} clicked!`);
             if (activeInfoWindow) {
               activeInfoWindow.close();
             }
-            infoWindow.open(map, marker);
+            infoWindow.setPosition(coords);
+            infoWindow.open({
+              map: map,
+              anchor: marker,
+              shouldFocus: false,
+            });
             setActiveInfoWindow(infoWindow);
           });
         } catch (error) {
