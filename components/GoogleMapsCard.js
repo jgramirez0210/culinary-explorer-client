@@ -1,6 +1,5 @@
 // GoogleMapsCard.jsx (or .js)
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import ReactDOM from 'react-dom'; // Import ReactDOM
 import { createRoot } from 'react-dom/client';
 import { GoogleMapsLoader } from '../utils/GoogleMapsLoader';
 import { fetchCoordinates } from '../utils/GoogleMapsScripts';
@@ -22,7 +21,6 @@ const GoogleMapsCard = ({ currentUser, restaurants }) => {
   const [locations, setLocations] = useState([]);
   const [activeInfoWindow, setActiveInfoWindow] = useState(null);
   const [userMarker, setUserMarker] = useState(null);
-  const infoWindowRef = useRef(document.createElement('div')); // Moved and initialized here
 
   const createUserMarker = useCallback(async (position, currentMap) => {
     if (!window.google?.maps) return null;
@@ -154,7 +152,6 @@ const GoogleMapsCard = ({ currentUser, restaurants }) => {
             return {
               restaurant_name: restaurant.restaurant?.restaurant_name,
               restaurant_address: restaurant.restaurant?.restaurant_address,
-              rating: restaurant.rating,
               coords: {
                 lat: restaurant.latitude,
                 lng: restaurant.longitude,
@@ -195,7 +192,6 @@ const GoogleMapsCard = ({ currentUser, restaurants }) => {
     processRestaurants();
   }, [restaurants]);
 
-  // Handle restaurant markers
   useEffect(() => {
     const createMarkers = async () => {
       if (!map || !locations.length || !isLoaded) {
@@ -210,18 +206,15 @@ const GoogleMapsCard = ({ currentUser, restaurants }) => {
       }
       window.currentMarkers = [];
 
-      for (const location of locations) {
-        if (!location.coords?.lat || !location.coords?.lng) {
+      for (const loc of locations) {
+        if (!loc.coords?.lat || !loc.coords?.lng) {
           continue;
         }
 
         const coords = {
-          lat: parseFloat(location.coords.lat),
-          lng: parseFloat(location.coords.lng),
+          lat: parseFloat(loc.coords.lat),
+          lng: parseFloat(loc.coords.lng),
         };
-
-        // Create the info window *outside* the marker creation
-        const infoWindow = new google.maps.InfoWindow();
 
         const restaurantPin = document.createElement('div');
         restaurantPin.className = 'restaurant-pin';
@@ -232,53 +225,53 @@ const GoogleMapsCard = ({ currentUser, restaurants }) => {
         try {
           const { AdvancedMarkerElement } = await google.maps.importLibrary('marker');
           const marker = new AdvancedMarkerElement({
-            position: userLocation,
+            position: coords,
             map: map,
-            title: 'Your Location',
+            title: loc.restaurant_name,
+            content: restaurantPin,
           });
-          marker.addListener('click', (newMap) => {
-            // Capture newMap as a variable
-            const hoverCard = new google.maps.InfoWindow({
-              position: userLocation,
-              content: 'This is the hover card content',
-            });
+
+          window.currentMarkers.push(marker);
+
+          marker.addListener('click', () => {
+            console.warn('Current User ID:', currentUser?.uid);
+            console.warn('Restaurant clicked:', loc.restaurant_name);
 
             if (activeInfoWindow) {
               activeInfoWindow.close();
             }
 
-            // Use the same infoWindowDiv for all markers
-            const infoWindowDiv = infoWindowRef.current;
+            const hoverCard = new google.maps.OverlayView();
+            hoverCard.onAdd = function () {
+              const hoverCardDiv = document.createElement('div');
+              hoverCardDiv.className = 'hover-card';
+              const root = createRoot(hoverCardDiv);
+              root.render(
+                <GoogleMapsHoverCard
+                  location={{
+                    restaurant_name: loc.restaurant_name,
+                    restaurant_address: loc.restaurant_address,
+                  }}
+                />,
+              );
+              this.getPanes().floatPane.appendChild(hoverCardDiv);
+            };
+            hoverCard.draw = function () {
+              const projection = this.getProjection();
+              const position = projection.fromLatLngToDivPixel(new google.maps.LatLng(coords.lat, coords.lng));
+              const hoverCardDiv = this.getPanes().floatPane.querySelector('.hover-card');
+              hoverCardDiv.style.left = position.x + 'px';
+              hoverCardDiv.style.top = position.y + 'px';
+            };
+            hoverCard.onRemove = function () {
+              const hoverCardDiv = this.getPanes().floatPane.querySelector('.hover-card');
+              if (hoverCardDiv) {
+                hoverCardDiv.parentNode.removeChild(hoverCardDiv);
+              }
+            };
+            hoverCard.setMap(map);
 
-            // Create root for React 18
-            const root = ReactDOM.createRoot(infoWindowDiv);
-
-            // Render using root.render
-            root.render(
-              <GoogleMapsHoverCard
-                location={{
-                  restaurant_name: location.restaurant_name,
-                  restaurant_address: location.restaurant_address,
-                  rating: location.rating,
-                  coords: coords,
-                }}
-              />,
-            );
-
-            // Set the content of the info window
-            infoWindow.setContent(infoWindowDiv);
-
-            infoWindow.setPosition({
-              lat: coords.lat + 0.0001,
-              lng: coords.lng,
-            });
-
-            infoWindow.open({
-              map: map,
-              anchor: marker,
-              shouldFocus: false,
-            });
-            setActiveInfoWindow(infoWindow);
+            setActiveInfoWindow(hoverCard);
           });
         } catch (error) {
           console.error('Error creating marker:', error);
