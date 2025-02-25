@@ -40,7 +40,6 @@ const getFoodLogByRestaurantId = (restaurantId) =>
 
 const getFoodLogByUser = (uid) =>
   new Promise((resolve, reject) => {
-    console.warn('Fetching food log for user:', uid);
     fetch(`${endpoint}/food_log?uid=${uid}`, {
       method: 'GET',
       headers: {
@@ -48,7 +47,6 @@ const getFoodLogByUser = (uid) =>
       },
     })
       .then((response) => {
-        console.warn('Food log API response status:', response.status);
         if (!response.ok) {
           return response.text().then((text) => {
             throw new Error(`HTTP error! status: ${response.status}, message: ${text}`);
@@ -57,17 +55,14 @@ const getFoodLogByUser = (uid) =>
         return response.json();
       })
       .then((data) => {
-        console.warn('Food log API response data:', data);
         if (!data || data.length === 0) {
           const errorMessage = 'No food logs found. Try adding a new entry in the food log.';
-          console.warn(errorMessage);
           reject(new Error(errorMessage));
         } else {
           resolve(data);
         }
       })
       .catch((error) => {
-        console.warn('Error fetching food log:', error);
         reject(error);
       });
   });

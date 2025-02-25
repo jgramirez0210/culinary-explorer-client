@@ -1,6 +1,4 @@
 const fetchCoordinates = (restaurant_address, restaurantId) => {
-  console.warn(`Fetching coordinates for address: ${restaurant_address}, restaurantId: ${restaurantId}`);
-
   return new Promise((resolve) => {
     fetch(`https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(restaurant_address)}&key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}`)
       .then((response) => response.json())

@@ -123,7 +123,7 @@ const GoogleMapsCard = ({ currentUser, restaurants }) => {
         setUserMarker(newMarker);
       }
     } catch (error) {
-      console.warn('Browser geolocation failed:', error);
+      console.error('Browser geolocation failed:', error);
       useHoustonLocation();
     } finally {
       setIsGettingLocation(false);
@@ -148,7 +148,6 @@ const GoogleMapsCard = ({ currentUser, restaurants }) => {
   // Handle restaurant data
   useEffect(() => {
     if (!restaurants || !Array.isArray(restaurants)) {
-      console.log('No restaurants data available or invalid format:', restaurants);
       setLocations([]);
       return;
     }
@@ -183,7 +182,6 @@ const GoogleMapsCard = ({ currentUser, restaurants }) => {
           const coords = await fetchCoordinates(restaurant.restaurant?.restaurant_address, restaurant.restaurant?.id);
 
           if (!coords) {
-            console.warn('Skipping restaurant due to missing coordinates:', restaurant.restaurant?.restaurant_name);
             return null;
           }
 
@@ -198,7 +196,6 @@ const GoogleMapsCard = ({ currentUser, restaurants }) => {
 
       // Filter out null values and set locations
       const validLocations = formattedLocations.filter(Boolean);
-      console.warn('Setting locations with valid coordinates:', validLocations);
       setLocations(validLocations);
     };
 
@@ -209,7 +206,6 @@ const GoogleMapsCard = ({ currentUser, restaurants }) => {
   useEffect(() => {
     const createMarkers = async () => {
       if (!map || !locations.length) {
-        console.log('No map or locations available:', { map, locationsLength: locations.length });
         return;
       }
 
@@ -221,11 +217,8 @@ const GoogleMapsCard = ({ currentUser, restaurants }) => {
       }
       window.currentMarkers = [];
 
-      console.log('Creating markers for locations:', locations);
-
       for (const location of locations) {
         if (!location.coords?.lat || !location.coords?.lng) {
-          console.log('Invalid coordinates for location:', location);
           continue;
         }
 
@@ -278,7 +271,8 @@ const GoogleMapsCard = ({ currentUser, restaurants }) => {
 
           window.currentMarkers.push(marker);
 
-          marker.addListener('click', () => {
+          marker.addEventListener('gmp-click', () => {
+            console.log(`Marker for ${location.restaurant_name} clicked!`);
             if (activeInfoWindow) {
               activeInfoWindow.close();
             }

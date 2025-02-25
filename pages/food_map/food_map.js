@@ -52,10 +52,8 @@ const FoodMap = () => {
 
   useEffect(() => {
     if (user) {
-      console.warn('FoodMap: Fetching restaurants for user:', user.uid);
       getFoodLogByUser(user.uid)
         .then((data) => {
-          console.warn('FoodMap: Successfully fetched restaurants:', data);
           setRestaurants(data);
         })
         .catch((error) => {
