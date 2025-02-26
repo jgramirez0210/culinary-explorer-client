@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { Navbar, Container, Nav, Button, Form, FormControl } from 'react-bootstrap';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { signOut } from '../utils/auth';
@@ -7,6 +6,7 @@ import { signOut } from '../utils/auth';
 export default function NavBar() {
   const [searchQuery, setSearchQuery] = useState('');
   const router = useRouter();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const handleSearchChange = (e) => {
     setSearchQuery(e.target.value);
@@ -17,30 +17,41 @@ export default function NavBar() {
     router.push(`/search?query=${encodeURIComponent(searchQuery.trim())}`);
   };
 
+  const toggleMenu = () => {
+    setIsMenuOpen(!isMenuOpen);
+  };
+
   return (
-    <Navbar collapseOnSelect expand="lg">
-      <Container>
-        <Link href="/" className="navbar-brand">
+    <nav className="custom-navbar">
+      <div className="navbar-container">
+        <Link href="/" className="navbar-brand-custom">
           Culinary Explorer
         </Link>
-        <Navbar.Toggle aria-controls="responsive-navbar-nav" />
-        <Navbar.Collapse id="responsive-navbar-nav">
-          <Nav className="me-auto">
-            <Link href="/food_log/new" className="nav-link">
-              Add To Food Log
-            </Link>
-            <Link href="/restaurant_map/restaurant_map" passHref>
-              Restaurant Map
-            </Link>
-            <Button variant="danger" onClick={signOut}>
-              Sign Out
-            </Button>
-          </Nav>
-          <Form className="d-flex" onSubmit={handleSearchSubmit}>
-            <FormControl type="search" placeholder="Search" className="me-2" aria-label="Search" value={searchQuery} onChange={handleSearchChange} />
-          </Form>
-        </Navbar.Collapse>
-      </Container>
-    </Navbar>
+
+        <button
+          className="navbar-toggler"
+          onClick={toggleMenu}
+          style={{ display: 'none' }} // Temporarily hidden, add proper toggle button styling
+        >
+          Menu
+        </button>
+
+        <div className={`navbar-links ${isMenuOpen ? 'show' : ''}`}>
+          <Link href="/food_log/new" className="navbar-link">
+            Add To Food Log
+          </Link>
+          <Link href="/restaurant_map/restaurant_map" className="navbar-link">
+            Restaurant Map
+          </Link>
+          <button className="sign-out-btn" onClick={signOut}>
+            Sign Out
+          </button>
+
+          <form className="search-form" onSubmit={handleSearchSubmit}>
+            <input type="search" placeholder="Search" className="search-input" value={searchQuery} onChange={handleSearchChange} aria-label="Search" />
+          </form>
+        </div>
+      </div>
+    </nav>
   );
 }
