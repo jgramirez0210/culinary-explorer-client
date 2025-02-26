@@ -15,27 +15,18 @@ const getAllFoodLogs = () =>
 
 const getFoodLogByRestaurantId = (restaurantId) =>
   new Promise((resolve, reject) => {
-    fetch(`${endpoint}/food_log/by_restaurant?restaurant_id=${restaurantId}`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        return response.text();
+    // Use existing getAllFoodLogs function instead of direct API call
+    getAllFoodLogs()
+      .then((allLogs) => {
+        // Filter logs by restaurant ID on the client side
+        const filteredLogs = allLogs.filter((log) => log.restaurant && log.restaurant.id === Number(restaurantId));
+        console.log(`Found ${filteredLogs.length} food logs for restaurant ID ${restaurantId}`);
+        resolve(filteredLogs);
       })
-      .then((text) => {
-        try {
-          const data = JSON.parse(text);
-          resolve(data);
-        } catch (error) {
-          throw new Error('Invalid JSON: ' + text);
-        }
-      })
-      .catch(reject);
+      .catch((error) => {
+        console.error('Error getting food logs by restaurant ID:', error);
+        reject(error);
+      });
   });
 
 const getFoodLogByUser = (uid) =>
