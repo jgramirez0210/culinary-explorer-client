@@ -13,28 +13,18 @@ const getAllRestaurants = () =>
       .catch(reject);
   });
 
-// const createRestaurant = async (payload) => {
-//   try {
-//     const response = await fetch(`${endpoint}/restaurants`, {
-//       method: 'POST',
-//       headers: {
-//         'Content-Type': 'application/json',
-//       },
-//       body: JSON.stringify(payload),
-//     });
-
-//     if (!response.ok) {
-//       const errorData = await response.json();
-//       console.error('Server responded with an error:', errorData);
-//       throw new Error(`HTTP error! status: ${response.status}`);
-//     }
-
-//     return response.json();
-//   } catch (error) {
-//     console.error('Error in createDish:', error);
-//     throw error;
-//   }
-// };
+const getAllRestaurantsByUid = (uid) =>
+  new Promise((resolve, reject) => {
+    fetch(`${endpoint}/restaurants?uid=${uid}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+      .then((response) => response.json())
+      .then((data) => resolve(data))
+      .catch(reject);
+  });
 
 const createRestaurant = (payload) =>
   new Promise((resolve, reject) => {
@@ -75,4 +65,4 @@ const deleteRestaurant = (id) =>
       .catch(reject);
   });
 
-export { getAllRestaurants, updateRestaurant, deleteRestaurant, createRestaurant };
+export { getAllRestaurants, getAllRestaurantsByUid, updateRestaurant, deleteRestaurant, createRestaurant };

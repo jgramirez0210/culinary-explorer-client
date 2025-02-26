@@ -9,7 +9,7 @@ const getAllFoodLogs = () =>
       },
     })
       .then((response) => response.json())
-      .then((data) => resolve(data)) // Directly resolve the array of food logs
+      .then((data) => resolve(data))
       .catch(reject);
   });
 
