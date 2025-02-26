@@ -18,35 +18,33 @@ const LocationFetcher = () => {
         const restaurants = await getAllRestaurantsByUid(user.uid);
         console.log('Fetched restaurants:', restaurants); // Debug log
 
-        const locationPromises = restaurants
-          .filter((restaurant) => restaurant.uid === user.uid)
-          .map(async (restaurant) => {
-            const { restaurant_name: restaurantName, restaurant_address: restaurantAddress, id } = restaurant;
-            const numericId = Number(id);
-            if (Number.isNaN(numericId)) {
-              console.error(`Invalid id for restaurant ${restaurantName}: ${id}`);
+        const locationPromises = restaurants.map(async (restaurant) => {
+          const { restaurant_name: restaurantName, restaurant_address: restaurantAddress, id } = restaurant;
+          const numericId = Number(id);
+          if (Number.isNaN(numericId)) {
+            console.error(`Invalid id for restaurant ${restaurantName}: ${id}`);
+            return null;
+          }
+          try {
+            const location = await fetchCoordinates(restaurantAddress, numericId);
+            if (!location) {
+              console.error(`No location found for restaurant ${restaurantName}`);
               return null;
             }
-            try {
-              const location = await fetchCoordinates(restaurantAddress, numericId);
-              if (!location) {
-                console.error(`No location found for restaurant ${restaurantName}`);
-                return null;
-              }
-              return {
-                id: numericId,
-                location: {
-                  lat: location.lat,
-                  lng: location.lng,
-                },
-                restaurantName,
-                restaurantAddress,
-              };
-            } catch (error) {
-              console.error(`Failed to fetch coordinates for ${restaurantName} with address: ${restaurantAddress}`, error);
-              return null;
-            }
-          });
+            return {
+              id: numericId,
+              location: {
+                lat: location.lat,
+                lng: location.lng,
+              },
+              restaurantName,
+              restaurantAddress,
+            };
+          } catch (error) {
+            console.error(`Failed to fetch coordinates for ${restaurantName} with address: ${restaurantAddress}`, error);
+            return null;
+          }
+        });
 
         const updatedLocations = (await Promise.all(locationPromises)).filter(Boolean);
         console.log('Updated locations:', updatedLocations);

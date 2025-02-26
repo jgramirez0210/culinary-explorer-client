@@ -1,6 +1,6 @@
 import React from 'react';
 import LocationFetcher from '../../utils/googleMapsMarkers';
 
-const GoogleMapsCard = () => <LocationFetcher />;
+const RestaurantMapCard = () => <LocationFetcher />;
 
-export default GoogleMapsCard;
+export default RestaurantMapCard;
