@@ -1,16 +1,11 @@
 import { useState } from 'react';
 import FoodLogForm from '../../components/forms/FoodLogForm';
 import { useAuth } from '../../utils/context/authContext';
-import { useJsApiLoader } from '@react-google-maps/api';
-
-const libraries = ['places'];
+import { useGoogleMaps } from '../../components/GoogleMapsProvider'; // Replace useJsApiLoader
 
 function NewGame() {
   const { user } = useAuth();
-  const { isLoaded, loadError } = useJsApiLoader({
-    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY,
-    libraries,
-  });
+  const { isLoaded, loadError } = useGoogleMaps();
 
   if (loadError) {
     return <div>Error loading Google Maps script</div>;
