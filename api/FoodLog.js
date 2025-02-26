@@ -15,7 +15,6 @@ const getAllFoodLogs = () =>
 
 const getFoodLogByRestaurantId = (restaurantId) =>
   new Promise((resolve, reject) => {
-    // Use existing getAllFoodLogs function instead of direct API call
     getAllFoodLogs()
       .then((allLogs) => {
         // Filter logs by restaurant ID on the client side
