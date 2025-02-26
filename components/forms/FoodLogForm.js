@@ -266,8 +266,14 @@ function FoodLogForm({ isLoaded, user, editObj = initialState }) {
       .catch(console.error);
   };
 
-  const generateOptions = (list, type) =>
-    list.map((item) => ({
+  const generateOptions = (list, type) => {
+    // Check if list is an array before trying to map over it
+    if (!Array.isArray(list)) {
+      console.warn(`List for ${type} is not an array:`, list);
+      return [];
+    }
+
+    return list.map((item) => ({
       value: item.id,
       label: (
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -278,6 +284,7 @@ function FoodLogForm({ isLoaded, user, editObj = initialState }) {
         </div>
       ),
     }));
+  };
 
   const restaurantOptions = generateOptions(restaurantList, 'restaurant');
   const dishOptions = generateOptions(dishList, 'dish');

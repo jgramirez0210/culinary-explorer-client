@@ -14,7 +14,7 @@ function Home() {
       console.warn('User ID:', uid); // Log the uid
       getFoodLogByUser(uid)
         .then((data) => {
-          console.warn('Food logs retrieved:', data); // Log the retrieved data
+          console.warn('Food logs retrieved:', data);
           setFoodLog(data);
         })
         .catch((error) => {
@@ -33,11 +33,7 @@ function Home() {
   return (
     <div>
       <div width="50rem" className="d-flex flex-wrap justify-content-evenly">
-        {foodLog
-          .filter((item) => item.uid === user.uid)
-          .map((item) => (
-            <FoodLogCard key={item.id} itemObj={item} onUpdate={handleUpdate} viewType="all" />
-          ))}
+        {Array.isArray(foodLog) ? foodLog.filter((item) => item.uid === user.uid).map((item) => <FoodLogCard key={item.id} itemObj={item} onUpdate={handleUpdate} viewType="all" />) : <div className="alert alert-warning">No food logs available or there was an error loading them.</div>}
       </div>
     </div>
   );
