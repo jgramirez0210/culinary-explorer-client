@@ -3,10 +3,12 @@ import { Form } from 'react-bootstrap';
 import GooglePlacesAutocomplete from 'react-google-places-autocomplete';
 import PropTypes from 'prop-types';
 import { createRestaurant } from '../../api/Restaurants';
+import { useAuth } from '../../utils/context/authContext';
 
 const libraries = ['places'];
 
 const RestaurantForm = ({ id, onRestaurantCreated, updateRestaurant, isLoaded }) => {
+  const { user } = useAuth(); // Get the current user
   const [formInput, setFormInput] = useState({
     restaurant_name: '',
     restaurant_address: '',
@@ -15,17 +17,30 @@ const RestaurantForm = ({ id, onRestaurantCreated, updateRestaurant, isLoaded })
 
   const [errors, setErrors] = useState({});
 
+  // Add the missing validateForm function
+  const validateForm = () => {
+    const newErrors = {};
+
+    if (!formInput.restaurant_name.trim()) {
+      newErrors.restaurant_name = 'Restaurant name is required';
+    }
+
+    if (!formInput.restaurant_address) {
+      newErrors.restaurant_address = 'Restaurant address is required';
+    }
+
+    return newErrors;
+  };
+
   if (!isLoaded) {
     return <div>Loading...</div>;
   }
 
-  const handleSubmit = () => {
-    // event.preventDefault();
-    const newErrors = {};
-    if (!formInput.restaurant_name) newErrors.restaurant_name = 'Restaurant name is required';
-    if (!formInput.restaurant_address) newErrors.restaurant_address = 'Restaurant address is required';
-    if (!formInput.website_url) newErrors.website_url = 'Website URL is required';
+  const handleSubmit = (e) => {
+    e.preventDefault();
 
+    // Validate form
+    const newErrors = validateForm();
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
       return;
@@ -35,6 +50,7 @@ const RestaurantForm = ({ id, onRestaurantCreated, updateRestaurant, isLoaded })
       restaurant_name: formInput.restaurant_name,
       restaurant_address: formInput.restaurant_address.label || formInput.restaurant_address,
       website_url: formInput.website_url,
+      uid_id: user.uid, // Add this line to include the user's UID
     };
 
     if (id) {

@@ -18,37 +18,39 @@ if (!firebaseCredentials.databaseURL) {
   throw new Error('Firebase databaseURL is not defined in firebaseCredentials');
 }
 
-const checkUser = (uid) => new Promise((resolve, reject) => {
-  fetch(`${firebaseCredentials.databaseURL}/checkuser`, {
-    method: 'POST',
-    body: JSON.stringify({ uid }),
-    headers: {
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-    },
-  })
-    .then((resp) => resolve(resp.json()))
-    .catch(reject);
-});
-
-const registerUser = (userInfo) => new Promise((resolve, reject) => {
-  fetch(`${firebaseCredentials.databaseURL}/register`, {
-    method: 'POST',
-    body: JSON.stringify(userInfo),
-    headers: {
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-    },
-  })
-    .then((resp) => resp.json())
-    .then((data) => {
-      resolve(data);
+const checkUser = (uid) =>
+  new Promise((resolve, reject) => {
+    fetch(`${firebaseCredentials.databaseURL}/checkuser`, {
+      method: 'POST',
+      body: JSON.stringify({ uid }),
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+      },
     })
-    .catch((error) => {
-      console.error('Error:', error);
-      reject(error);
-    });
-});
+      .then((resp) => resolve(resp.json()))
+      .catch(reject);
+  });
+
+const registerUser = (userInfo) =>
+  new Promise((resolve, reject) => {
+    fetch(`${firebaseCredentials.databaseURL}/register`, {
+      method: 'POST',
+      body: JSON.stringify(userInfo),
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+      },
+    })
+      .then((resp) => resp.json())
+      .then((data) => {
+        resolve(data);
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+        reject(error);
+      });
+  });
 
 const signIn = () => {
   const provider = new GoogleAuthProvider();
@@ -56,12 +58,14 @@ const signIn = () => {
 };
 
 const signOut = () => {
-  firebaseSignOut(auth);
+  firebaseSignOut(auth)
+    .then(() => {
+      // Force page refresh or redirect
+      window.location.href = '/';
+    })
+    .catch((error) => {
+      console.error('Sign out error:', error);
+    });
 };
 
-export {
-  signIn,
-  signOut,
-  checkUser,
-  registerUser,
-};
+export { signIn, signOut, checkUser, registerUser };
