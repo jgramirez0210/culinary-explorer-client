@@ -16,7 +16,6 @@ const LocationFetcher = () => {
 
       try {
         const restaurants = await getAllRestaurantsByUid(user.uid);
-        console.log('Fetched restaurants:', restaurants); // Debug log
 
         const locationPromises = restaurants.map(async (restaurant) => {
           const { restaurant_name: restaurantName, restaurant_address: restaurantAddress, id } = restaurant;
@@ -47,7 +46,6 @@ const LocationFetcher = () => {
         });
 
         const updatedLocations = (await Promise.all(locationPromises)).filter(Boolean);
-        console.log('Updated locations:', updatedLocations);
         setLocations(updatedLocations);
       } catch (error) {
         console.error('Error updating locations:', error);

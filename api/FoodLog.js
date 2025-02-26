@@ -19,7 +19,6 @@ const getFoodLogByRestaurantId = (restaurantId) =>
       .then((allLogs) => {
         // Filter logs by restaurant ID on the client side
         const filteredLogs = allLogs.filter((log) => log.restaurant && log.restaurant.id === Number(restaurantId));
-        console.log(`Found ${filteredLogs.length} food logs for restaurant ID ${restaurantId}`);
         resolve(filteredLogs);
       })
       .catch((error) => {

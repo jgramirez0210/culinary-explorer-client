@@ -6,7 +6,6 @@ const GoogleMapsHoverCard = ({ poi, restaurantId, onClose }) => {
   const cardRef = useRef();
 
   useEffect(() => {
-    console.log('GoogleMapsHoverCard rendered with:', { poi, restaurantId });
     const handleClickOutside = (event) => {
       if (cardRef.current && !cardRef.current.contains(event.target)) {
         onClose();

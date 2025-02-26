@@ -11,14 +11,11 @@ function Home() {
   useEffect(() => {
     if (user) {
       const { uid } = user;
-      console.warn('User ID:', uid); // Log the uid
       getFoodLogByUser(uid)
         .then((data) => {
-          console.warn('Food logs retrieved:', data);
           setFoodLog(data);
         })
         .catch((error) => {
-          console.warn('Error fetching food log:', error);
           setFoodLog([]); // Set empty array on error to prevent undefined
         });
     } else {
