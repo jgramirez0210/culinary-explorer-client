@@ -2,37 +2,62 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '../utils/context/authContext';
 import FoodLogCard from '../components/FoodLogCard';
 import { getFoodLogByUser } from '../api/FoodLog';
-// Function Name
+
 function Home() {
-  // Variable Declarations
   const [foodLog, setFoodLog] = useState([]);
+  const [loading, setLoading] = useState(true);
   const { user } = useAuth();
-  // UseEffect (what happens when the user logs in)
+
   useEffect(() => {
+    setLoading(true);
+
     if (user) {
       const { uid } = user;
+      console.warn('Making API call with UID:', uid);
+
       getFoodLogByUser(uid)
         .then((data) => {
-          setFoodLog(data);
+          console.warn('Food logs received from API:', data);
+          setFoodLog(Array.isArray(data) ? data : []);
         })
         .catch((error) => {
-          setFoodLog([]); // Set empty array on error to prevent undefined
+          console.warn('Error fetching food logs:', error);
+          setFoodLog([]);
+        })
+        .finally(() => {
+          setLoading(false);
         });
     } else {
-      // No user available, skipping food log fetch
+      console.warn('No user available, skipping food log fetch');
+      setLoading(false);
     }
   }, [user]);
-  // Handle Update (what happens when the user updates)
+
   const handleUpdate = (deletedItemId) => {
     setFoodLog((prevFoodLog) => prevFoodLog.filter((item) => item.id !== deletedItemId));
   };
-  // Return (what is displayed on the page)
+
+  // Show loading indicator while authentication is being checked
+  if (loading) {
+    return (
+      <div className="text-center p-5">
+        <div className="spinner-border" role="status"></div>
+      </div>
+    );
+  }
+
+  // If not logged in, show login prompt
+  if (!user) {
+    return <div className="alert alert-warning text-center m-5">You must be logged in to view your food logs. Please sign in.</div>;
+  }
+
   return (
     <div>
       <div width="50rem" className="d-flex flex-wrap justify-content-evenly">
-        {Array.isArray(foodLog) ? foodLog.filter((item) => item.uid === user.uid).map((item) => <FoodLogCard key={item.id} itemObj={item} onUpdate={handleUpdate} viewType="all" />) : <div className="alert alert-warning">No food logs available or there was an error loading them.</div>}
+        {Array.isArray(foodLog) && foodLog.length > 0 ? foodLog.map((item) => <FoodLogCard key={item.id} itemObj={item} onUpdate={handleUpdate} viewType="all" />) : <div className="alert alert-warning">No food logs available or there was an error loading them.</div>}
       </div>
     </div>
   );
 }
+
 export default Home;
