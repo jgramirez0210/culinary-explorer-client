@@ -1,0 +1,202 @@
+[
+  {
+    "id": 1,
+    "restaurant_id": 1,
+    "dish_id": 1,
+    "category_ids": [1],
+    "uid": "user1",
+    "date_created": "2024-01-15T18:30:00Z",
+    "rating": 5,
+    "notes": "Amazing pizza, perfectly crispy crust!"
+  },
+  {
+    "id": 2,
+    "restaurant_id": 3,
+    "dish_id": 5,
+    "category_ids": [3],
+    "uid": "user1",
+    "date_created": "2024-01-16T19:45:00Z",
+    "rating": 4,
+    "notes": "Good quesadillas, could use more cheese"
+  },
+  {
+    "id": 3,
+    "restaurant_id": 2,
+    "dish_id": 3,
+    "category_ids": [2],
+    "uid": "user2",
+    "date_created": "2024-01-17T20:15:00Z",
+    "rating": 5,
+    "notes": "Spicy and delicious, just like I remember from China"
+  },
+  {
+    "id": 4,
+    "restaurant_id": 5,
+    "dish_id": 9,
+    "category_ids": [5],
+    "uid": "user2",
+    "date_created": "2024-01-18T12:30:00Z",
+    "rating": 4,
+    "notes": "Solid burger, fries were a bit soggy"
+  },
+  {
+    "id": 5,
+    "restaurant_id": 4,
+    "dish_id": 7,
+    "category_ids": [4],
+    "uid": "user3",
+    "date_created": "2024-01-19T19:00:00Z",
+    "rating": 5,
+    "notes": "Fresh sushi, excellent presentation"
+  },
+  {
+    "id": 6,
+    "restaurant_id": 6,
+    "dish_id": 11,
+    "category_ids": [6],
+    "uid": "user1",
+    "date_created": "2024-01-20T18:45:00Z",
+    "rating": 4,
+    "notes": "Authentic Pad Thai, great balance of flavors"
+  },
+  {
+    "id": 7,
+    "restaurant_id": 7,
+    "dish_id": 13,
+    "category_ids": [7],
+    "uid": "user3",
+    "date_created": "2024-01-21T20:30:00Z",
+    "rating": 5,
+    "notes": "Creamy and flavorful butter chicken"
+  },
+  {
+    "id": 8,
+    "restaurant_id": 8,
+    "dish_id": 15,
+    "category_ids": [8],
+    "uid": "user2",
+    "date_created": "2024-01-22T19:15:00Z",
+    "rating": 4,
+    "notes": "Classic French dish, tender chicken"
+  },
+  {
+    "id": 9,
+    "restaurant_id": 9,
+    "dish_id": 17,
+    "category_ids": [9],
+    "uid": "user1",
+    "date_created": "2024-01-23T13:00:00Z",
+    "rating": 5,
+    "notes": "Fresh Mediterranean flavors, perfect for lunch"
+  },
+  {
+    "id": 10,
+    "restaurant_id": 10,
+    "dish_id": 19,
+    "category_ids": [10],
+    "uid": "user3",
+    "date_created": "2024-01-24T18:00:00Z",
+    "rating": 4,
+    "notes": "Healthy and delicious vegetarian option"
+  },
+  {
+    "id": 11,
+    "restaurant_id": 1,
+    "dish_id": 2,
+    "category_ids": [1],
+    "uid": "user2",
+    "date_created": "2024-01-25T20:00:00Z",
+    "rating": 5,
+    "notes": "Best carbonara I've had in Chicago"
+  },
+  {
+    "id": 12,
+    "restaurant_id": 4,
+    "dish_id": 8,
+    "category_ids": [4],
+    "uid": "user1",
+    "date_created": "2024-01-26T19:30:00Z",
+    "rating": 4,
+    "notes": "Comforting udon, generous tempura portions"
+  },
+  {
+    "id": 13,
+    "restaurant_id": 5,
+    "dish_id": 10,
+    "category_ids": [5],
+    "uid": "user3",
+    "date_created": "2024-01-27T21:00:00Z",
+    "rating": 5,
+    "notes": "Wings were perfectly crispy and saucy"
+  },
+  {
+    "id": 14,
+    "restaurant_id": 6,
+    "dish_id": 12,
+    "category_ids": [6],
+    "uid": "user2",
+    "date_created": "2024-01-28T18:15:00Z",
+    "rating": 4,
+    "notes": "Aromatic green curry, not too spicy"
+  },
+  {
+    "id": 15,
+    "restaurant_id": 2,
+    "dish_id": 4,
+    "category_ids": [2],
+    "uid": "user1",
+    "date_created": "2024-01-29T17:45:00Z",
+    "rating": 5,
+    "notes": "Sweet and sour pork was excellent"
+  },
+  {
+    "id": 16,
+    "restaurant_id": 3,
+    "dish_id": 6,
+    "category_ids": [3],
+    "uid": "user3",
+    "date_created": "2024-01-30T20:30:00Z",
+    "rating": 4,
+    "notes": "Great tacos, fresh ingredients"
+  },
+  {
+    "id": 17,
+    "restaurant_id": 9,
+    "dish_id": 18,
+    "category_ids": [9],
+    "uid": "user2",
+    "date_created": "2024-01-31T19:00:00Z",
+    "rating": 5,
+    "notes": "Authentic moussaka, rich and comforting"
+  },
+  {
+    "id": 18,
+    "restaurant_id": 7,
+    "dish_id": 14,
+    "category_ids": [7],
+    "uid": "user1",
+    "date_created": "2024-02-01T18:30:00Z",
+    "rating": 5,
+    "notes": "Spicy vindaloo, perfect for spice lovers"
+  },
+  {
+    "id": 19,
+    "restaurant_id": 8,
+    "dish_id": 16,
+    "category_ids": [8],
+    "uid": "user3",
+    "date_created": "2024-02-02T20:00:00Z",
+    "rating": 4,
+    "notes": "Fresh seafood bouillabaisse"
+  },
+  {
+    "id": 20,
+    "restaurant_id": 10,
+    "dish_id": 20,
+    "category_ids": [10],
+    "uid": "user2",
+    "date_created": "2024-02-03T12:15:00Z",
+    "rating": 5,
+    "notes": "Nutritious and delicious Buddha bowl"
+  }
+]

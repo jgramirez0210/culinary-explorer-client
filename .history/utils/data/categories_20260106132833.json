@@ -1,0 +1,42 @@
+[
+  {
+    "id": 1,
+    "category": "Italian"
+  },
+  {
+    "id": 2,
+    "category": "Chinese"
+  },
+  {
+    "id": 3,
+    "category": "Mexican"
+  },
+  {
+    "id": 4,
+    "category": "Japanese"
+  },
+  {
+    "id": 5,
+    "category": "American"
+  },
+  {
+    "id": 6,
+    "category": "Thai"
+  },
+  {
+    "id": 7,
+    "category": "Indian"
+  },
+  {
+    "id": 8,
+    "category": "French"
+  },
+  {
+    "id": 9,
+    "category": "Mediterranean"
+  },
+  {
+    "id": 10,
+    "category": "Vegetarian"
+  }
+]

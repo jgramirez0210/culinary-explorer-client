@@ -1,0 +1,72 @@
+[
+  {
+    "id": 1,
+    "restaurant_name": "Mario's Authentic Italian",
+    "restaurant_address": "123 Main St, Chicago, IL 60601",
+    "website_url": "https://mariositalian.com",
+    "uid_id": "user1"
+  },
+  {
+    "id": 2,
+    "restaurant_name": "Golden Dragon Chinese",
+    "restaurant_address": "456 Oak Ave, Chicago, IL 60602",
+    "website_url": "https://goldendragonchicago.com",
+    "uid_id": "user2"
+  },
+  {
+    "id": 3,
+    "restaurant_name": "Casa Mexico",
+    "restaurant_address": "789 Pine St, Chicago, IL 60603",
+    "website_url": "https://casamexicochicago.com",
+    "uid_id": "user1"
+  },
+  {
+    "id": 4,
+    "restaurant_name": "Sakura Japanese Cuisine",
+    "restaurant_address": "321 Elm Dr, Chicago, IL 60604",
+    "website_url": "https://sakurajapanesecuisine.com",
+    "uid_id": "user3"
+  },
+  {
+    "id": 5,
+    "restaurant_name": "Burger Palace",
+    "restaurant_address": "654 Maple Ln, Chicago, IL 60605",
+    "website_url": "https://burgerpalacechicago.com",
+    "uid_id": "user2"
+  },
+  {
+    "id": 6,
+    "restaurant_name": "Thai Spice",
+    "restaurant_address": "987 Cedar St, Chicago, IL 60606",
+    "website_url": "https://thaispicechicago.com",
+    "uid_id": "user1"
+  },
+  {
+    "id": 7,
+    "restaurant_name": "Curry House",
+    "restaurant_address": "147 Birch Ave, Chicago, IL 60607",
+    "website_url": "https://curryhousechicago.com",
+    "uid_id": "user3"
+  },
+  {
+    "id": 8,
+    "restaurant_name": "Le Petit Paris",
+    "restaurant_address": "258 Willow St, Chicago, IL 60608",
+    "website_url": "https://lepetitparis.com",
+    "uid_id": "user2"
+  },
+  {
+    "id": 9,
+    "restaurant_name": "Olive Garden Mediterranean",
+    "restaurant_address": "369 Ash St, Chicago, IL 60609",
+    "website_url": "https://olivegardenmed.com",
+    "uid_id": "user1"
+  },
+  {
+    "id": 10,
+    "restaurant_name": "Green Leaf Vegetarian",
+    "restaurant_address": "741 Poplar Ave, Chicago, IL 60610",
+    "website_url": "https://greenleafvegetarian.com",
+    "uid_id": "user3"
+  }
+]

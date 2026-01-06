@@ -1,0 +1,162 @@
+[
+  {
+    "id": 1,
+    "dish_name": "Margherita Pizza",
+    "description": "Classic Neapolitan pizza with fresh mozzarella, tomatoes, and basil",
+    "notes": "Wood-fired oven, San Marzano tomatoes",
+    "food_image_url": "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=400",
+    "price": 18.99
+  },
+  {
+    "id": 2,
+    "dish_name": "Spaghetti Carbonara",
+    "description": "Traditional Roman pasta with eggs, Pecorino Romano, pancetta, and black pepper",
+    "notes": "Authentic recipe from Rome",
+    "food_image_url": "https://images.unsplash.com/photo-1551892376-2e22223c46d7?w=400",
+    "price": 22.50
+  },
+  {
+    "id": 3,
+    "dish_name": "Kung Pao Chicken",
+    "description": "Spicy Sichuan dish with chicken, peanuts, vegetables, and chili peppers",
+    "notes": "Contains peanuts, very spicy",
+    "food_image_url": "https://images.unsplash.com/photo-1526318896980-cf78c088247c?w=400",
+    "price": 16.75
+  },
+  {
+    "id": 4,
+    "dish_name": "Sweet and Sour Pork",
+    "description": "Crispy pork with pineapple, bell peppers, and tangy sweet-sour sauce",
+    "notes": "Deep-fried, pineapple chunks included",
+    "food_image_url": "https://images.unsplash.com/photo-1563379091339-03246963d4ad?w=400",
+    "price": 19.25
+  },
+  {
+    "id": 5,
+    "dish_name": "Chicken Quesadillas",
+    "description": "Grilled tortillas filled with chicken, cheese, salsa, and sour cream",
+    "notes": "Served with guacamole and pico de gallo",
+    "food_image_url": "https://images.unsplash.com/photo-1599974579688-8e9492eedb59?w=400",
+    "price": 14.99
+  },
+  {
+    "id": 6,
+    "dish_name": "Beef Tacos",
+    "description": "Soft corn tortillas with seasoned ground beef, lettuce, cheese, and salsa",
+    "notes": "Three tacos per serving",
+    "food_image_url": "https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=400",
+    "price": 12.50
+  },
+  {
+    "id": 7,
+    "dish_name": "Sushi Platter",
+    "description": "Assortment of nigiri, maki, and sashimi with wasabi and pickled ginger",
+    "notes": "Fresh fish, chef's selection",
+    "food_image_url": "https://images.unsplash.com/photo-1579871494447-9811cf80d66c?w=400",
+    "price": 28.99
+  },
+  {
+    "id": 8,
+    "dish_name": "Tempura Udon",
+    "description": "Thick wheat noodles in broth with crispy tempura shrimp and vegetables",
+    "notes": "Hot and comforting, seasonal vegetables",
+    "food_image_url": "https://images.unsplash.com/photo-1557872943-16a5ac26437e?w=400",
+    "price": 15.75
+  },
+  {
+    "id": 9,
+    "dish_name": "Classic Cheeseburger",
+    "description": "Juicy beef patty with American cheese, lettuce, tomato, onion, and pickles",
+    "notes": "Served with fries, all-beef patty",
+    "food_image_url": "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=400",
+    "price": 13.99
+  },
+  {
+    "id": 10,
+    "dish_name": "Buffalo Wings",
+    "description": "Crispy chicken wings tossed in spicy buffalo sauce",
+    "notes": "Served with blue cheese dressing and celery, very spicy",
+    "food_image_url": "https://images.unsplash.com/photo-1524114664602-4401286018bd?w=400",
+    "price": 11.99
+  },
+  {
+    "id": 11,
+    "dish_name": "Pad Thai",
+    "description": "Stir-fried rice noodles with shrimp, tofu, bean sprouts, and crushed peanuts",
+    "notes": "Traditional Bangkok street food style",
+    "food_image_url": "https://images.unsplash.com/photo-1559314809-0d155014e29e?w=400",
+    "price": 17.50
+  },
+  {
+    "id": 12,
+    "dish_name": "Green Curry",
+    "description": "Thai green curry with coconut milk, eggplant, bamboo shoots, and basil",
+    "notes": "Medium spicy, with jasmine rice",
+    "food_image_url": "https://images.unsplash.com/photo-1455619452474-d2be8b1e70cd?w=400",
+    "price": 16.25
+  },
+  {
+    "id": 13,
+    "dish_name": "Butter Chicken",
+    "description": "Creamy tomato-based curry with tender chicken pieces",
+    "notes": "Mild spice level, served with naan bread",
+    "food_image_url": "https://images.unsplash.com/photo-1585937421612-70a008356fbe?w=400",
+    "price": 19.99
+  },
+  {
+    "id": 14,
+    "dish_name": "Lamb Vindaloo",
+    "description": "Very spicy Goan curry with tender lamb and potatoes",
+    "notes": "Extremely spicy, not for the faint of heart",
+    "food_image_url": "https://images.unsplash.com/photo-1565299507177-b0ac66763828?w=400",
+    "price": 21.50
+  },
+  {
+    "id": 15,
+    "dish_name": "Coq au Vin",
+    "description": "Chicken braised in red wine with mushrooms, onions, and herbs",
+    "notes": "Classic French bistro dish, slow-cooked",
+    "food_image_url": "https://images.unsplash.com/photo-1432139555190-58524dae6a55?w=400",
+    "price": 26.99
+  },
+  {
+    "id": 16,
+    "dish_name": "Bouillabaisse",
+    "description": "Traditional Provençal fish stew with various seafood and saffron",
+    "notes": "Served with rouille and crusty bread",
+    "food_image_url": "https://images.unsplash.com/photo-1559847844-5315695dadae?w=400",
+    "price": 32.00
+  },
+  {
+    "id": 17,
+    "dish_name": "Greek Salad",
+    "description": "Fresh tomatoes, cucumbers, olives, feta cheese, and olive oil dressing",
+    "notes": "Traditional Mediterranean flavors",
+    "food_image_url": "https://images.unsplash.com/photo-1540420773420-3366772f4999?w=400",
+    "price": 12.99
+  },
+  {
+    "id": 18,
+    "dish_name": "Moussaka",
+    "description": "Layered casserole with eggplant, ground meat, and béchamel sauce",
+    "notes": "Greek comfort food, baked to perfection",
+    "food_image_url": "https://images.unsplash.com/photo-1544025162-d76694265947?w=400",
+    "price": 18.75
+  },
+  {
+    "id": 19,
+    "dish_name": "Vegetable Stir Fry",
+    "description": "Mixed seasonal vegetables stir-fried with tofu and ginger",
+    "notes": "100% plant-based, gluten-free option available",
+    "food_image_url": "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400",
+    "price": 13.50
+  },
+  {
+    "id": 20,
+    "dish_name": "Quinoa Buddha Bowl",
+    "description": "Quinoa base with roasted vegetables, avocado, and tahini dressing",
+    "notes": "Vegan, high-protein, customizable",
+    "food_image_url": "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400",
+    "price": 15.25
+  }
+]
