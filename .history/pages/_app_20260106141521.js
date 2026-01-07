@@ -20,7 +20,7 @@ const ViewDirectorBasedOnUserAuthStatus = dynamic(() => import('../utils/ViewDir
 function MyApp({ Component, pageProps }) {
   return (
     <GoogleMapsProvider>
-      <AuthProvider>
+      <ClientSideAuthProvider>
         {' '}
         {/* gives children components access to user and auth methods */}
         <ViewDirectorBasedOnUserAuthStatus
@@ -30,7 +30,7 @@ function MyApp({ Component, pageProps }) {
           component={Component}
           pageProps={pageProps}
         />
-      </AuthProvider>
+      </ClientSideAuthProvider>
     </GoogleMapsProvider>
   );
 }

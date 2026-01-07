@@ -6,7 +6,7 @@ const AuthContext = createContext();
 const AuthProvider = (props) => {
   // Don't render anything on server to prevent SSR issues
   if (typeof window === 'undefined') {
-    return null;
+    return <>{props.children}</>;
   }
 
   const [user, setUser] = useState(null);

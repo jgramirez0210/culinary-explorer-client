@@ -41,7 +41,7 @@ const checkUser = (uid) =>
       .then((resp) => {
         if (!resp.ok) {
           console.warn('Backend not available, treating user as new');
-        resolve({ valid: false, uid });
+          resolve({ valid: false, uid });
         } else {
           return resp.json();
         }

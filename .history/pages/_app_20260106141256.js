@@ -4,7 +4,7 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../styles/globals.css';
 import dynamic from 'next/dynamic';
-import { AuthProvider } from '../utils/context/authContext';
+import ClientSideAuthProvider from '../components/ClientSideAuthProvider';
 
 // Dynamically import GoogleMapsProvider to prevent SSR issues
 const GoogleMapsProvider = dynamic(() => import('../components/GoogleMapsProvider').then(mod => mod.GoogleMapsProvider), {

@@ -1,26 +1,14 @@
-'use client';
-
 /* eslint-disable react/prop-types */
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../styles/globals.css';
-import dynamic from 'next/dynamic';
-import { AuthProvider } from '../utils/context/authContext';
-
-// Dynamically import GoogleMapsProvider to prevent SSR issues
-const GoogleMapsProvider = dynamic(() => import('../components/GoogleMapsProvider').then(mod => mod.GoogleMapsProvider), {
-  ssr: false,
-  loading: () => <div>Loading...</div>
-});
-
-const ViewDirectorBasedOnUserAuthStatus = dynamic(() => import('../utils/ViewDirector').then(mod => mod.default), {
-  ssr: false,
-  loading: () => <div>Loading...</div>
-});
+import ClientSideAuthProvider from '../components/ClientSideAuthProvider';
+import { GoogleMapsProvider } from '../components/GoogleMapsProvider';
+import ViewDirectorBasedOnUserAuthStatus from '../utils/ViewDirector';
 
 function MyApp({ Component, pageProps }) {
   return (
     <GoogleMapsProvider>
-      <AuthProvider>
+      <ClientSideAuthProvider>
         {' '}
         {/* gives children components access to user and auth methods */}
         <ViewDirectorBasedOnUserAuthStatus
@@ -30,7 +18,7 @@ function MyApp({ Component, pageProps }) {
           component={Component}
           pageProps={pageProps}
         />
-      </AuthProvider>
+      </ClientSideAuthProvider>
     </GoogleMapsProvider>
   );
 }

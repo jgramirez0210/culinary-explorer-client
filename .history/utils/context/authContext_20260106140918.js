@@ -6,7 +6,7 @@ const AuthContext = createContext();
 const AuthProvider = (props) => {
   // Don't render anything on server to prevent SSR issues
   if (typeof window === 'undefined') {
-    return null;
+    return <>{props.children}</>;
   }
 
   const [user, setUser] = useState(null);
@@ -21,23 +21,21 @@ const AuthProvider = (props) => {
         }
         const auth = getAuth();
         onAuthStateChanged(auth, (fbUser) => {
-          if (fbUser) {
-            setOAuthUser(fbUser);
-            checkUser(fbUser.uid).then((userInfo) => {
-              let userObj = {};
-              if ('null' in userInfo) {
-                userObj = userInfo;
-              } else {
-                userObj = { fbUser, uid: fbUser.uid, ...userInfo };
-              }
-              setUser(userObj);
-            });
+      if (fbUser) {
+        setOAuthUser(fbUser);
+        checkUser(fbUser.uid).then((userInfo) => {
+          let userObj = {};
+          if ('null' in userInfo) {
+            userObj = userInfo;
           } else {
-            setOAuthUser(false);
-            setUser(false);
+            userObj = { fbUser, uid: fbUser.uid, ...userInfo };
           }
+          setUser(userObj);
         });
-      });
+      } else {
+        setOAuthUser(false);
+        setUser(false);
+      }
     });
   }, []);
 

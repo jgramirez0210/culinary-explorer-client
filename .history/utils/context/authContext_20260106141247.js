@@ -4,11 +4,15 @@ import { checkUser, firebaseCredentials } from '../auth.js';
 const AuthContext = createContext();
 
 const AuthProvider = (props) => {
+  console.log('AuthProvider called, window defined:', typeof window !== 'undefined');
+
   // Don't render anything on server to prevent SSR issues
   if (typeof window === 'undefined') {
-    return null;
+    console.log('SSR: returning children without provider');
+    return <>{props.children}</>;
   }
 
+  console.log('Client: rendering AuthProvider');
   const [user, setUser] = useState(null);
   const [oAuthUser, setOAuthUser] = useState(null);
 

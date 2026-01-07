@@ -8,11 +8,6 @@ import RegisterForm from '../components/forms/RegisterForm';
 const ViewDirectorBasedOnUserAuthStatus = ({ component: Component, pageProps }) => {
   const { user, userLoading, updateUser } = useAuth();
 
-  // On server-side, show loading to prevent SSR issues
-  if (typeof window === 'undefined') {
-    return <Loading />;
-  }
-
   // if user state is null, then show loader
   if (userLoading) {
     return <Loading />;

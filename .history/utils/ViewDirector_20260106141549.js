@@ -6,6 +6,11 @@ import NavBar from '../components/NavBar';
 import RegisterForm from '../components/forms/RegisterForm';
 
 const ViewDirectorBasedOnUserAuthStatus = ({ component: Component, pageProps }) => {
+  // On server-side, show loading to prevent SSR issues
+  if (typeof window === 'undefined') {
+    return <Loading />;
+  }
+
   const { user, userLoading, updateUser } = useAuth();
 
   // On server-side, show loading to prevent SSR issues
