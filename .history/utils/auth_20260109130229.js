@@ -30,9 +30,7 @@ if (!firebaseCredentials.databaseURL) {
 
 const checkUser = (uid) =>
   new Promise((resolve, reject) => {
-    const url = `${firebaseCredentials.databaseURL}/checkuser`;
-    console.log('Checking user at URL:', url, 'with uid:', uid);
-    fetch(url, {
+    fetch(`${firebaseCredentials.databaseURL}/checkuser`, {
       method: 'POST',
       body: JSON.stringify({ uid }),
       headers: {
@@ -41,22 +39,16 @@ const checkUser = (uid) =>
       },
     })
       .then((resp) => {
-        console.log('Check user response status:', resp.status);
         if (!resp.ok) {
           console.warn('Backend not available, treating user as new');
           resolve({ valid: false, uid });
         } else {
-          console.log('Check user response json');
           return resp.json();
         }
       })
-      .then((data) => {
-        console.log('Check user resolved with:', data);
-        resolve(data);
-      })
+      .then(resolve)
       .catch((error) => {
         console.warn('Backend fetch failed, treating user as new:', error.message);
-        console.warn('Full error:', error);
         resolve({ valid: false, uid });
       });
   });

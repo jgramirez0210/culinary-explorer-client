@@ -31,9 +31,7 @@ const MapComponent = ({ locations }) => {
   return (
     <div className="map-container">
       <GoogleMap mapContainerClassName="google-map-container" center={center} zoom={10}>
-        {console.log('GoogleMapsCard: Rendering markers for locations:', locations)}
         {locations.map((poi) => {
-          console.log('GoogleMapsCard: Creating marker for:', poi.restaurantName, 'at position:', poi.location);
           const restaurantId = poi.id;
 
           return <Marker key={restaurantId} position={poi.location} title={poi.restaurantName} onClick={() => handleMarkerClick(poi)} />;

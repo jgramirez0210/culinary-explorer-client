@@ -19,7 +19,7 @@ function RegisterForm({ user, updateUser }) {
   });
   const handleSubmit = (e) => {
     e.preventDefault();
-    registerUser(formData).then((userData) => updateUser({ ...user, valid: true, ...userData }));
+    registerUser(formData).then(() => updateUser(user.uid));
   };
 
   return (

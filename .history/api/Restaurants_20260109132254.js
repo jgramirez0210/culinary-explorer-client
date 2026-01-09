@@ -1,7 +1,7 @@
 const getAllRestaurants = () =>
   new Promise((resolve, reject) => {
     const endpoint = process.env.NEXT_PUBLIC_DATABASE_URL;
-    fetch(`${endpoint}/culinary_explorer_api_restaurants`, {
+    fetch(`${endpoint}/culinary_explorer_api/restaurants`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -29,7 +29,7 @@ const getAllRestaurantsByUid = (uid) =>
 const createRestaurant = (payload) =>
   new Promise((resolve, reject) => {
     const endpoint = process.env.NEXT_PUBLIC_DATABASE_URL;
-    fetch(`${endpoint}/culinary_explorer_api_restaurants`, {
+    fetch(`${endpoint}/culinary_explorer_api/restaurants`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -44,7 +44,7 @@ const createRestaurant = (payload) =>
 const updateRestaurant = (id, payload) =>
   new Promise((resolve, reject) => {
     const endpoint = process.env.NEXT_PUBLIC_DATABASE_URL;
-    fetch(`${endpoint}/culinary_explorer_api_restaurants/${id}`, {
+    fetch(`${endpoint}/culinary_explorer_api/restaurants/${id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -58,7 +58,7 @@ const updateRestaurant = (id, payload) =>
 const deleteRestaurant = (id) =>
   new Promise((resolve, reject) => {
     const endpoint = process.env.NEXT_PUBLIC_DATABASE_URL;
-    fetch(`${endpoint}/culinary_explorer_api_restaurants/${id}`, {
+    fetch(`${endpoint}/restaurants/${id}`, {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',

@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "google-maps": {
+      "command": "uvx",
+      "args": [
+        "mcp-server-google-maps"
+      ],
+      "env": {
+        "GOOGLE_MAPS_API_KEY": "AIzaSyAD1I9LN6w0ZZ71vtly3rqgOkn-CclfS0k"
+      }
+    }
+  }
+}
