@@ -12,15 +12,21 @@ export const firebaseCredentials = {
   databaseURL: process.env.NEXT_PUBLIC_DATABASE_URL,
 };
 
+// Log environment variables status
+console.log('🔍 DEBUG: Firebase credentials check - API_KEY:', !!firebaseCredentials.apiKey, 'AUTH_DOMAIN:', !!firebaseCredentials.authDomain, 'DATABASE_URL:', !!firebaseCredentials.databaseURL);
+
 // Initialize Firebase only on client-side to avoid SSR issues
 let firebaseApp;
 let auth;
 
 const initializeFirebase = () => {
+  console.log('🔍 DEBUG: initializeFirebase called, typeof window:', typeof window);
   if (typeof window === 'undefined') return; // Skip on server
   if (!firebaseApp) {
+    console.log('🔍 DEBUG: Initializing Firebase app');
     firebaseApp = !getApps().length ? initializeApp(firebaseCredentials) : getApp();
     auth = getAuth(firebaseApp);
+    console.log('🔍 DEBUG: Firebase initialized successfully');
   }
 };
 
@@ -63,9 +69,10 @@ const checkUser = (uid) =>
 
 const registerUser = (userInfo) =>
   new Promise((resolve, reject) => {
-    const url = `${firebaseCredentials.databaseURL}/register`;
-    console.log('Registering user at URL:', url);
-    console.log('User info:', userInfo);
+    const url = `${firebaseCredentials.databaseURL}/register_user`;
+    console.log('🔍 DEBUG: Registering user at URL:', url);
+    console.log('🔍 DEBUG: User info being sent:', userInfo);
+    console.log('🔍 DEBUG: Checking required fields - first_name:', userInfo.first_name, 'last_name:', userInfo.last_name, 'email_address:', userInfo.email_address, 'uid:', userInfo.uid);
     fetch(url, {
       method: 'POST',
       body: JSON.stringify(userInfo),
@@ -75,19 +82,21 @@ const registerUser = (userInfo) =>
       },
     })
       .then((resp) => {
-        console.log('Register fetch response status:', resp.status);
+        console.log('🔍 DEBUG: Register fetch response status:', resp.status);
+        console.log('🔍 DEBUG: Register fetch response headers:', resp.headers);
         if (!resp.ok) {
-          console.error('Register fetch not ok:', resp.statusText);
+          console.error('🔍 DEBUG: Register fetch not ok:', resp.statusText);
+          console.error('🔍 DEBUG: Register fetch response body will be parsed as JSON');
         }
         return resp.json();
       })
       .then((data) => {
-        console.log('Register successful, data:', data);
+        console.log('🔍 DEBUG: Register successful, data:', data);
         resolve(data);
       })
       .catch((error) => {
-        console.error('Register fetch error:', error.message);
-        console.error('Full error:', error);
+        console.error('🔍 DEBUG: Register fetch error:', error.message);
+        console.error('🔍 DEBUG: Full error:', error);
         reject(error);
       });
   });

@@ -84,7 +84,9 @@ function DishForm({ onDishCreated }) {
         <Form.Label>Price</Form.Label>
         <Form.Control type="text" name="price" value={formInput.price} onChange={handleChange} placeholder="Enter price" />
       </Form.Group>
-      <button type="submit">Food Log Submit</button>
+      <button type="submit" className="button button-view">
+        Food Log Submit
+      </button>
     </Form>
   );
 }

@@ -5,12 +5,7 @@ import PropTypes from 'prop-types';
 import { useRouter } from 'next/router';
 import { deleteItem } from '../api/FoodLog';
 
-const FoodLogCard = ({
-  itemObj,
-  viewType,
-  onUpdate,
-  onClick = () => {},
-}) => {
+const FoodLogCard = ({ itemObj, viewType, onUpdate, onClick = () => {} }) => {
   const router = useRouter();
   const categoryNames = Array.isArray(itemObj.category) ? itemObj.category.map((cat) => cat.category) : [];
 
@@ -24,17 +19,10 @@ const FoodLogCard = ({
   };
 
   return (
-    <Card className="card" style={{ width: '18rem', margin: '10px', border: '1px solid' }} onClick={onClick}>
-      <Card.Title style={{ textAlign: 'center', paddingTop: '10px' }}>{itemObj.restaurant?.restaurant_name}</Card.Title>
+    <Card className="card" style={{ width: '20rem', margin: '1rem' }} onClick={onClick}>
+      <Card.Title style={{ textAlign: 'center', paddingTop: '1rem', fontSize: '1.25rem' }}>{itemObj.restaurant?.restaurant_name}</Card.Title>
       <Card.Body className="card-body">
-        {itemObj.dish.food_image_url && (
-          <Card.Img
-            variant="top"
-            src={itemObj.dish?.food_image_url}
-            alt={itemObj.dish?.dish_name}
-            style={{ height: '175px', borderRadius: '0.5rem' }}
-          />
-        )}
+        {itemObj.dish.food_image_url && <Card.Img variant="top" src={itemObj.dish?.food_image_url} alt={itemObj.dish?.dish_name} style={{ height: '175px', borderRadius: '0.5rem' }} />}
         <div className="card-text">
           <label htmlFor="dishName">Dish Name:</label>
           <span id="dishName">{itemObj.dish?.dish_name}</span>
@@ -69,9 +57,7 @@ const FoodLogCard = ({
               <span id="notes">{itemObj.dish?.notes}</span>
             </p>
             <Link href={`/food_log/edit/${itemObj.id}`} passHref>
-              <Button className="button button-edit">
-                EDIT
-              </Button>
+              <Button className="button button-edit">EDIT</Button>
             </Link>
             <Button type="button" onClick={() => deleteThisItem(itemObj.id)} className="button button-delete">
               DELETE
@@ -85,7 +71,9 @@ const FoodLogCard = ({
               <span id="short-description">{itemObj.dish.description}</span>
             </p>
             <Link href={`/food_log/${itemObj.id}`} passHref>
-              <button type="button" className="button button-view">VIEW</button>
+              <button type="button" className="button button-view">
+                VIEW
+              </button>
             </Link>
           </>
         )}

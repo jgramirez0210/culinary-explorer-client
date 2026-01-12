@@ -34,20 +34,18 @@ const Search = () => {
   }
 
   return (
-    <div className="search-results">
-      {query && items.length === 0 ? (
-        <p>No items found for &quot;{query}&quot;.</p>
-      ) : (
-        <div className="d-flex flex-wrap justify-content-evenly">
-          {items.map((item) => (
-            <FoodLogCard
-              key={item.id}
-              itemObj={item}
-              onClick={() => handleItemClick(item.id)}
-            />
-          ))}
-        </div>
-      )}
+    <div className="page-container">
+      <div className="search-results">
+        {query && items.length === 0 ? (
+          <div className="card">No items found for &quot;{query}&quot;.</div>
+        ) : (
+          <div className="card-grid">
+            {items.map((item) => (
+              <FoodLogCard key={item.id} itemObj={item} onClick={() => handleItemClick(item.id)} />
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 };

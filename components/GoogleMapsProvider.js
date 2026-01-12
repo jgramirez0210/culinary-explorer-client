@@ -6,7 +6,7 @@ const libraries = ['marker', 'places'];
 
 export const GoogleMapsContext = createContext({
   isLoaded: false,
-  loadError: null
+  loadError: null,
 });
 
 export const useGoogleMaps = () => useContext(GoogleMapsContext);
@@ -15,9 +15,10 @@ export function GoogleMapsProvider({ children }) {
   const options = {
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY,
     libraries,
-    loading: 'async'
+    loading: 'async',
   };
   const { isLoaded, loadError } = useJsApiLoader(options);
+  console.log('GoogleMapsProvider: useJsApiLoader isLoaded:', isLoaded, 'loadError:', loadError);
 
   if (loadError) {
     console.error('Google Maps API failed to load:', loadError);

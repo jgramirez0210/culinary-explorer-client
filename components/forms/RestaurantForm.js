@@ -117,7 +117,9 @@ const RestaurantForm = ({ id, onRestaurantCreated, updateRestaurant, isLoaded })
         <Form.Control type="text" name="website_url" value={formInput.website_url} onChange={handleChange} placeholder="Enter website URL" isInvalid={!!errors.website_url} />
         <Form.Control.Feedback type="invalid">{errors.website_url}</Form.Control.Feedback>
       </Form.Group>
-      <button type="submit">Submit</button>
+      <button type="submit" className="button button-view">
+        Submit
+      </button>
     </Form>
   );
 };

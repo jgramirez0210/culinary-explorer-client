@@ -19,7 +19,15 @@ function RegisterForm({ user, updateUser }) {
   });
   const handleSubmit = (e) => {
     e.preventDefault();
-    registerUser(formData).then((userData) => updateUser({ ...user, valid: true, ...userData }));
+    console.log('🔍 DEBUG: RegisterForm handleSubmit called with formData:', formData);
+    registerUser(formData)
+      .then((userData) => {
+        console.log('🔍 DEBUG: RegisterForm registerUser success, userData:', userData);
+        updateUser({ ...user, valid: true, ...userData });
+      })
+      .catch((error) => {
+        console.error('🔍 DEBUG: RegisterForm registerUser failed:', error);
+      });
   };
 
   return (
@@ -40,7 +48,7 @@ function RegisterForm({ user, updateUser }) {
         <Form.Label>Profile Image URL</Form.Label>
         <Form.Control type="text" name="profile_image_url" placeholder="Enter your profile image URL" value={formData.profile_image_url} onChange={({ target }) => setFormData((prev) => ({ ...prev, [target.name]: target.value }))} />
       </Form.Group>
-      <Button variant="primary" type="submit">
+      <Button className="button button-view" type="submit">
         Submit
       </Button>
     </Form>

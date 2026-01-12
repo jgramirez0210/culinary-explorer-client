@@ -6,7 +6,7 @@ import Form from 'react-bootstrap/Form';
 import { Button } from 'react-bootstrap';
 import { useJsApiLoader } from '@react-google-maps/api';
 import { updateFoodLog, createFoodLog } from '../../api/FoodLog';
-import { getAllRestaurants, deleteRestaurant } from '../../api/Restaurants';
+import { getAllRestaurants, getAllRestaurantsByUid, deleteRestaurant } from '../../api/Restaurants';
 import { getAllCategories } from '../../api/Categories';
 import { getAllDishes, deleteDish } from '../../api/Dish';
 import DishForm from './DishForm';
@@ -60,7 +60,7 @@ function FoodLogForm({ isLoaded, user, editObj = initialState }) {
       setFormInput(initialState);
     }
 
-    getAllRestaurants()
+    getAllRestaurantsByUid(user.uid)
       .then((restaurants) => {
         setRestaurants(restaurants);
       })
@@ -278,7 +278,7 @@ function FoodLogForm({ isLoaded, user, editObj = initialState }) {
       label: (
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <span>{type === 'restaurant' ? item.restaurant_name : item.dish_name}</span>
-          <Button variant="danger" size="sm" onClick={() => handleDelete(item.id, type)}>
+          <Button className="button button-delete" size="sm" onClick={() => handleDelete(item.id, type)}>
             Delete
           </Button>
         </div>
@@ -294,7 +294,7 @@ function FoodLogForm({ isLoaded, user, editObj = initialState }) {
       return (
         <div>
           <RestaurantForm user={user} onRestaurantCreated={handleSubmit} isLoaded={isLoaded} />
-          <Button variant="primary" onClick={handleBack}>
+          <Button className="button button-view" onClick={handleBack}>
             Back
           </Button>
         </div>
@@ -305,7 +305,7 @@ function FoodLogForm({ isLoaded, user, editObj = initialState }) {
       return (
         <div>
           <DishForm user={user} onDishCreated={handleSubmit} isLoaded={isLoaded} />
-          <Button variant="primary" onClick={handleBack}>
+          <Button className="button button-view" onClick={handleBack}>
             Back
           </Button>
         </div>
@@ -379,7 +379,7 @@ function FoodLogForm({ isLoaded, user, editObj = initialState }) {
               );
             })()}
           </Form.Group>
-          <Button variant="primary" type="submit">
+          <Button className="button button-view" type="submit">
             Submit
           </Button>
         </Form>

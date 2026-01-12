@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '../utils/context/authContext';
 import FoodLogCard from '../components/FoodLogCard';
 import { getFoodLogByUser } from '../api/FoodLog';
+import LocationFetcher from '../utils/googleMapsMarkers';
 
 function Home() {
   const [foodLog, setFoodLog] = useState([]);
@@ -37,6 +38,10 @@ function Home() {
     setFoodLog((prevFoodLog) => prevFoodLog.filter((item) => item.id !== deletedItemId));
   };
 
+  // Extract unique restaurants from food logs
+  const restaurants = Array.isArray(foodLog) ? [...new Map(foodLog.map((item) => [item.restaurant.id, item.restaurant])).values()] : [];
+  console.log('Index: Extracted restaurants from food logs:', restaurants, 'Length:', restaurants.length);
+
   // Show loading indicator while authentication is being checked
   if (loading) {
     return (
@@ -52,10 +57,9 @@ function Home() {
   }
 
   return (
-    <div>
-      <div width="50rem" className="d-flex flex-wrap justify-content-evenly">
-        {Array.isArray(foodLog) && foodLog.length > 0 ? foodLog.map((item) => <FoodLogCard key={item.id} itemObj={item} onUpdate={handleUpdate} viewType="all" />) : <div className="alert alert-warning">No food logs available or there was an error loading them.</div>}
-      </div>
+    <div className="page-container">
+      <div className="card-grid">{Array.isArray(foodLog) && foodLog.length > 0 ? foodLog.map((item) => <FoodLogCard key={item.id} itemObj={item} onUpdate={handleUpdate} viewType="all" />) : <div className="card">No food logs available or there was an error loading them.</div>}</div>
+      <LocationFetcher restaurants={restaurants} />
     </div>
   );
 }

@@ -5,7 +5,7 @@ import { fetchCoordinates } from '../utils/GoogleMapsScripts';
 import { useAuth } from '../utils/context/authContext';
 import Map from '../components/GoogleMapsCard';
 
-const LocationFetcher = () => {
+const LocationFetcher = ({ restaurants: propRestaurants }) => {
   const [locations, setLocations] = useState([]);
   const { user } = useAuth();
   const { isLoaded } = useGoogleMaps();
@@ -19,9 +19,15 @@ const LocationFetcher = () => {
       }
 
       try {
-        console.log('LocationFetcher: Fetching restaurants for user:', user.uid);
-        const restaurants = await getAllRestaurantsByUid(user.uid);
-        console.log('API response restaurants:', restaurants, 'Type:', typeof restaurants, 'Is Array:', Array.isArray(restaurants));
+        let restaurants;
+        if (propRestaurants) {
+          console.log('LocationFetcher: Using provided restaurants:', propRestaurants, 'Length:', propRestaurants.length);
+          restaurants = propRestaurants;
+        } else {
+          console.log('LocationFetcher: Fetching restaurants for user:', user.uid);
+          restaurants = await getAllRestaurantsByUid(user.uid);
+          console.log('API response restaurants:', restaurants, 'Type:', typeof restaurants, 'Is Array:', Array.isArray(restaurants));
+        }
 
         if (!Array.isArray(restaurants)) {
           if (restaurants && restaurants.message) {
@@ -35,6 +41,7 @@ const LocationFetcher = () => {
 
         console.log('LocationFetcher: Processing', restaurants.length, 'restaurants');
         const locationPromises = restaurants.map(async (restaurant) => {
+          console.log('LocationFetcher: Restaurant object:', restaurant);
           const { restaurant_name: restaurantName, restaurant_address: restaurantAddress, id } = restaurant;
           console.log('LocationFetcher: Processing restaurant:', restaurantName, 'Address:', restaurantAddress, 'ID:', id);
           const numericId = Number(id);
@@ -73,7 +80,7 @@ const LocationFetcher = () => {
       }
     };
     updateLocations();
-  }, [user]); // Add user dependency
+  }, [user, propRestaurants]); // Add user and propRestaurants dependency
 
   if (!isLoaded) return <div>Loading...</div>;
 

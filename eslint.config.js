@@ -1,8 +1,8 @@
-const reactPlugin = require('eslint-plugin-react');
-const prettierPlugin = require('eslint-plugin-prettier');
-const jsxA11yPlugin = require('eslint-plugin-jsx-a11y');
+import reactPlugin from 'eslint-plugin-react';
+import prettierPlugin from 'eslint-plugin-prettier';
+import jsxA11yPlugin from 'eslint-plugin-jsx-a11y';
 
-module.exports = {
+export default {
   languageOptions: {
     sourceType: 'module',
     parserOptions: {
