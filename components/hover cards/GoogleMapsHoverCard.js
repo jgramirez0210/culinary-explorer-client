@@ -5,19 +5,6 @@ import DishListByRestaurant from '../DishListByRestaurant';
 const GoogleMapsHoverCard = ({ poi, restaurantId, onClose }) => {
   const cardRef = useRef();
 
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (cardRef.current && !cardRef.current.contains(event.target)) {
-        onClose();
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [onClose]);
-
   return (
     <div ref={cardRef} className="hover-card">
       <button className="close-button" onClick={onClose}>

@@ -19,15 +19,11 @@ function RegisterForm({ user, updateUser }) {
   });
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log('🔍 DEBUG: RegisterForm handleSubmit called with formData:', formData);
     registerUser(formData)
       .then((userData) => {
-        console.log('🔍 DEBUG: RegisterForm registerUser success, userData:', userData);
         updateUser({ ...user, valid: true, ...userData });
       })
-      .catch((error) => {
-        console.error('🔍 DEBUG: RegisterForm registerUser failed:', error);
-      });
+      .catch((error) => {});
   };
 
   return (

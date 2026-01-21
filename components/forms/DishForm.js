@@ -1,7 +1,6 @@
 // Importing necessary modules and functions
-import { useRouter, Router } from 'next/router';
 import PropTypes from 'prop-types';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Form from 'react-bootstrap/Form';
 import { createDish, updateDish } from '../../api/Dish';
 
@@ -14,10 +13,22 @@ const initialState = {
   price: '',
 };
 
-function DishForm({ onDishCreated }) {
+function DishForm({ editItem, onDishCreated }) {
   const [formInput, setFormInput] = useState(initialState);
-  const { query } = useRouter();
-  const { id } = query;
+
+  useEffect(() => {
+    if (editItem) {
+      setFormInput({
+        dish_name: editItem.dish_name || '',
+        description: editItem.description || '',
+        notes: editItem.notes || '',
+        food_image_url: editItem.food_image_url || '',
+        price: editItem.price || '',
+      });
+    } else {
+      setFormInput(initialState);
+    }
+  }, [editItem]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -28,8 +39,9 @@ function DishForm({ onDishCreated }) {
   };
 
   // Function to handle form submission
-  const handleSubmit = () => {
-    // Constructing the Food log object
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    // Constructing the dish object
     const payload = {
       dish_name: formInput.dish_name,
       description: formInput.description,
@@ -38,27 +50,24 @@ function DishForm({ onDishCreated }) {
       price: parseFloat(formInput.price), // Ensure price is a number
     };
 
-    if (id) {
-      // If an id is present, update the Food log
-      updateDish(id, payload)
-        .then(() => {
-          // router.push(`/food_log`);
-        })
-        .catch((error) => {
-          console.error(error);
-        });
-    } else {
-      // Otherwise, create a new Food log
-      createDish(payload)
+    if (editItem && editItem.id) {
+      // If an editItem is present, update the dish
+      updateDish(editItem.id, payload)
         .then(() => {
           if (onDishCreated) {
-            onDishCreated();
+            onDishCreated(editItem);
           }
-          Router.push('/food_log');
         })
-        .catch((error) => {
-          console.error(error);
-        });
+        .catch((error) => {});
+    } else {
+      // Otherwise, create a new dish
+      createDish(payload)
+        .then((data) => {
+          if (onDishCreated) {
+            onDishCreated(data);
+          }
+        })
+        .catch((error) => {});
     }
   };
 
@@ -70,11 +79,11 @@ function DishForm({ onDishCreated }) {
       </Form.Group>
       <Form.Group controlId="description">
         <Form.Label>Description</Form.Label>
-        <Form.Control type="text" name="description" value={formInput.description} onChange={handleChange} placeholder="Enter description" />
+        <Form.Control as="textarea" rows={3} name="description" value={formInput.description} onChange={handleChange} placeholder="Enter description" />
       </Form.Group>
       <Form.Group controlId="notes">
         <Form.Label>Notes</Form.Label>
-        <Form.Control type="text" name="notes" value={formInput.notes} onChange={handleChange} placeholder="Enter notes" />
+        <Form.Control as="textarea" rows={3} name="notes" value={formInput.notes} onChange={handleChange} placeholder="Enter notes" />
       </Form.Group>
       <Form.Group controlId="foodImageUrl">
         <Form.Label>Food Image URL</Form.Label>
@@ -82,26 +91,24 @@ function DishForm({ onDishCreated }) {
       </Form.Group>
       <Form.Group controlId="price">
         <Form.Label>Price</Form.Label>
-        <Form.Control type="text" name="price" value={formInput.price} onChange={handleChange} placeholder="Enter price" />
+        <Form.Control type="number" name="price" value={formInput.price} onChange={handleChange} placeholder="Enter price" />
       </Form.Group>
       <button type="submit" className="button button-view">
-        Food Log Submit
+        Submit Dish
       </button>
     </Form>
   );
 }
 
 DishForm.propTypes = {
-  editObj: PropTypes.shape({
+  editItem: PropTypes.shape({
+    id: PropTypes.number,
     dish_name: PropTypes.string,
     description: PropTypes.string,
     notes: PropTypes.string,
     food_image_url: PropTypes.string,
-    price: PropTypes.string,
+    price: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   }),
-  user: PropTypes.shape({
-    uid: PropTypes.string.isRequired,
-  }).isRequired,
   onDishCreated: PropTypes.func.isRequired,
 };
 

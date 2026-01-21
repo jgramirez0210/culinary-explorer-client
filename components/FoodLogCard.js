@@ -19,10 +19,10 @@ const FoodLogCard = ({ itemObj, viewType, onUpdate, onClick = () => {} }) => {
   };
 
   return (
-    <Card className="card" style={{ width: '20rem', margin: '1rem' }} onClick={onClick}>
+    <Card className={`card food-log-card ${viewType === 'single' ? 'food-log-card-single' : ''}`} onClick={onClick}>
       <Card.Title style={{ textAlign: 'center', paddingTop: '1rem', fontSize: '1.25rem' }}>{itemObj.restaurant?.restaurant_name}</Card.Title>
       <Card.Body className="card-body">
-        {itemObj.dish.food_image_url && <Card.Img variant="top" src={itemObj.dish?.food_image_url} alt={itemObj.dish?.dish_name} style={{ height: '175px', borderRadius: '0.5rem' }} />}
+        {itemObj.dish.food_image_url && <Card.Img variant="top" src={itemObj.dish?.food_image_url} alt={itemObj.dish?.dish_name} style={{ width: '100%', height: '175px', objectFit: 'cover', borderRadius: '0.5rem' }} />}
         <div className="card-text">
           <label htmlFor="dishName">Dish Name:</label>
           <span id="dishName">{itemObj.dish?.dish_name}</span>
@@ -67,8 +67,8 @@ const FoodLogCard = ({ itemObj, viewType, onUpdate, onClick = () => {} }) => {
         {viewType === 'all' && (
           <>
             <p className="card-text bold">
-              <label htmlFor="short-description">Short Description: </label>
-              <span id="short-description">{itemObj.dish.description}</span>
+              <label htmlFor="notes">Notes: </label>
+              <span id="notes">{itemObj.dish.notes}</span>
             </p>
             <Link href={`/food_log/${itemObj.id}`} passHref>
               <button type="button" className="button button-view">

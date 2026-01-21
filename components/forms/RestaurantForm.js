@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Form } from 'react-bootstrap';
 import GooglePlacesAutocomplete from 'react-google-places-autocomplete';
 import PropTypes from 'prop-types';
@@ -7,7 +7,7 @@ import { useAuth } from '../../utils/context/authContext';
 
 const libraries = ['places'];
 
-const RestaurantForm = ({ id, onRestaurantCreated, updateRestaurant, isLoaded }) => {
+const RestaurantForm = ({ id, editItem, onRestaurantCreated, updateRestaurant, isLoaded }) => {
   const { user } = useAuth(); // Get the current user
   const [formInput, setFormInput] = useState({
     restaurant_name: '',
@@ -16,6 +16,22 @@ const RestaurantForm = ({ id, onRestaurantCreated, updateRestaurant, isLoaded })
   });
 
   const [errors, setErrors] = useState({});
+
+  useEffect(() => {
+    if (editItem) {
+      setFormInput({
+        restaurant_name: editItem.restaurant_name || '',
+        restaurant_address: editItem.restaurant_address || '',
+        website_url: editItem.website_url || '',
+      });
+    } else {
+      setFormInput({
+        restaurant_name: '',
+        restaurant_address: '',
+        website_url: '',
+      });
+    }
+  }, [editItem]);
 
   // Add the missing validateForm function
   const validateForm = () => {
@@ -46,33 +62,31 @@ const RestaurantForm = ({ id, onRestaurantCreated, updateRestaurant, isLoaded })
       return;
     }
 
+    const restaurantAddress = formInput.restaurant_address.label || formInput.restaurant_address;
+
     const payload = {
       restaurant_name: formInput.restaurant_name,
-      restaurant_address: formInput.restaurant_address.label || formInput.restaurant_address,
+      restaurant_address: restaurantAddress,
       website_url: formInput.website_url,
-      uid_id: user.uid, // Add this line to include the user's UID
+      uid: user.uid,
     };
 
-    if (id) {
-      updateRestaurant(id, payload)
+    if (editItem && editItem.id) {
+      updateRestaurant(editItem.id, payload)
         .then(() => {
           if (onRestaurantCreated) {
-            onRestaurantCreated();
+            onRestaurantCreated(editItem);
           }
         })
-        .catch((error) => {
-          console.error('Error updating restaurant:', error);
-        });
+        .catch((error) => {});
     } else {
       createRestaurant(payload)
-        .then(() => {
+        .then((data) => {
           if (onRestaurantCreated) {
-            onRestaurantCreated();
+            onRestaurantCreated(data);
           }
         })
-        .catch((error) => {
-          console.error('Error creating restaurant:', error);
-        });
+        .catch((error) => {});
     }
   };
 
@@ -126,6 +140,12 @@ const RestaurantForm = ({ id, onRestaurantCreated, updateRestaurant, isLoaded })
 
 RestaurantForm.propTypes = {
   id: PropTypes.string,
+  editItem: PropTypes.shape({
+    id: PropTypes.number,
+    restaurant_name: PropTypes.string,
+    restaurant_address: PropTypes.string,
+    website_url: PropTypes.string,
+  }),
   onRestaurantCreated: PropTypes.func.isRequired,
   createRestaurant: PropTypes.func,
   updateRestaurant: PropTypes.func,

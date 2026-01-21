@@ -12,18 +12,13 @@ export const firebaseCredentials = {
   databaseURL: process.env.NEXT_PUBLIC_DATABASE_URL,
 };
 
-// Log environment variables status
-console.log('🔍 DEBUG: Firebase credentials check - API_KEY:', !!firebaseCredentials.apiKey, 'AUTH_DOMAIN:', !!firebaseCredentials.authDomain, 'DATABASE_URL:', !!firebaseCredentials.databaseURL);
-
 // Initialize Firebase only on client-side to avoid SSR issues
 let firebaseApp;
 let auth;
 
 const initializeFirebase = () => {
-  console.log('🔍 DEBUG: initializeFirebase called, typeof window:', typeof window);
   if (typeof window === 'undefined') return; // Skip on server
   if (!firebaseApp) {
-    console.log('🔍 DEBUG: Initializing Firebase app');
     firebaseApp = !getApps().length ? initializeApp(firebaseCredentials) : getApp();
     auth = getAuth(firebaseApp);
     console.log('🔍 DEBUG: Firebase initialized successfully');
@@ -37,7 +32,6 @@ if (!firebaseCredentials.databaseURL) {
 const checkUser = (uid) =>
   new Promise((resolve, reject) => {
     const url = `${firebaseCredentials.databaseURL}/checkuser`;
-    console.log('Checking user at URL:', url, 'with uid:', uid);
     fetch(url, {
       method: 'POST',
       body: JSON.stringify({ uid }),
@@ -47,17 +41,14 @@ const checkUser = (uid) =>
       },
     })
       .then((resp) => {
-        console.log('Check user response status:', resp.status);
         if (!resp.ok) {
           console.warn('Backend not available, treating user as new');
           resolve({ valid: false, uid });
         } else {
-          console.log('Check user response json');
           return resp.json();
         }
       })
       .then((data) => {
-        console.log('Check user resolved with:', data);
         resolve(data);
       })
       .catch((error) => {

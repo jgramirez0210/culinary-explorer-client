@@ -8,7 +8,6 @@ function SignIn() {
     try {
       await signIn();
     } catch (error) {
-      console.error('Sign in failed:', error);
       alert('Sign in failed. Please try again.');
     }
   };
@@ -35,4 +34,3 @@ function SignIn() {
 }
 
 export default SignIn;
-

@@ -24,14 +24,12 @@ const AuthProvider = (props) => {
           if (fbUser) {
             setOAuthUser(fbUser);
             checkUser(fbUser.uid).then((userInfo) => {
-              console.log('🔍 DEBUG: checkUser result:', userInfo);
               let userObj = {};
               if (!userInfo.valid) {
                 userObj = { fbUser, uid: fbUser.uid, valid: false };
               } else {
                 userObj = { fbUser, uid: fbUser.uid, ...userInfo };
               }
-              console.log('🔍 DEBUG: userObj set to:', userObj);
               setUser(userObj);
             });
           } else {

@@ -25,13 +25,11 @@ const createDish = async (payload) => {
 
     if (!response.ok) {
       const errorData = await response.json();
-      console.error('Server responded with an error:', errorData);
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
     return response.json();
   } catch (error) {
-    console.error('Error in createDish:', error);
     throw error;
   }
 };

@@ -13,12 +13,12 @@ export default function NoAuthNavBar() {
         <Navbar.Toggle aria-controls="responsive-navbar-nav" />
         <Navbar.Collapse id="responsive-navbar-nav">
           <Nav className="me-auto">
-            <Link passHref href="/">
-              <Nav.Link as="a">Home</Nav.Link>
-            </Link>
-            <Link passHref href="/delete-me">
-              <Nav.Link as="a">Food Map</Nav.Link>
-            </Link>
+            <Nav.Link as={Link} href="/">
+              Home
+            </Nav.Link>
+            <Nav.Link as={Link} href="/restaurant_map/restaurant_map">
+              Food Map
+            </Nav.Link>
             <Button type="button" size="lg" className="copy-btn" onClick={signIn}>
               Sign In
             </Button>

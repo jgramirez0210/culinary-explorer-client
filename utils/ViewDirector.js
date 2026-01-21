@@ -18,6 +18,18 @@ const ViewDirectorBasedOnUserAuthStatus = ({ component: Component, pageProps }) 
     return <Loading />;
   }
 
+  // Allow restaurant_map page for testing even if not logged in
+  if (window.location.pathname.includes('restaurant_map')) {
+    return (
+      <>
+        <NavBar />
+        <div className="container">
+          <Component {...pageProps} />
+        </div>
+      </>
+    );
+  }
+
   // what the user should see if they are logged in
   if (user) {
     return (

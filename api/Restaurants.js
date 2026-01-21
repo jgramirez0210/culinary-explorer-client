@@ -8,7 +8,9 @@ const getAllRestaurants = () =>
       },
     })
       .then((response) => response.json())
-      .then((data) => resolve(data))
+      .then((data) => {
+        resolve(data);
+      })
       .catch(reject);
   });
 
@@ -17,11 +19,10 @@ const getAllRestaurantsByUid = (uid) =>
     getAllRestaurants()
       .then((allRestaurants) => {
         // Filter restaurants by user ID on the client side
-        const filteredRestaurants = allRestaurants.filter((restaurant) => restaurant.uid_id === uid);
+        const filteredRestaurants = allRestaurants.filter((restaurant) => restaurant.uid === uid);
         resolve(filteredRestaurants);
       })
       .catch((error) => {
-        console.error('Error getting restaurants by user ID:', error);
         reject(error);
       });
   });
@@ -36,7 +37,14 @@ const createRestaurant = (payload) =>
       },
       body: JSON.stringify(payload),
     })
-      .then((response) => response.json())
+      .then((response) => {
+        if (!response.ok) {
+          return response.text().then((text) => {
+            throw new Error(`HTTP ${response.status}: ${text}`);
+          });
+        }
+        return response.json();
+      })
       .then((data) => resolve(data))
       .catch(reject);
   });

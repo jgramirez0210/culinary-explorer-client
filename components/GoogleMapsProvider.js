@@ -18,10 +18,8 @@ export function GoogleMapsProvider({ children }) {
     loading: 'async',
   };
   const { isLoaded, loadError } = useJsApiLoader(options);
-  console.log('GoogleMapsProvider: useJsApiLoader isLoaded:', isLoaded, 'loadError:', loadError);
 
   if (loadError) {
-    console.error('Google Maps API failed to load:', loadError);
   }
 
   return <GoogleMapsContext.Provider value={{ isLoaded, loadError }}>{children}</GoogleMapsContext.Provider>;
